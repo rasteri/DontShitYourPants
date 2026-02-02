@@ -1,0 +1,22 @@
+!define BLANK ""
+C:\code\DontShitYourPants\data.obj : C:\code\DontShitYourPants\data.c .AUTOD&
+EPEND
+ @C:
+ cd C:\code\DontShitYourPants
+ *wcc data.c -fo=.obj -i="C:\WATCOM/h" -w4 -e25 -zq -od -d2 -bt=dos -ml
+
+C:\code\DontShitYourPants\testtext.obj : C:\code\DontShitYourPants\testtext.&
+c .AUTODEPEND
+ @C:
+ cd C:\code\DontShitYourPants
+ *wcc testtext.c -fo=.obj -i="C:\WATCOM/h" -w4 -e25 -zq -od -d2 -bt=dos -ml
+
+C:\code\DontShitYourPants\dontshit.exe : C:\code\DontShitYourPants\data.obj &
+C:\code\DontShitYourPants\testtext.obj .AUTODEPEND
+ @C:
+ cd C:\code\DontShitYourPants
+ @%write dontshit.lk1 FIL data.obj,testtext.obj
+ @%append dontshit.lk1 
+ *wlink name dontshit d all sys dos op m op maxe=25 op q op symf @dontshit.l&
+k1
+

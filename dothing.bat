@@ -1,6 +1,7 @@
-call c:\watcom\owsetenv.bat
-wmake -f noname.mk
+
 del /Q floppy\*.* 
-copy noname.exe floppy
+copy dontshit.exe floppy
 copy u4.dat floppy
+copy strings.txt floppy
+copy verbs.txt floppy
 bfi -t=4 -f=autofloppy.img .\floppy

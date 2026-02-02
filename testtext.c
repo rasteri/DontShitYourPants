@@ -2,6 +2,7 @@
 #include <dos.h>
 #include <conio.h>
 #include <graph.h>
+#include <string.h>
 
 /* CGA ports */
 #define CGA_CRTC_INDEX  0x3D4
@@ -324,7 +325,6 @@ void raster_loop_250_frames(void);
     "out dx,al" \
     /* next frame */ \
     "dec bx" \
-    "jnz frame_loop" \
     "sti" \
     modify [ax bx cx dx];
 
@@ -339,12 +339,20 @@ void DrawText(unsigned int x, unsigned int y, unsigned char *data) {
     }
 }
 
+void * DrawPoint;
+
 int main(void)
 {
     union REGS r;
     FILE *infile;
     int i;
     char buf[10];
+    char inkey;
+
+    char InputBuff[100];
+    int bufpos = 0;
+
+    memset(InputBuff, 0x00, 100);    
 
     printf("1 CGA, 2 EGA200, 3 EGA350, 4 VGA, 5 VGA 200\n");
 
@@ -406,21 +414,33 @@ getch();
             }
             break;
 
-        case 0x32:
-            raster_loop_250_frames_cga();
-            break;
-
-        case 0x33:
-            raster_loop_250_frames_ega();
-            break;
-
         case 0x34:
-            raster_loop_250_frames_vga();
+            while (strcmp(InputBuff, "exit") != 0) {
+                raster_loop_250_frames_vga();
+                    if (kbhit()){
+                        inkey = getch();
+                        if (inkey == '\b'){
+                            bufpos--;
+                            InputBuff[bufpos] = 0;
+                            DrawText(0, 86, "                                                    ");
+                            DrawText(0, 86, InputBuff);
+                        }
+                        else if (inkey == '\n'){
+                            bufpos--;
+                            InputBuff[bufpos] = 0;
+                            DrawText(0, 86, "                                                    ");
+                            DrawText(0, 86, InputBuff);
+                        }
+                        else {
+                            InputBuff[bufpos] = inkey;
+                            DrawText(0, 86, InputBuff);
+                            bufpos++;
+                        }
+                    }
+                        
+            }
             break;
 
-        case 0x35:
-            raster_loop_250_frames_cga();
-            break;
         default:
             exit(0);
     }

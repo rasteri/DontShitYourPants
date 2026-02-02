@@ -1,0 +1,5 @@
+gamelogic.h(237): Warning! W138: No newline at end of file
+data.c(281): Warning! W202: Symbol 'pnt' has been defined, but not referenced
+data.c(443): Warning! W304: Return type 'int' assumed for function 'GameLogic_TextInput'
+data.c(445): Warning! W107: Missing return value for function 'GameLogic_TextInput'
+data.c(463): Warning! W138: No newline at end of file

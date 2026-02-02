@@ -1,0 +1,170 @@
+1
+ --- play
+ --- start
+2
+ --- delete
+3
+ --- Awards
+4
+ --- menu
+5
+ --- quit
+6
+ --- "menu"
+ --- "play"
+ --- "awards"
+7
+ --- credits
+8
+ --- shit
+ --- take shit
+ --- shit yourself
+9
+ --- shit pants
+ --- shit your pants
+10
+ --- shit on floor
+11
+ --- fart
+12
+ --- shit toilet
+13
+ --- fart lightly
+ --- lightly fart (first time)
+14
+ --- fart lightly
+ --- lightly fart (second time)
+15
+ --- fart lightly
+ --- lightly fart (third time)
+16
+ --- don't shit
+17
+ --- break
+18
+ --- die
+19
+ --- pants remove
+ --- remove pants
+ --- remove up pants
+20
+ --- pants on
+ --- on pants
+ --- wear pants
+21
+ --- open door
+22
+ --- pull door
+23
+ --- close door
+24
+ --- sit toilet
+ --- toilet sit
+ --- sit on toilet
+ --- move toilet
+ --- move washroom
+25
+ --- stand
+ --- up
+ --- stand up
+26
+ --- look
+ --- look room
+27
+ --- look washroom
+28
+ --- look door
+29
+ --- look toilet
+30
+ --- look pocket
+ --- look pants
+31
+ --- look shirt
+32
+ --- look clothes
+33
+ --- look pills
+34
+ --- eat pills
+ --- take pills
+35
+ --- look hair
+36
+ --- look shoes
+37
+ --- 
+38
+ --- 
+39
+ --- 
+40
+ --- 
+41
+ --- 
+42
+ --- 
+43
+ --- 
+44
+ --- 
+45
+ --- 
+46
+ --- 
+47
+ --- 
+48
+ --- 
+49
+ --- 
+50
+ --- 
+51
+ --- 
+52
+ --- 
+53
+ --- 
+54
+ --- 
+55
+ --- 
+56
+ --- 
+57
+ --- 
+58
+ --- 
+59
+ --- 
+60
+ --- 
+61
+ --- 
+62
+ --- 
+63
+ --- 
+64
+ --- 
+65
+ --- 
+66
+ --- 
+67
+ --- 
+68
+ --- 
+69
+ --- 
+70
+ --- 
+71
+ --- 
+72
+ --- 
+73
+ --- 
+74
+ -^C

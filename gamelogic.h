@@ -39,6 +39,7 @@ typedef struct _GameString {
 #define ACTION_ADDTOTIMER 5
 #define ACTION_TAKEPILLS 5
 #define ACTION_PLAYSOUND 6
+#define ACTION_DISPLAYGFX 7
 
 // An action that gets taken
 typedef struct _gameaction {
@@ -59,9 +60,6 @@ typedef struct _gameaction {
 typedef struct _GameState {
 
     int ID;
-
-    // ID of graphic to display in this state
-    int Graphic;
 
     // array of actions one can take
     GameAction *Actions;
@@ -108,6 +106,7 @@ typedef struct _GameState {
 #define VERB_TIMEOUT 100
 #define VERB_PILLSACTIVE 101
 #define VERB_ONENTRY 102
+#define VERB_WILDCARD 103
 
 #define STRING_STARTSPACE 1
 #define STRING_ENDSPACE 2

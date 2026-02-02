@@ -187,40 +187,43 @@ GameAction SittingPantsOffActions[] = {
 };
 
 GameAction ShitOnFloorActions[] = {
+    {VERB_ONENTRY, ACTION_DISPLAYGFX, STATE_SHITONFLOOR},
     {VERB_ONENTRY, ACTION_TEXTOUTPUT, STRING_ENDING_SHITONFLOOR},
-    {VERB_ONENTRY, ACTION_GOTOSTATE, STATE_MENU},
+    {VERB_WILDCARD, ACTION_GOTOSTATE, STATE_MENU},
     {0,0,0}
 };
 
 GameAction ShitInToiletActions[] = {
+    {VERB_ONENTRY, ACTION_DISPLAYGFX, STATE_SHITINTOILET},
     {VERB_ONENTRY, ACTION_TEXTOUTPUT, STRING_ENDING_SHITINTOILET},
     {VERB_ONENTRY, ACTION_GOTOSTATE, STATE_MENU},
     {0,0,0}
 };
 
 GameAction ShitPantsStandingActions[] = {
+    {VERB_ONENTRY, ACTION_DISPLAYGFX, STATE_SHITPANTSSTANDING},
     {VERB_ONENTRY, ACTION_TEXTOUTPUT, STRING_ENDING_SHITPANTSSTANDING},
     {VERB_ONENTRY, ACTION_GOTOSTATE, STATE_MENU},
     {0,0,0}
 };
 
 GameState GameStates[] = {
-    {0, 0, 0},
-    {STATE_MENU, STATE_MENU, MenuActions},
-    {STATE_STANDING, STATE_STANDING, StandingActions},
-    {STATE_STANDINGPANTSOFF, STATE_STANDINGPANTSOFF, StandingPantsOffActions},
-    {STATE_DOOROPEN, STATE_DOOROPEN, StandingDoorOpenActions},
-    {STATE_DOOROPENPANTSOFF, STATE_DOOROPENPANTSOFF, StandingDoorOpenPantsOffActions},
-    {STATE_ONTOILET, STATE_ONTOILET, SittingActions},
-    {STATE_ONTOILETPANTSOFF, STATE_ONTOILETPANTSOFF, SittingPantsOffActions},
+    {0, 0},
+    {STATE_MENU, MenuActions},
+    {STATE_STANDING, StandingActions},
+    {STATE_STANDINGPANTSOFF, StandingPantsOffActions},
+    {STATE_DOOROPEN, StandingDoorOpenActions},
+    {STATE_DOOROPENPANTSOFF, StandingDoorOpenPantsOffActions},
+    {STATE_ONTOILET, SittingActions},
+    {STATE_ONTOILETPANTSOFF, SittingPantsOffActions},
 
-    {STATE_AWARDS, STATE_AWARDS, NULL},
-    {STATE_CREDITS, STATE_CREDITS, NULL},
+    {STATE_AWARDS, NULL},
+    {STATE_CREDITS, NULL},
 
     //endings
-    {STATE_SHITONFLOOR, STATE_SHITONFLOOR, ShitOnFloorActions},
-    {STATE_SHITINTOILET, STATE_SHITINTOILET, ShitInToiletActions},
-    {STATE_SHITPANTSSTANDING, STATE_SHITPANTSSTANDING, ShitPantsStandingActions},
+    {STATE_SHITONFLOOR, ShitOnFloorActions},
+    {STATE_SHITINTOILET, ShitInToiletActions},
+    {STATE_SHITPANTSSTANDING, ShitPantsStandingActions},
 };
 
 char * FindString(int id){
@@ -262,6 +265,7 @@ int FindVerb(char *TextEntry){
     return 0;
 }
 
+char filter[4] = {'\r', '\n', 0x0B, 0x00};
 
 void LoadVerbs() {
     char line[1024];
@@ -271,6 +275,10 @@ void LoadVerbs() {
     GameString *currstring;
     GameString *prevstring = NULL;
 
+    Synonym *prevsyn = NULL, *currsyn = NULL;
+    GameVerb *prevverb = NULL, *currverb = NULL;
+    char *token;
+    char *pnt;
     FILE* file = fopen("strings.txt", "r");
 
     while (fgets(line, 1024, file)) {
@@ -282,7 +290,7 @@ void LoadVerbs() {
 
         currstring->Text = malloc(strlen(line) + 1);
         strcpy(currstring->Text, line);
-        currstring->Text[strcspn(currstring->Text, "\r\n")] = 0; // strip newline
+        currstring->Text[strcspn(currstring->Text, filter)] = 0; // strip newline
 
         if (prevstring != NULL)
             prevstring->next = currstring;
@@ -298,13 +306,13 @@ void LoadVerbs() {
 
     file = fopen("verbs.txt", "r");
 
-    Synonym *prevsyn = NULL, *currsyn = NULL;
-    GameVerb *prevverb = NULL, *currverb = NULL;
+
 
     linenum = 1;
     while (fgets(line, 1024, file))
     {
-        char *token;
+
+
 
         // one verb per line
         currverb = malloc(sizeof(GameVerb));
@@ -326,6 +334,8 @@ void LoadVerbs() {
         // Walk through other tokens
         while(token != NULL) {
 
+
+
             // alloc a synonym
             currsyn = malloc(sizeof(Synonym));
             currsyn->next = NULL;
@@ -334,10 +344,18 @@ void LoadVerbs() {
             if (currverb->Synonyms == NULL)
                 currverb->Synonyms = currsyn;
 
-            currsyn->Text = malloc(strlen(token));
+            currsyn->Text = malloc(strlen(token) + 1);
 
             strcpy(currsyn->Text, token);
-            currsyn->Text[strcspn(currsyn->Text, "\r\n")] = 0; // strip newline
+
+
+            /*pnt = currsyn->Text;
+            while (*pnt != 0){
+                printf("%02X", *pnt);
+                pnt++;
+            }
+
+            printf(" -- %s\n", token);*/
 
             if (prevsyn != NULL)
                 prevsyn->next = currsyn;
@@ -355,6 +373,24 @@ void LoadVerbs() {
 
     fclose(file);
 
+   
+    /*currverb = firstverb;
+    while (currverb != NULL) {
+
+        printf("%d\n", currverb->ID);
+        currsyn = currverb->Synonyms;
+        while (currsyn != NULL){
+            pnt = currsyn->Text;
+            while (*pnt != 0){
+                printf("%02X", *pnt);
+                pnt++;
+            }
+            printf(" --- %s\n", currsyn->Text);
+            currsyn = currsyn->next;
+        }
+
+        currverb = currverb->next;
+    }*/
 }
 
 GameState *CurrState = &GameStates[1];
@@ -368,13 +404,16 @@ void RunAction(GameAction *curraction){
             //printf("printf string %d\n", curraction->Action);
             printf("%s\n", FindString(curraction->Action));
             break;
+        case ACTION_DISPLAYGFX:
+            printf("display gfx %d\n", curraction->Action);
+            break;
         case ACTION_GOTOSTATE:
             printf("goto state %d\n", curraction->Action);
             CurrState = &GameStates[curraction->Action];
 
             // run any "on entry" actions in the new state
             StateEntryAction = CurrState->Actions;
-            while (StateEntryAction->Verb != 0){
+            while (StateEntryAction->Verb != 0) {
                 if (StateEntryAction->Verb == VERB_ONENTRY){
                     RunAction(StateEntryAction);
                 }
@@ -385,32 +424,40 @@ void RunAction(GameAction *curraction){
     }
 }
 
-void RunVerb(int Verb){
+void RunVerb(int Verb) {
     GameAction *curraction = CurrState->Actions;
     while (curraction->Verb != 0) {
 
-        if (curraction->Verb == Verb) {
+        if (curraction->Verb == VERB_WILDCARD || curraction->Verb == Verb) {
             RunAction(curraction);
-
         }
 
         curraction++;
     }
 }
 
+void Gamelogic_Init(){
+    LoadVerbs();
+}
+
+GameLogic_TextInput(char *Text) {
+    RunVerb(FindVerb(Text));
+}
 
 
-int main(void)
+
+/*int main(void)
 {   
     char inbuf[100];
-    LoadVerbs();
+
 
     while(1) {
         fgets(inbuf, 100, stdin);
         inbuf[strcspn(inbuf, "\r\n")] = 0; // strip newline
+        printf("inputted %s\n", inbuf);
         //printf("verb ID %d\n",FindVerb(inbuf));
         RunVerb(FindVerb(inbuf));
     }
 
     return 0;
-}
+}*/
