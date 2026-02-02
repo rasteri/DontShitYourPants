@@ -1,0 +1,45 @@
+Menu
+Standing
+Standing pants off
+Door Open
+Door Open pants off
+Sitting on toilet
+Sitting on toilet pants off
+Awards
+Credits
+You just shit on the floor! Congratulations!
+You just shit in the toilet! Congratulations!
+You just shit your pants! Game over!
+You forgot to take your pants off! You just shit your pants! Game over!
+You shit your pants anyway! Game over!
+The exertion causes you to shit your pants! Game over!
+You farted too hard and shit your pants! Maybe next time you shouldn't push it so hard.
+You farted too hard but your pants are off so you shit the floor! Still, you shouldn't push it so hard.
+Your vision fades and you hear a soft 'pbffffff' as you shit your pants. Game over.
+Your vision fades and you hear a soft 'pbffffff' as you shit, but your pants are off. So... congratulations?
+You shit anyway, but all is forgiven because your pants are off. Congratulations!
+The exertion causes you to shit, but your pants are off anyway. Close call! Congratulations!
+The pills worked! You didn't shit your pants. Congratulations! - standing pants on
+Uh oh. Wait a minute... - standing pants on
+Awww, you just shit your pants!  Maybe they didn't work so well... - standing pants on
+NULL
+The game hasn't started yet but you just couldn't help yourself. You just shit your pants. Game over. 
+The pills worked! You didn't shit your pants. Congratulations! - standing pants off
+Uh oh. Wait a minute... - standing pants off
+THIS HAS YET TO BE WRITTEN - standing pants off
+The pills worked! You didn't shit your pants. Congratulations! - sitting pants on
+Uh oh. Wait a minute... - sitting pants on
+Awww, you just shit your pants!  Maybe they didn't work so well... - sitting pants on
+he pills worked! You didn't shit your pants. Congratulations! - sitting pants off
+Uh oh. Wait a minute... - sitting pants off
+THIS HAS YET TO BE WRITTEN - BELT AND BRACES AWARD? - sitting pants off
+You couldn't hold it anymore, you just shit your pants! Game over! - standing
+You couldn't hold it anymore, you just shit your pants! Game over! - sitting
+You couldn't hold it anymore, you had to shit!  Good thing your pants were off. Congratulations! - standing
+You couldn't hold it anymore, you had to shit!  Good thing your pants were off. Congratulations! - sitting
+For some reason, despite your pants being off, you chose to shit in them anyway. Game over!
+You farted too hard and shit your pants! Maybe next time you shouldn't push it so hard. -- on toilet
+You shit your pants anyway! Game over! -- on toilet
+Your vision fades and you hear a soft 'pbffffff' as you shit your pants. Game over. - on toilet
+Your vision fades and you hear a soft 'pbffffff' as you shit, but your pants are off. So... congratulations? - on toilet
+You shit anyway, but all is forgiven because your pants are off. Congratulations! - on toilet

@@ -1,0 +1,13 @@
+testtext.c(93): Warning! W202: Symbol 'i' has been defined, but not referenced
+testtext.c(116): Warning! W202: Symbol 'i' has been defined, but not referenced
+testtext.c(139): Warning! W202: Symbol 'i' has been defined, but not referenced
+testtext.c(162): Warning! W202: Symbol 'i' has been defined, but not referenced
+testtext.c(376): Warning! W131: No prototype found for function 'exit'
+testtext.c(400): Warning! W131: No prototype found for function 'raster_loop_250_frames_cga'
+testtext.c(414): Warning! W131: No prototype found for function 'raster_loop_250_frames_ega'
+testtext.c(418): Warning! W131: No prototype found for function 'raster_loop_250_frames_vga'
+testtext.c(435): Warning! W138: No newline at end of file
+testtext.c(376): Warning! W308: The function 'exit' without prototyped parameters called
+testtext.c(376): Note! I2002: 'exit' defined in: testtext.c(376)
+testtext.c(425): Warning! W308: The function 'exit' without prototyped parameters called
+testtext.c(425): Note! I2002: 'exit' defined in: testtext.c(376)

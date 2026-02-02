@@ -1,0 +1,438 @@
+// menu play
+1,1,2,2
+
+//menu delete
+1,2,3,0,2,2
+
+// menu awards
+1,3,2,8
+
+//menu menu
+1,4,1,9
+
+//menu quit
+1,5,4,0
+
+//menu quote
+1,6,1,10
+
+//menu credits
+1,7,2,9
+
+//menu shit
+1,8,2,26
+
+//menu shit pants
+1,9,2,26
+
+
+//STANDING
+//shit
+2,8,2,12
+
+//shit pants
+2,9,2,12
+
+// fart
+2,11,2,16
+
+// shit toilet
+2,12,1,11
+
+//don't shit
+2,16,2,14
+
+//break
+2,17,2,15
+
+//die
+2,18,2,18
+
+//remove pants
+2,19,2,3,1,3
+
+//pants on
+2,20,1,7
+
+//open door
+2,21,1,16
+
+//pull door
+2,22,2,4,1,17
+
+//close door
+2,23,1,18
+
+//sit toilet
+2,24,1,24
+
+//stand
+2,25,1,23
+
+//look
+2,26,1,26
+
+//look washroom
+2,27,1,31
+
+//look door
+2,28,1,29
+
+//look toilet
+2,29,1,11
+
+//run outta time
+2,100,2,36
+
+//pills kick in
+2,101,2,22
+
+
+//STANDING PANTS OFF
+//shit
+3,8,2,10
+
+//shit pants
+3,9,2,40
+
+// fart
+3,11,2,17
+
+// shit toilet
+3,12,1,11
+
+//don't shit
+3,16,2,20
+
+//break
+3,17,2,21
+
+//die
+3,18,2,19
+
+//remove pants
+3,19,1,4
+
+//pants on
+3,20,2,2,1,6
+
+//open door
+3,21,1,16
+
+//pull door
+3,22,2,5,1,17
+
+//close door
+3,23,1,18
+
+//sit toilet
+3,24,1,24
+
+//stand
+3,25,1,23
+
+//look
+3,26,1,26
+
+//look washroom
+3,27,1,31
+
+//look door
+3,28,1,29
+
+//look toilet
+3,29,1,11
+
+//run outta time
+3,100,2,38
+
+//pills kick in
+3,101,2,27
+
+
+//DOOR OPEN
+//shit
+4,8,2,12
+
+//shit pants
+4,9,2,12
+
+// fart
+4,11,2,16
+
+// shit toilet
+4,12,2,13
+
+//don't shit
+4,16,2,14
+
+//break
+4,17,2,15
+
+//die
+4,18,2,18
+
+//remove pants
+4,19,2,5,1,3
+
+//pants on
+4,20,1,7
+
+//open door
+4,21,1,8
+
+//pull door
+4,22,1,8
+
+//close door
+4,23,2,2,1,20
+
+//sit toilet
+4,24,2,6,1,21
+
+//stand
+4,25,1,23
+
+//look
+4,26,1,27
+
+//look washroom
+4,27,1,28
+
+//look door
+4,28,1,29
+
+//look toilet
+4,29,1,30
+
+//run outta time
+4,100,2,36
+
+//pills kick in
+4,101,2,22
+
+//DOOR OPEN, PANTS OFF
+//shit
+5,8,2,10
+
+//shit pants
+5,9,2,40
+
+// fart
+5,11,2,17
+
+// shit toilet
+5,12,2,11
+
+//don't shit
+5,16,2,20
+
+//break
+5,17,2,21
+
+//die
+5,18,2,19
+
+//remove pants
+5,19,1,4
+
+//pants on
+5,20,2,4,1,6
+
+//open door
+5,21,1,8
+
+//pull door
+5,22,1,8
+
+//close door
+5,23,2,3,1,20
+
+//sit toilet
+5,24,2,7,1,21
+
+//stand
+5,25,1,23
+
+//look
+5,26,1,27
+
+//look washroom
+5,27,1,28
+
+//look door
+5,28,1,29
+
+//look toilet
+5,29,1,30
+
+//run outta time
+5,100,2,38
+
+//pills kick in
+5,101,2,27
+
+
+// ON TOILET, PANTS ON
+//shit
+6,8,2,13
+
+//shit pants
+6,9,2,13
+
+// fart
+6,11,2,41
+
+// shit toilet
+6,12,2,13
+
+//don't shit
+6,16,2,42
+
+//break
+6,17,1,14
+
+//die
+6,18,2,43
+
+//remove pants
+6,19,1,5
+
+//pants on
+6,20,1,7
+
+//open door
+6,21,1,8
+
+//pull door
+6,22,1,8
+
+//close door
+6,23,1,19
+
+//sit toilet
+6,24,1,25
+
+//stand
+6,25,2,4,1,22 
+
+//look
+6,26,1,27
+
+//look washroom
+6,27,1,28
+
+//look door
+6,28,1,29
+
+//look toilet
+6,29,1,30
+
+//run outta time
+6,100,2,37
+
+//pills kick in
+6,101,2,30
+
+
+// ON TOILET, PANTS OFF
+//shit
+7,8,2,11
+
+//shit pants
+7,9,2,40
+
+// fart
+7,11,2,11
+
+// shit toilet
+7,12,2,11
+
+//don't shit
+7,16,2,45
+
+//break
+7,17,1,14
+
+//die
+7,18,2,44
+
+//remove pants
+7,19,1,4
+
+//pants on
+7,20,1,5
+
+//open door
+7,21,1,8
+
+//pull door
+7,22,1,8
+
+//close door
+7,23,1,19
+
+//sit toilet
+7,24,1,25
+
+//stand
+7,25,2,5,1,22 
+
+//look
+7,26,1,27
+
+//look washroom
+7,27,1,28
+
+//look door
+7,28,1,29
+
+//look toilet
+7,29,1,30
+
+//run outta time
+7,100,2,39
+
+//pills kick in
+7,101,2,33
+
+
+//WILDCARDS
+//look pocket
+255,30,1,32
+254,30,1,33
+
+//look shirt
+0,31,1,34
+
+//look clothes
+0,32,1,35
+
+//look pills
+255,33,1,36
+254,33,1,37
+
+//eat pills
+255,34,5,0,1,38
+254,33,1,37
+
+//look hair
+0,35,1,39
+
+//look shoes
+0,36,1,40
+
+//fart lightly, first time
+0,13,1,12,5,0
+
+//fart lightly, second time
+0,13,1,13
+
+//fart lightly, third time
+0,13,2,12
+
+
+// state, verb, type, action, [type, action]...
+// 0 in state is wildcard(any state except menu), others will override
+// 255 in state is if pills haven't been taken
+// 254 in state is if pills have been taken

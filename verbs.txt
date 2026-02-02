@@ -1,0 +1,103 @@
+play,start
+delete
+Awards
+menu
+quit
+"menu","play","awards"
+credits
+shit,take shit,shit yourself
+shit pants,shit your pants
+shit on floor
+fart
+shit toilet
+fart lightly,lightly fart (first time)
+fart lightly,lightly fart (second time)
+fart lightly,lightly fart (third time)
+don't shit
+break
+die
+pants remove,remove pants,remove up pants
+pants on,on pants,wear pants
+open door
+pull door
+close door
+sit toilet,toilet sit,sit on toilet,move toilet,move washroom
+stand,up,stand up
+look,look room
+look washroom
+look door
+look toilet
+look pocket,look pants
+look shirt
+look clothes
+look pills
+eat pills,take pills
+look hair
+look shoes
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+run out of time
+pills kick in
+20sec left
+5sec left

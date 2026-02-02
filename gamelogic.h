@@ -1,0 +1,193 @@
+
+// linked list of synonyms
+typedef struct _Synonym {
+
+    char *Text;
+
+    struct _Synonym *next;
+
+} Synonym;
+
+typedef struct _GameVerb {
+
+    int ID;
+
+    // Linked list, or array or something, of synonyms for this verb
+    Synonym *Synonyms;
+
+    // next in list
+    struct _GameVerb *next;
+
+} GameVerb;
+
+
+typedef struct _GameString {
+
+    int ID;
+
+    char *Text;
+
+    struct _GameString *next;
+
+} GameString;
+
+#define ACTION_NONE 0
+#define ACTION_TEXTOUTPUT 1
+#define ACTION_GOTOSTATE 2
+#define ACTION_DELETEAWARDS 3
+#define ACTION_EXITGAME 4
+#define ACTION_ADDTOTIMER 5
+#define ACTION_TAKEPILLS 5
+
+// An action that gets taken
+typedef struct _gameaction {
+
+    // Verb number
+    int Verb;
+
+    // Action Type, ACTION_x
+    int Type;
+
+    // index of either a string for TEXTOUTPUT or a state for GOTOSTATE
+    int Action;
+
+} GameAction;
+
+
+// One state in the state machine
+typedef struct _GameState {
+
+    int ID;
+
+    // ID of graphic to display in this state
+    int Graphic;
+
+    // array of actions one can take
+    GameAction *Actions;
+
+} GameState;
+
+
+#define VERB_PLAY 1
+#define VERB_DELETE 2
+#define VERB_AWARDS 3
+#define VERB_MENU 4
+#define VERB_QUIT 5
+#define VERB_IDIOT 6
+#define VERB_CREDITS 7
+#define VERB_SHIT 8
+#define VERB_SHITPANTS 9
+#define VERB_SHITONFLOOR 10 
+#define VERB_FART 11
+#define VERB_SHITTOILET 12
+#define VERB_FARTLIGHTLY1 13
+#define VERB_FARTLIGHTLY2 14
+#define VERB_FARTLIGHTLY3 15
+#define VERB_DONTSHIT 16
+#define VERB_BREAK 17
+#define VERB_DIE 18
+#define VERB_REMOVEPANTS 19
+#define VERB_WEARPANTS 20
+#define VERB_OPENDOOR 21
+#define VERB_PULLDOOR 22
+#define VERB_CLOSEDOOR 23
+#define VERB_SITTOILET 24
+#define VERB_STAND 25
+#define VERB_LOOK 26
+#define VERB_LOOKWASHROOM 27
+#define VERB_LOOKDOOR 28
+#define VERB_LOOKTOILET 29
+#define VERB_LOOKPOCKET 30
+#define VERB_LOOKSHIRT 31
+#define VERB_LOOKCLOTHES 32
+#define VERB_LOOKPILLS 33
+#define VERB_TAKEPILLS 34
+#define VERB_LOOKHAIR 35
+#define VERB_LOOKSHOES 36
+
+#define STRING_STARTSPACE 1
+#define STRING_ENDSPACE 2
+#define STRING_REMOVEPANTS 3
+#define STRING_ALREADYOFF 4
+#define STRING_GETOFFTOILET 5
+#define STRING_WEARPANTS 6
+#define STRING_ALREADYON 7
+#define STRING_ALREADYOPEN 8
+#define STRING_ALREADYMENU 9
+#define STRING_IDIOT 10
+#define STRING_WHATTOILET 11
+#define STRING_FARTEDLIGHTLY1 12
+#define STRING_FARTEDLIGHTLY2 13
+#define STRING_CONCENTRATE 14
+#define STRING_DONTKNOW 15
+#define STRING_PUSHDOOR 16
+#define STRING_PULLDOOR 17
+#define STRING_ALREADYCLOSED 18
+#define STRING_CANTREACH 19
+#define STRING_CLOSEDOOR 20
+#define STRING_SITONTOILET 21
+#define STRING_STAND 22
+#define STRING_STANDMORE 23
+#define STRING_CANTSIT 24
+#define STRING_ALREADYSITTING 25
+#define STRING_LOOK 26
+#define STRING_LOOKDOOROPEN 27
+#define STRING_LOOKWASHROOM 28
+#define STRING_LOOKDOOR 29
+#define STRING_LOOKTOILET 30
+#define STRING_CANTSEE 31
+#define STRING_LOOKPOCKETS 32
+#define STRING_LOOKPOCKETSEMPTY 33
+#define STRING_LOOKSHIRT 34
+#define STRING_LOOKCLOTHES 35
+#define STRING_LOOKPILLS 36
+#define STRING_ALREADYEATEN 37
+#define STRING_EATPILLS 38
+#define STRING_LOOKHAIR 39
+#define STRING_LOOKSHOES 40
+
+#define STATE_MENU 1
+#define STATE_STANDING 2
+#define STATE_STANDINGPANTSOFF 3
+#define STATE_DOOROPEN 4
+#define STATE_DOOROPENPANTSOFF 5
+#define STATE_ONTOILET 6
+#define STATE_ONTOILETPANTSOFF 7
+#define STATE_AWARDS 8
+#define STATE_CREDITS 9
+#define STATE_SHITONFLOOR 10
+#define STATE_SHITINTOILET 11
+#define STATE_SHITPANTSSTANDING 12
+#define STATE_SHITINPANTSSITTING 13
+#define STATE_DONTSHITPANTSON 14
+#define STATE_BREAKPANTSON 15
+#define STATE_FARTPANTSON 16
+#define STATE_FARTPANTSOFF 17
+#define STATE_DIEPANTSON 18
+#define STATE_DIEPANTSOFF 19
+#define STATE_DONTSHITPANTSOFF 20
+#define STATE_BREAKPANTSOFF 21
+#define STATE_PILLSSTANDINGPANTSON1 22
+#define STATE_PILLSSTANDINGPANTSON2 23
+#define STATE_PILLSSTANDINGPANTSON3 24
+#define STATE_NULL
+#define STATE_STARTINGGUN 25
+#define STATE_PILLSSTANDINGPANTSOFF1 26
+#define STATE_PILLSSTANDINGPANTSOFF2 27
+#define STATE_PILLSSTANDINGPANTSOFF3 28
+#define STATE_PILLSSITTINGPANTSON1 29
+#define STATE_PILLSSITTINGPANTSON2 30
+#define STATE_PILLSSITTINGPANTSON3 31
+#define STATE_PILLSSITTINGPANTSOFF1 32
+#define STATE_PILLSSITTINGPANTSOFF2 33
+#define STATE_PILLSSITTINGPANTSOFF3 34
+#define STATE_TIMEOVERSTANDINGPANTSON 35
+#define STATE_TIMEOVERSITTINGPANTSON 36
+#define STATE_TIMEOVERSTANDINGPANTSOFF 37
+#define STATE_TIMEOVERSITTINGPANTSOFF 38
+#define STATE_SHITINPANTSWHILEOFF 39
+#define STATE_FARTPANTSONSITTING 40
+#define STATE_DONTSHITPANTSONSITTING 41
+#define STATE_DIEPANTSONSITTING 42
+#define STATE_DIEPANTSOFFSITTING 43
+#define STATE_DONTSHITPANTSOFFSITTING 44
