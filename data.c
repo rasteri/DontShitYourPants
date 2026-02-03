@@ -262,10 +262,11 @@ int FindVerb(char *TextEntry){
         currverb = currverb->next;
     }
 
+    DisplayText("Can't find verb");
     return 0;
 }
 
-char filter[4] = {'\r', '\n', 0x0B, 0x00};
+char filter[3] = {'\r', '\n', 0x00};
 
 void LoadVerbs() {
     char line[1024];
@@ -347,6 +348,7 @@ void LoadVerbs() {
             currsyn->Text = malloc(strlen(token) + 1);
 
             strcpy(currsyn->Text, token);
+            currsyn->Text[strcspn(currsyn->Text, filter)] = 0; // strip newline
 
 
             /*pnt = currsyn->Text;
@@ -374,7 +376,7 @@ void LoadVerbs() {
     fclose(file);
 
    
-    /*currverb = firstverb;
+    currverb = firstverb;
     while (currverb != NULL) {
 
         printf("%d\n", currverb->ID);
@@ -390,7 +392,7 @@ void LoadVerbs() {
         }
 
         currverb = currverb->next;
-    }*/
+    }
 }
 
 GameState *CurrState = &GameStates[1];
@@ -402,13 +404,14 @@ void RunAction(GameAction *curraction){
     switch (curraction->Type) {
         case ACTION_TEXTOUTPUT:
             //printf("printf string %d\n", curraction->Action);
-            printf("%s\n", FindString(curraction->Action));
+            //printf("%s\n", FindString(curraction->Action));
+            DisplayText(FindString(curraction->Action));
             break;
         case ACTION_DISPLAYGFX:
-            printf("display gfx %d\n", curraction->Action);
+            //printf("display gfx %d\n", curraction->Action);
             break;
         case ACTION_GOTOSTATE:
-            printf("goto state %d\n", curraction->Action);
+            //printf("goto state %d\n", curraction->Action);
             CurrState = &GameStates[curraction->Action];
 
             // run any "on entry" actions in the new state
@@ -440,7 +443,7 @@ void Gamelogic_Init(){
     LoadVerbs();
 }
 
-GameLogic_TextInput(char *Text) {
+void GameLogic_TextInput(char *Text) {
     RunVerb(FindVerb(Text));
 }
 

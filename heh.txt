@@ -1,97 +1,97 @@
 1
- --- play
- --- start
+706C6179 --- play
+7374617274 --- start
 2
- --- delete
+64656C657465 --- delete
 3
- --- Awards
+417761726473 --- Awards
 4
- --- menu
+6D656E75 --- menu
 5
- --- quit
+71756974 --- quit
 6
- --- "menu"
- --- "play"
- --- "awards"
+226D656E7522 --- "menu"
+22706C617922 --- "play"
+2261776172647322 --- "awards"
 7
- --- credits
+63726564697473 --- credits
 8
- --- shit
- --- take shit
- --- shit yourself
+73686974 --- shit
+74616B652073686974 --- take shit
+7368697420796F757273656C66 --- shit yourself
 9
- --- shit pants
- --- shit your pants
+736869742070616E7473 --- shit pants
+7368697420796F75722070616E7473 --- shit your pants
 10
- --- shit on floor
+73686974206F6E20666C6F6F72 --- shit on floor
 11
- --- fart
+66617274 --- fart
 12
- --- shit toilet
+7368697420746F696C6574 --- shit toilet
 13
- --- fart lightly
- --- lightly fart (first time)
+66617274206C696768746C79 --- fart lightly
+6C696768746C792066617274202866697273742074696D6529 --- lightly fart (first time)
 14
- --- fart lightly
- --- lightly fart (second time)
+66617274206C696768746C79 --- fart lightly
+6C696768746C79206661727420287365636F6E642074696D6529 --- lightly fart (second time)
 15
- --- fart lightly
- --- lightly fart (third time)
+66617274206C696768746C79 --- fart lightly
+6C696768746C792066617274202874686972642074696D6529 --- lightly fart (third time)
 16
- --- don't shit
+646F6E27742073686974 --- don't shit
 17
- --- break
+627265616B --- break
 18
- --- die
+646965 --- die
 19
- --- pants remove
- --- remove pants
- --- remove up pants
+70616E74732072656D6F7665 --- pants remove
+72656D6F76652070616E7473 --- remove pants
+72656D6F76652075702070616E7473 --- remove up pants
 20
- --- pants on
- --- on pants
- --- wear pants
+70616E7473206F6E --- pants on
+6F6E2070616E7473 --- on pants
+776561722070616E7473 --- wear pants
 21
- --- open door
+6F70656E20646F6F72 --- open door
 22
- --- pull door
+70756C6C20646F6F72 --- pull door
 23
- --- close door
+636C6F736520646F6F72 --- close door
 24
- --- sit toilet
- --- toilet sit
- --- sit on toilet
- --- move toilet
- --- move washroom
+73697420746F696C6574 --- sit toilet
+746F696C657420736974 --- toilet sit
+736974206F6E20746F696C6574 --- sit on toilet
+6D6F766520746F696C6574 --- move toilet
+6D6F76652077617368726F6F6D --- move washroom
 25
- --- stand
- --- up
- --- stand up
+7374616E64 --- stand
+7570 --- up
+7374616E64207570 --- stand up
 26
- --- look
- --- look room
+6C6F6F6B --- look
+6C6F6F6B20726F6F6D --- look room
 27
- --- look washroom
+6C6F6F6B2077617368726F6F6D --- look washroom
 28
- --- look door
+6C6F6F6B20646F6F72 --- look door
 29
- --- look toilet
+6C6F6F6B20746F696C6574 --- look toilet
 30
- --- look pocket
- --- look pants
+6C6F6F6B20706F636B6574 --- look pocket
+6C6F6F6B2070616E7473 --- look pants
 31
- --- look shirt
+6C6F6F6B207368697274 --- look shirt
 32
- --- look clothes
+6C6F6F6B20636C6F74686573 --- look clothes
 33
- --- look pills
+6C6F6F6B2070696C6C73 --- look pills
 34
- --- eat pills
- --- take pills
+6561742070696C6C73 --- eat pills
+74616B652070696C6C73 --- take pills
 35
- --- look hair
+6C6F6F6B2068616972 --- look hair
 36
- --- look shoes
+6C6F6F6B2073686F6573 --- look shoes
 37
  --- 
 38
@@ -167,4 +167,60 @@
 73
  --- 
 74
- -^C
+ --- 
+75
+ --- 
+76
+ --- 
+77
+ --- 
+78
+ --- 
+79
+ --- 
+80
+ --- 
+81
+ --- 
+82
+ --- 
+83
+ --- 
+84
+ --- 
+85
+ --- 
+86
+ --- 
+87
+ --- 
+88
+ --- 
+89
+ --- 
+90
+ --- 
+91
+ --- 
+92
+ --- 
+93
+ --- 
+94
+ --- 
+95
+ --- 
+96
+ --- 
+97
+ --- 
+98
+ --- 
+99
+ --- 
+100
+72756E206F7574206F662074696D65 --- run out of time
+101
+70696C6C73206B69636B20696E --- pills kick in
+102
+3230736563206C656674 ---^C

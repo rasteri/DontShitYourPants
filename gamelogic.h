@@ -1,3 +1,6 @@
+void DisplayText(char *text);
+void Gamelogic_Init();
+void GameLogic_TextInput(char *Text);
 
 // linked list of synonyms
 typedef struct _Synonym {

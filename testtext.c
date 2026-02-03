@@ -3,6 +3,7 @@
 #include <conio.h>
 #include <graph.h>
 #include <string.h>
+#include "gamelogic.h"
 
 /* CGA ports */
 #define CGA_CRTC_INDEX  0x3D4
@@ -341,6 +342,17 @@ void DrawText(unsigned int x, unsigned int y, unsigned char *data) {
 
 void * DrawPoint;
 
+
+void ClearLine(int line){
+    DrawText(0, line, "                                                                                ");
+}
+
+void DisplayText(char *text){
+    ClearLine(86);
+    DrawText(10, 86, text);
+}
+
+
 int main(void)
 {
     union REGS r;
@@ -353,6 +365,9 @@ int main(void)
     int bufpos = 0;
 
     memset(InputBuff, 0x00, 100);    
+
+    Gamelogic_Init();
+
 
     printf("1 CGA, 2 EGA200, 3 EGA350, 4 VGA, 5 VGA 200\n");
 
@@ -398,10 +413,11 @@ int main(void)
     rasterEnable();
     
 
-    DrawText(10, 86, "The quick brown fox jumped over the lazy god.");
+
+    /*DrawText(10, 86, "The quick brown fox jumped over the lazy god.");
     DrawText(10, 87, "The quick brown fox jumped over the lazy god.");
-    DrawText(10, 88, "The quick brown fox jumped over the lazy god.");
-getch();
+    DrawText(10, 88, "The quick brown fox jumped over the lazy god.");*/
+
         switch (i){
         case 0x31:
             for (i = 0; i < 100; i++){
@@ -419,21 +435,29 @@ getch();
                 raster_loop_250_frames_vga();
                     if (kbhit()){
                         inkey = getch();
+                        //delete
                         if (inkey == '\b'){
-                            bufpos--;
-                            InputBuff[bufpos] = 0;
-                            DrawText(0, 86, "                                                    ");
-                            DrawText(0, 86, InputBuff);
+                            if (bufpos) {
+                                bufpos--;
+                                InputBuff[bufpos] = 0;
+                                ClearLine(88);
+                                DrawText(0, 88, InputBuff);
+                            }
                         }
-                        else if (inkey == '\n'){
-                            bufpos--;
+                        //enter
+                        else if (inkey == '\r'){
+                            GameLogic_TextInput(InputBuff);
+                            bufpos = 0;
                             InputBuff[bufpos] = 0;
-                            DrawText(0, 86, "                                                    ");
-                            DrawText(0, 86, InputBuff);
+                            InputBuff[bufpos+1] = 0;
+                            ClearLine(88);
+                            DrawText(0, 88, InputBuff);
                         }
                         else {
                             InputBuff[bufpos] = inkey;
-                            DrawText(0, 86, InputBuff);
+                            InputBuff[bufpos+1] = 0;
+                            ClearLine(88);
+                            DrawText(0, 88, InputBuff);
                             bufpos++;
                         }
                     }
