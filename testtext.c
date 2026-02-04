@@ -3,6 +3,8 @@
 #include <conio.h>
 #include <graph.h>
 #include <string.h>
+#include <stdlib.h>
+
 #include "gamelogic.h"
 
 /* CGA ports */
@@ -60,7 +62,7 @@ Start Address 0000
 [R17] LightPenPositionL 0
 */
 
-
+Graphic Graphics[GFXCOUNT];
 
 /* ---------- Video mode setup ---------- */
 
@@ -190,6 +192,8 @@ void set_160x100_mode_vga_200(void)
 
 void raster_loop_250_frames(void);
 
+unsigned int split_rows = 344;
+
 #pragma aux raster_loop_250_frames_cga = \
     "cli" \
     "mov bx,250"            /* frame counter */ \
@@ -213,7 +217,7 @@ void raster_loop_250_frames(void);
     "out dx,al" \
     /* back to CGA status */ \
     "mov dx,03DAh" \
-    "mov cx,172"           /* split at scanline 100 */ \
+    "mov cx,split_rows"           /* split at scanline 100 */ \
 "scan_loop:" \
 "h1:" \
     "in  al,dx" \
@@ -306,7 +310,7 @@ void raster_loop_250_frames(void);
     "out dx,al" \
     /* back to CGA status */ \
     "mov dx,03DAh" \
-    "mov cx,344"           /* split at scanline 100 */ \
+    "mov cx,split_rows"           /* split at scanline 100 */ \
 "scan_loop:" \
 "h1:" \
     "in  al,dx" \
@@ -340,8 +344,18 @@ void DrawText(unsigned int x, unsigned int y, unsigned char *data) {
     }
 }
 
-void * DrawPoint;
+void DrawTextColor(unsigned int x, unsigned int y, unsigned char color, unsigned char *data) {
+    unsigned char far *screenpt;
 
+    screenpt = text_mem + (y * 160) + (2 * x);
+
+    while (*data){
+        *screenpt++ = *data++;
+        *screenpt++ = color;
+    }
+}
+
+void * DrawPoint;
 
 void ClearLine(int line){
     DrawText(0, line, "                                                                                ");
@@ -352,26 +366,68 @@ void DisplayText(char *text){
     DrawText(10, 86, text);
 }
 
+void Decode(char *gfx, int length) {
+    char *writepnt = text_mem;
+    unsigned int Numbytes;
+
+    //gfx[0] is value
+    //gfx[1] is number bytes
+    while (length-=2) {
+        Numbytes = gfx[1]+1;
+        while (Numbytes--) {
+            writepnt[0] = 0xDD;
+            writepnt[1] = gfx[0];
+            writepnt += 2;
+        }
+        gfx += 2;
+    }
+}
+
+void DisplayGFX(int id){
+    memset(text_mem, 0x00, 16000);
+    Decode(Graphics[id].Data, Graphics[id].Length);
+}
+
+void LoadGFX(int num, char * filename) {
+    FILE *infile;
+    infile = fopen(filename, "rb");
+    if (!infile){
+        printf("Can't open %s\n", filename);
+        exit (1);
+    }
+
+
+    fseek(infile, 0, SEEK_END);
+    Graphics[num].Length = ftell(infile);
+    fseek(infile, 0, SEEK_SET);  /* same as rewind(f); */
+
+    Graphics[num].Data = malloc(Graphics[num].Length + 1);
+    fread(Graphics[num].Data, Graphics[num].Length, 1, infile);
+    fclose(infile);
+}
+
 
 int main(void)
 {
     union REGS r;
-    FILE *infile;
+
     int i;
     char buf[10];
     char inkey;
 
     char InputBuff[100];
     int bufpos = 0;
+    long fsize;
+    char *ReadGfx;
 
     memset(InputBuff, 0x00, 100);    
 
     Gamelogic_Init();
 
-
     printf("1 CGA, 2 EGA200, 3 EGA350, 4 VGA, 5 VGA 200\n");
 
-    i = getch();
+    i = getch();    
+    
 
     switch (i){
         case 0x31:
@@ -399,21 +455,19 @@ int main(void)
             exit(0);
     }
 
-    infile = fopen("u4.dat", "rb");
-    if (!infile)
-    {
-        printf("Failed to open input file\n");
-        return 1;
-    }
 
-    
 
-    fread(text_mem, 0x3E80, 1, infile);
-    fclose(infile);
     rasterEnable();
+
+    LoadGFX(GFX_MENU, "1.bin");
+    LoadGFX(GFX_STANDING, "2.bin");
+    LoadGFX(GFX_STANDINGPANTSOFF, "3.bin");
+    LoadGFX(GFX_DOOROPEN, "4.bin");
+    LoadGFX(GFX_DOOROPENPANTSOFF, "5.bin");
+    LoadGFX(GFX_ONTOILET, "6.bin");
+    LoadGFX(GFX_ONTOILETPANTSOFF, "7.bin");
+    LoadGFX(GFX_SHITONFLOOR, "8.bin");
     
-
-
     /*DrawText(10, 86, "The quick brown fox jumped over the lazy god.");
     DrawText(10, 87, "The quick brown fox jumped over the lazy god.");
     DrawText(10, 88, "The quick brown fox jumped over the lazy god.");*/

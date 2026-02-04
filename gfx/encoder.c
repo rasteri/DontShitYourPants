@@ -1,21 +1,72 @@
+/*
+
+Simple RLE format
+Value then number of bytes
+
+*/
+
+
 #include<stdio.h>
+#include<stdlib.h>
 
-int main(){
 
-    char inbuf[4];
-    char outbuf[2];
+int main(int argc, char *argv[]) {
+
+    unsigned char inbuf[4];
+    unsigned char outbuf[2];
+    unsigned char thischar, lastchar;
 
     FILE* fileout;
     FILE* file;
-    file = fopen("standingdooropen.raw", "rb");
-    fileout = fopen("standingdooropen.bin", "wb");
 
-    while (fread(inbuf, 4, 1, file)) // 2 pixels at a time
-    {
-        outbuf[0] = 0xDD;
-        outbuf[1] = inbuf[0] | (inbuf[2] << 4);
-        fwrite(outbuf, 2, 1, fileout);
+    unsigned char runningcount = 0;
+
+    unsigned char firsttime = 1;
+
+    if (argc != 3) {
+        printf("No file specified\n");
+        exit(1);
     }
+
+    printf("reading %s, writing %s\n", argv[1], argv[2]);
+
+
+    file = fopen(argv[1], "rb");
+
+    if (!file){
+        printf ("can't open %s\n", argv[1]);
+    }
+    fileout = fopen(argv[2], "wb");
+
+    if (!fileout){
+        printf ("can't open %s\n", argv[2]);
+    }
+
+    while (fread(inbuf, 4, 1, file)) // 2 pixels at a time  
+    {
+        thischar = inbuf[0] | (inbuf[2] << 4);
+        if (firsttime) {
+            // do nothing
+            firsttime = 0;
+        }
+        else if ((thischar == lastchar)) {
+            runningcount++;
+            firsttime = 0;
+        }
+        else {
+            outbuf[0] = lastchar;
+            outbuf[1] = runningcount;
+            fwrite(outbuf, 2, 1, fileout);
+
+            runningcount = 0;
+        }
+        lastchar = thischar;
+    }
+    
+    //write last entry
+    outbuf[0] = lastchar;
+    outbuf[1] = runningcount;
+    fwrite(outbuf, 2, 1, fileout);
 
     fclose(file);
     fclose(fileout);

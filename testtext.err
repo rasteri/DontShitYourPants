@@ -1,13 +1,10 @@
-gamelogic.h(240): Warning! W138: No newline at end of file
-testtext.c(95): Warning! W202: Symbol 'i' has been defined, but not referenced
-testtext.c(118): Warning! W202: Symbol 'i' has been defined, but not referenced
-testtext.c(141): Warning! W202: Symbol 'i' has been defined, but not referenced
-testtext.c(164): Warning! W202: Symbol 'i' has been defined, but not referenced
-testtext.c(399): Warning! W131: No prototype found for function 'exit'
-testtext.c(424): Warning! W131: No prototype found for function 'raster_loop_250_frames_cga'
-testtext.c(435): Warning! W131: No prototype found for function 'raster_loop_250_frames_vga'
-testtext.c(479): Warning! W138: No newline at end of file
-testtext.c(399): Warning! W308: The function 'exit' without prototyped parameters called
-testtext.c(399): Note! I2002: 'exit' defined in: testtext.c(399)
-testtext.c(469): Warning! W308: The function 'exit' without prototyped parameters called
-testtext.c(469): Note! I2002: 'exit' defined in: testtext.c(399)
+gamelogic.h(306): Warning! W138: No newline at end of file
+testtext.c(97): Warning! W202: Symbol 'i' has been defined, but not referenced
+testtext.c(120): Warning! W202: Symbol 'i' has been defined, but not referenced
+testtext.c(143): Warning! W202: Symbol 'i' has been defined, but not referenced
+testtext.c(166): Warning! W202: Symbol 'i' has been defined, but not referenced
+testtext.c(478): Warning! W131: No prototype found for function 'raster_loop_250_frames_cga'
+testtext.c(489): Warning! W131: No prototype found for function 'raster_loop_250_frames_vga'
+testtext.c(421): Warning! W202: Symbol 'ReadGfx' has been defined, but not referenced
+testtext.c(420): Warning! W202: Symbol 'fsize' has been defined, but not referenced
+testtext.c(533): Warning! W138: No newline at end of file

@@ -1,7 +1,9 @@
-void DisplayText(char *text);
+
+void DisplayGFX(int id);
 void Gamelogic_Init();
 void GameLogic_TextInput(char *Text);
-
+void Decode(char *gfx, int length);
+void DrawTextColor(unsigned int x, unsigned int y, unsigned char color, unsigned char *data);
 // linked list of synonyms
 typedef struct _Synonym {
 
@@ -40,9 +42,11 @@ typedef struct _GameString {
 #define ACTION_DELETEAWARDS 3
 #define ACTION_EXITGAME 4
 #define ACTION_ADDTOTIMER 5
-#define ACTION_TAKEPILLS 5
-#define ACTION_PLAYSOUND 6
-#define ACTION_DISPLAYGFX 7
+#define ACTION_TAKEPILLS 6
+#define ACTION_PLAYSOUND 7
+#define ACTION_DISPLAYGFX 8
+#define ACTION_SCREENLINES 9
+#define ACTION_DRAWMENU 10
 
 // An action that gets taken
 typedef struct _gameaction {
@@ -54,7 +58,7 @@ typedef struct _gameaction {
     int Type;
 
     // index of either a string for TEXTOUTPUT or a state for GOTOSTATE
-    int Action;
+    unsigned int Action;
 
 } GameAction;
 
@@ -68,6 +72,20 @@ typedef struct _GameState {
     GameAction *Actions;
 
 } GameState;
+
+extern unsigned int split_rows;
+
+typedef struct _Graphic {
+
+    long Length;
+
+    // to set raster split
+    unsigned int Lines;
+
+    // pointer to le data
+    char *Data;
+
+} Graphic;
 
 
 #define VERB_PLAY 1
@@ -238,3 +256,51 @@ typedef struct _GameState {
 #define STATE_DIEPANTSONSITTING 42
 #define STATE_DIEPANTSOFFSITTING 43
 #define STATE_DONTSHITPANTSOFFSITTING 44
+#define STATECOUNT 45
+
+#define GFX_MENU 1
+#define GFX_STANDING 2
+#define GFX_STANDINGPANTSOFF 3
+#define GFX_DOOROPEN 4
+#define GFX_DOOROPENPANTSOFF 5
+#define GFX_ONTOILET 6
+#define GFX_ONTOILETPANTSOFF 7
+#define GFX_AWARDS 8
+#define GFX_CREDITS 9
+#define GFX_SHITONFLOOR 10
+#define GFX_SHITINTOILET 11
+#define GFX_SHITPANTSSTANDING 12
+#define GFX_SHITINPANTSSITTING 13
+#define GFX_DONTSHITPANTSON 14
+#define GFX_BREAKPANTSON 15
+#define GFX_FARTPANTSON 16
+#define GFX_FARTPANTSOFF 17
+#define GFX_DIEPANTSON 18
+#define GFX_DIEPANTSOFF 19
+#define GFX_DONTSHITPANTSOFF 20
+#define GFX_BREAKPANTSOFF 21
+#define GFX_PILLSSTANDINGPANTSON1 22
+#define GFX_PILLSSTANDINGPANTSON2 23
+#define GFX_PILLSSTANDINGPANTSON3 24
+#define GFX_NULL
+#define GFX_STARTINGGUN 25
+#define GFX_PILLSSTANDINGPANTSOFF1 26
+#define GFX_PILLSSTANDINGPANTSOFF2 27
+#define GFX_PILLSSTANDINGPANTSOFF3 28
+#define GFX_PILLSSITTINGPANTSON1 29
+#define GFX_PILLSSITTINGPANTSON2 30
+#define GFX_PILLSSITTINGPANTSON3 31
+#define GFX_PILLSSITTINGPANTSOFF1 32
+#define GFX_PILLSSITTINGPANTSOFF2 33
+#define GFX_PILLSSITTINGPANTSOFF3 34
+#define GFX_TIMEOVERSTANDINGPANTSON 35
+#define GFX_TIMEOVERSITTINGPANTSON 36
+#define GFX_TIMEOVERSTANDINGPANTSOFF 37
+#define GFX_TIMEOVERSITTINGPANTSOFF 38
+#define GFX_SHITINPANTSWHILEOFF 39
+#define GFX_FARTPANTSONSITTING 40
+#define GFX_DONTSHITPANTSONSITTING 41
+#define GFX_DIEPANTSONSITTING 42
+#define GFX_DIEPANTSOFFSITTING 43
+#define GFX_DONTSHITPANTSOFFSITTING 44
+#define GFXCOUNT 45

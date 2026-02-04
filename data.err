@@ -1,2 +1,7 @@
-gamelogic.h(240): Warning! W138: No newline at end of file
-data.c(466): Warning! W138: No newline at end of file
+gamelogic.h(306): Warning! W138: No newline at end of file
+data.c(309): Warning! W131: No prototype found for function 'DisplayText'
+data.c(519): Warning! W138: No newline at end of file
+data.c(309): Warning! W308: The function 'DisplayText' without prototyped parameters called
+data.c(309): Note! I2002: 'DisplayText' defined in: data.c(309)
+data.c(446): Warning! W308: The function 'DisplayText' without prototyped parameters called
+data.c(446): Note! I2002: 'DisplayText' defined in: data.c(309)
