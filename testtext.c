@@ -192,7 +192,12 @@ void set_160x100_mode_vga_200(void)
 
 void raster_loop_250_frames(void);
 
+unsigned int row_multiplier = 2;
 unsigned int split_rows = 344;
+
+void SetRows(int rows) {
+    split_rows = rows * row_multiplier;
+}
 
 #pragma aux raster_loop_250_frames_cga = \
     "cli" \
@@ -388,6 +393,25 @@ void DisplayGFX(int id){
     Decode(Graphics[id].Data, Graphics[id].Length);
 }
 
+void enable_cursor(unsigned char cursor_start, unsigned char cursor_end)
+{
+	outp(0x3D4, 0x0A);
+	outp(0x3D5, (inp(0x3D5) & 0xC0) | cursor_start);
+
+	outp(0x3D4, 0x0B);
+	outp(0x3D5, (inp(0x3D5) & 0xE0) | cursor_end);
+}
+
+void update_cursor(int x, int y)
+{
+	unsigned int pos = y * 80 + x;
+
+	outp(0x3D4, 0x0F);
+	outp(0x3D5, (unsigned char) (pos & 0xFF));
+	outp(0x3D4, 0x0E);
+	outp(0x3D5, (unsigned char) ((pos >> 8) & 0xFF));
+}
+
 void LoadGFX(int num, char * filename) {
     FILE *infile;
     infile = fopen(filename, "rb");
@@ -406,6 +430,8 @@ void LoadGFX(int num, char * filename) {
     fclose(infile);
 }
 
+int Countdown = 90;
+int SecondCount = 0;
 
 int main(void)
 {
@@ -420,9 +446,16 @@ int main(void)
     long fsize;
     char *ReadGfx;
 
+    char TimeBuf[10];
+
+    int mins, secs;
+
     memset(InputBuff, 0x00, 100);    
 
     Gamelogic_Init();
+
+    //enable_cursor(0,7);
+    update_cursor(0,0);
 
     printf("1 CGA, 2 EGA200, 3 EGA350, 4 VGA, 5 VGA 200\n");
 
@@ -472,55 +505,53 @@ int main(void)
     DrawText(10, 87, "The quick brown fox jumped over the lazy god.");
     DrawText(10, 88, "The quick brown fox jumped over the lazy god.");*/
 
-        switch (i){
-        case 0x31:
-            for (i = 0; i < 100; i++){
-                raster_loop_250_frames_cga();
-                    if (kbhit()){
-                        sprintf(buf, "hit%02X\n", getch());
-                        DrawText(10, 86, buf);
-                    }
-                        
-            }
-            break;
+    while (strcmp(InputBuff, "exit") != 0) {
 
-        case 0x34:
-            while (strcmp(InputBuff, "exit") != 0) {
-                raster_loop_250_frames_vga();
-                    if (kbhit()){
-                        inkey = getch();
-                        //delete
-                        if (inkey == '\b'){
-                            if (bufpos) {
-                                bufpos--;
-                                InputBuff[bufpos] = 0;
-                                ClearLine(88);
-                                DrawText(0, 88, InputBuff);
-                            }
-                        }
-                        //enter
-                        else if (inkey == '\r'){
-                            GameLogic_TextInput(InputBuff);
-                            bufpos = 0;
-                            InputBuff[bufpos] = 0;
-                            InputBuff[bufpos+1] = 0;
-                            ClearLine(88);
-                            DrawText(0, 88, InputBuff);
-                        }
-                        else {
-                            InputBuff[bufpos] = inkey;
-                            InputBuff[bufpos+1] = 0;
-                            ClearLine(88);
-                            DrawText(0, 88, InputBuff);
-                            bufpos++;
-                        }
-                    }
-                        
-            }
-            break;
+        switch (i) {
+            case 0x31:
+                    raster_loop_250_frames_cga();
+                break;
 
-        default:
-            exit(0);
+            case 0x34:
+                    raster_loop_250_frames_vga();
+                break;
+        }
+
+
+        SecondCount++;
+        if (SecondCount == 60){
+            SecondCount = 0;
+            Countdown--;
+            sprintf(TimeBuf, "%02d:%02d", Countdown / 60, Countdown % 60);
+            DrawText(70, 88, TimeBuf);
+        }
+
+        if (kbhit()){
+            inkey = getch();
+            //delete
+            if (inkey == '\b'){
+                if (bufpos) {
+                    bufpos--;
+                    InputBuff[bufpos] = 0;
+                }
+            }
+            //enter
+            else if (inkey == '\r'){
+                GameLogic_TextInput(InputBuff);
+                bufpos = 0;
+                InputBuff[bufpos] = 0;
+                InputBuff[bufpos+1] = 0;
+            }
+            else {
+                InputBuff[bufpos] = inkey;
+                InputBuff[bufpos+1] = 0;
+                bufpos++;
+            }
+            ClearLine(88);
+            DrawText(10, 88, InputBuff);
+            DrawText(8, 88, ">");
+            update_cursor(strlen(InputBuff) + 10,88);
+        }
     }
 
 

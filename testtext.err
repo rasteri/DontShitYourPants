@@ -3,8 +3,11 @@ testtext.c(97): Warning! W202: Symbol 'i' has been defined, but not referenced
 testtext.c(120): Warning! W202: Symbol 'i' has been defined, but not referenced
 testtext.c(143): Warning! W202: Symbol 'i' has been defined, but not referenced
 testtext.c(166): Warning! W202: Symbol 'i' has been defined, but not referenced
-testtext.c(478): Warning! W131: No prototype found for function 'raster_loop_250_frames_cga'
-testtext.c(489): Warning! W131: No prototype found for function 'raster_loop_250_frames_vga'
-testtext.c(421): Warning! W202: Symbol 'ReadGfx' has been defined, but not referenced
-testtext.c(420): Warning! W202: Symbol 'fsize' has been defined, but not referenced
-testtext.c(533): Warning! W138: No newline at end of file
+testtext.c(512): Warning! W131: No prototype found for function 'raster_loop_250_frames_cga'
+testtext.c(516): Warning! W131: No prototype found for function 'raster_loop_250_frames_vga'
+testtext.c(447): Warning! W202: Symbol 'ReadGfx' has been defined, but not referenced
+testtext.c(451): Warning! W202: Symbol 'secs' has been defined, but not referenced
+testtext.c(446): Warning! W202: Symbol 'fsize' has been defined, but not referenced
+testtext.c(441): Warning! W202: Symbol 'buf' has been defined, but not referenced
+testtext.c(451): Warning! W202: Symbol 'mins' has been defined, but not referenced
+testtext.c(564): Warning! W138: No newline at end of file
