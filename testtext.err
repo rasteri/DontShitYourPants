@@ -1,13 +1,18 @@
-gamelogic.h(306): Warning! W138: No newline at end of file
+gamelogic.h(312): Warning! W138: No newline at end of file
 testtext.c(97): Warning! W202: Symbol 'i' has been defined, but not referenced
 testtext.c(120): Warning! W202: Symbol 'i' has been defined, but not referenced
 testtext.c(143): Warning! W202: Symbol 'i' has been defined, but not referenced
 testtext.c(166): Warning! W202: Symbol 'i' has been defined, but not referenced
-testtext.c(512): Warning! W131: No prototype found for function 'raster_loop_250_frames_cga'
-testtext.c(516): Warning! W131: No prototype found for function 'raster_loop_250_frames_vga'
-testtext.c(447): Warning! W202: Symbol 'ReadGfx' has been defined, but not referenced
-testtext.c(451): Warning! W202: Symbol 'secs' has been defined, but not referenced
-testtext.c(446): Warning! W202: Symbol 'fsize' has been defined, but not referenced
-testtext.c(441): Warning! W202: Symbol 'buf' has been defined, but not referenced
-testtext.c(451): Warning! W202: Symbol 'mins' has been defined, but not referenced
-testtext.c(564): Warning! W138: No newline at end of file
+testtext.c(206): Warning! W304: Return type 'int' assumed for function 'SetTextLine'
+testtext.c(208): Warning! W107: Missing return value for function 'SetTextLine'
+testtext.c(544): Warning! W131: No prototype found for function 'EnterState'
+testtext.c(552): Warning! W131: No prototype found for function 'raster_loop_250_frames_cga'
+testtext.c(556): Warning! W131: No prototype found for function 'raster_loop_250_frames_vga'
+testtext.c(565): Warning! W131: No prototype found for function 'Gamelogic_SecondTick'
+testtext.c(604): Warning! W201: Unreachable code
+testtext.c(457): Warning! W202: Symbol 'ReadGfx' has been defined, but not referenced
+testtext.c(461): Warning! W202: Symbol 'secs' has been defined, but not referenced
+testtext.c(456): Warning! W202: Symbol 'fsize' has been defined, but not referenced
+testtext.c(451): Warning! W202: Symbol 'buf' has been defined, but not referenced
+testtext.c(461): Warning! W202: Symbol 'mins' has been defined, but not referenced
+testtext.c(609): Warning! W138: No newline at end of file

@@ -49,16 +49,16 @@ int main(int argc, char *argv[]) {
             // do nothing
             firsttime = 0;
         }
-        else if ((thischar == lastchar)) {
-            runningcount++;
-            firsttime = 0;
-        }
-        else {
+        else if ((thischar != lastchar) || runningcount > 250) { // max of 250 in a row
             outbuf[0] = lastchar;
             outbuf[1] = runningcount;
             fwrite(outbuf, 2, 1, fileout);
 
             runningcount = 0;
+        }        
+        else if ((thischar == lastchar)) {
+            runningcount++;
+            firsttime = 0;
         }
         lastchar = thischar;
     }
@@ -67,6 +67,7 @@ int main(int argc, char *argv[]) {
     outbuf[0] = lastchar;
     outbuf[1] = runningcount;
     fwrite(outbuf, 2, 1, fileout);
+    printf("last entry %X %X\n", outbuf[0], outbuf[1]);
 
     fclose(file);
     fclose(fileout);

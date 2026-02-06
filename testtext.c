@@ -33,8 +33,8 @@ unsigned char cga160crtc[] = {
     112, /* R7  Vertical sync position */
     2,   /* R8  Interlace mode */
     1,   /* R9  Max scan line */
-    32,  /* R10 Cursor start */
-    0,   /* R11 Cursor end */
+    6,  /* R10 Cursor start */
+    7,   /* R11 Cursor end */
     0,   /* R12 Start address high */
     0    /* R13 Start address low */
 };
@@ -194,9 +194,17 @@ void raster_loop_250_frames(void);
 
 unsigned int row_multiplier = 2;
 unsigned int split_rows = 344;
+unsigned int gfxlines = 86;
+unsigned int textline = 86;
 
 void SetRows(int rows) {
+    gfxlines = rows;
     split_rows = rows * row_multiplier;
+    textline = gfxlines;
+}
+
+SetTextLine(int line){
+    textline = line;
 }
 
 #pragma aux raster_loop_250_frames_cga = \
@@ -367,8 +375,8 @@ void ClearLine(int line){
 }
 
 void DisplayText(char *text){
-    ClearLine(86);
-    DrawText(10, 86, text);
+    ClearLine(textline);
+    DrawText(0, textline, text);
 }
 
 void Decode(char *gfx, int length) {
@@ -377,6 +385,7 @@ void Decode(char *gfx, int length) {
 
     //gfx[0] is value
     //gfx[1] is number bytes
+    length += 2;
     while (length-=2) {
         Numbytes = gfx[1]+1;
         while (Numbytes--) {
@@ -390,7 +399,9 @@ void Decode(char *gfx, int length) {
 
 void DisplayGFX(int id){
     memset(text_mem, 0x00, 16000);
-    Decode(Graphics[id].Data, Graphics[id].Length);
+    if (Graphics[id].Length != 0) {
+        Decode(Graphics[id].Data, Graphics[id].Length);
+    }
 }
 
 void enable_cursor(unsigned char cursor_start, unsigned char cursor_end)
@@ -430,7 +441,6 @@ void LoadGFX(int num, char * filename) {
     fclose(infile);
 }
 
-int Countdown = 90;
 int SecondCount = 0;
 
 int main(void)
@@ -452,10 +462,41 @@ int main(void)
 
     memset(InputBuff, 0x00, 100);    
 
+    /*sound(200);
+    delay(500);
+    nosound();*/
+
     Gamelogic_Init();
 
     //enable_cursor(0,7);
     update_cursor(0,0);
+
+    memset(Graphics, 0x00, sizeof(Graphics));
+
+    LoadGFX(GFX_MENU, "1.bin");
+    LoadGFX(GFX_STANDING, "2.bin");
+    LoadGFX(GFX_STANDINGPANTSOFF, "3.bin");
+    LoadGFX(GFX_DOOROPEN, "4.bin");
+    LoadGFX(GFX_DOOROPENPANTSOFF, "5.bin");
+    LoadGFX(GFX_ONTOILET, "6.bin");
+    LoadGFX(GFX_ONTOILETPANTSOFF, "7.bin");
+    LoadGFX(GFX_AWARDS, "8.bin");
+    LoadGFX(GFX_SHITONFLOOR, "10.bin");
+    LoadGFX(GFX_SHITINTOILET, "11.bin");
+    LoadGFX(GFX_SHITPANTSSTANDING, "12.bin");
+    LoadGFX(GFX_SHITINPANTSSITTING, "13.bin");
+    LoadGFX(GFX_DIEPANTSON, "18.bin");
+    LoadGFX(GFX_DIEPANTSOFF, "19.bin");
+    LoadGFX(GFX_PILLSSTANDINGPANTSON1, "22.bin");
+    LoadGFX(GFX_PILLSSTANDINGPANTSON2, "23.bin");
+    LoadGFX(GFX_PILLSSTANDINGPANTSOFF1, "26.bin");
+    LoadGFX(GFX_PILLSSTANDINGPANTSOFF2, "27.bin");
+    LoadGFX(GFX_PILLSSITTINGPANTSON1, "29.bin");
+    LoadGFX(GFX_PILLSSITTINGPANTSON2, "30.bin");
+    LoadGFX(GFX_PILLSSITTINGPANTSOFF2, "33.bin");
+    LoadGFX(GFX_SHITINPANTSWHILEOFF, "39.bin");
+    LoadGFX(GFX_DIEPANTSONSITTING, "42.bin");
+    LoadGFX(GFX_DIEPANTSOFFSITTING, "43.bin");
 
     printf("1 CGA, 2 EGA200, 3 EGA350, 4 VGA, 5 VGA 200\n");
 
@@ -464,6 +505,7 @@ int main(void)
 
     switch (i){
         case 0x31:
+            row_multiplier = 2;
             set_160x100_mode_cga();
             break;
 
@@ -476,6 +518,7 @@ int main(void)
             break;
 
         case 0x34:
+            row_multiplier = 4;
             set_160x100_mode_vga();
             break;
         
@@ -492,38 +535,36 @@ int main(void)
 
     rasterEnable();
 
-    LoadGFX(GFX_MENU, "1.bin");
-    LoadGFX(GFX_STANDING, "2.bin");
-    LoadGFX(GFX_STANDINGPANTSOFF, "3.bin");
-    LoadGFX(GFX_DOOROPEN, "4.bin");
-    LoadGFX(GFX_DOOROPENPANTSOFF, "5.bin");
-    LoadGFX(GFX_ONTOILET, "6.bin");
-    LoadGFX(GFX_ONTOILETPANTSOFF, "7.bin");
-    LoadGFX(GFX_SHITONFLOOR, "8.bin");
+
     
     /*DrawText(10, 86, "The quick brown fox jumped over the lazy god.");
     DrawText(10, 87, "The quick brown fox jumped over the lazy god.");
     DrawText(10, 88, "The quick brown fox jumped over the lazy god.");*/
 
-    while (strcmp(InputBuff, "exit") != 0) {
+    EnterState();
 
-        switch (i) {
-            case 0x31:
-                    raster_loop_250_frames_cga();
-                break;
+    while (1) {
 
-            case 0x34:
-                    raster_loop_250_frames_vga();
-                break;
+        // draw first x lines in 160x100 mode
+        if (gfxlines){
+            switch (i) {
+                case 0x31:
+                        raster_loop_250_frames_cga();
+                    break;
+
+                case 0x34:
+                        raster_loop_250_frames_vga();
+                    break;
+            }
         }
 
 
         SecondCount++;
         if (SecondCount == 60){
             SecondCount = 0;
-            Countdown--;
+            Gamelogic_SecondTick();
             sprintf(TimeBuf, "%02d:%02d", Countdown / 60, Countdown % 60);
-            DrawText(70, 88, TimeBuf);
+            DrawText(70, textline + 2, TimeBuf);
         }
 
         if (kbhit()){
@@ -534,23 +575,27 @@ int main(void)
                     bufpos--;
                     InputBuff[bufpos] = 0;
                 }
+                ClearLine(textline + 2);
             }
             //enter
             else if (inkey == '\r'){
+                if (strcmp(InputBuff, "exit") == 0)
+                    exit(0);
                 GameLogic_TextInput(InputBuff);
                 bufpos = 0;
                 InputBuff[bufpos] = 0;
                 InputBuff[bufpos+1] = 0;
+                ClearLine(textline + 2);
             }
             else {
                 InputBuff[bufpos] = inkey;
                 InputBuff[bufpos+1] = 0;
                 bufpos++;
             }
-            ClearLine(88);
-            DrawText(10, 88, InputBuff);
-            DrawText(8, 88, ">");
-            update_cursor(strlen(InputBuff) + 10,88);
+            
+            DrawText(10, textline + 2, InputBuff);
+            DrawText(8, textline + 2, ">");
+            update_cursor(strlen(InputBuff) + 10, textline + 2);
         }
     }
 

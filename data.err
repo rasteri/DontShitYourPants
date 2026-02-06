@@ -1,7 +1,12 @@
-gamelogic.h(306): Warning! W138: No newline at end of file
-data.c(309): Warning! W131: No prototype found for function 'DisplayText'
-data.c(519): Warning! W138: No newline at end of file
-data.c(309): Warning! W308: The function 'DisplayText' without prototyped parameters called
-data.c(309): Note! I2002: 'DisplayText' defined in: data.c(309)
-data.c(446): Warning! W308: The function 'DisplayText' without prototyped parameters called
-data.c(446): Note! I2002: 'DisplayText' defined in: data.c(309)
+gamelogic.h(312): Warning! W138: No newline at end of file
+data.c(573): Warning! W131: No prototype found for function 'DisplayText'
+data.c(592): Warning! W202: Symbol 'pnt' has been defined, but not referenced
+data.c(711): Warning! W131: No prototype found for function 'RunAction'
+data.c(734): Warning! W131: No prototype found for function 'SetTextLine'
+data.c(913): Warning! W138: No newline at end of file
+data.c(573): Warning! W308: The function 'DisplayText' without prototyped parameters called
+data.c(573): Note! I2002: 'DisplayText' defined in: data.c(573)
+data.c(728): Warning! W308: The function 'DisplayText' without prototyped parameters called
+data.c(728): Note! I2002: 'DisplayText' defined in: data.c(573)
+data.c(734): Warning! W308: The function 'SetTextLine' without prototyped parameters called
+data.c(734): Note! I2002: 'SetTextLine' defined in: data.c(734)

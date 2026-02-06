@@ -1,6 +1,6 @@
 play,start
 delete
-Awards
+awards
 menu
 quit
 "menu","play","awards"
@@ -10,9 +10,9 @@ shit pants,shit your pants
 shit on floor
 fart
 shit toilet
-fart lightly,lightly fart (first time)
-fart lightly,lightly fart (second time)
-fart lightly,lightly fart (third time)
+fart lightly,lightly fart
+fart lightly second time
+fart lightly third time
 don't shit
 break
 die
@@ -34,9 +34,9 @@ look pills
 eat pills,take pills
 look hair
 look shoes
-
-
-
+look pockets while empty
+look pills after taken
+take pills after taken
 
 
 
