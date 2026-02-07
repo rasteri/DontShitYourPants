@@ -512,7 +512,7 @@ int main(void)
 
     memset(InputBuff, 0x00, 100);    
 
-    CurrNote = SOUND_INTRO;
+    CurrNote = SONG_INTRO;
 
     Gamelogic_Init();
 
