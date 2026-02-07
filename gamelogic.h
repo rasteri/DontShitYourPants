@@ -5,6 +5,7 @@ void GameLogic_TextInput(char *Text);
 void Decode(char *gfx, int length);
 void DrawTextColor(unsigned int x, unsigned int y, unsigned char color, unsigned char *data);
 void SetRows(int rows);
+
 extern int Countdown;
 // linked list of synonyms
 typedef struct _Synonym {
@@ -51,6 +52,8 @@ typedef struct _GameString {
 #define ACTION_DRAWMENU 10
 #define ACTION_SETTEXTLINE 11
 #define ACTION_FART 12
+#define ACTION_GIVEAWARD 13
+#define ACTION_DISPLAYNEWAWARDS 14
 
 // An action that gets taken
 typedef struct _gameaction {
@@ -90,6 +93,18 @@ typedef struct _Graphic {
     char *Data;
 
 } Graphic;
+
+typedef struct _Note {
+
+    unsigned int Time; // in ms from start
+
+    unsigned char NoteNum;
+
+} Note;
+
+extern Note SONG_INTRO[];
+extern unsigned int NoteTable[];
+int RunAction(GameAction *curraction);
 
 
 #define VERB_PLAY 1
@@ -135,7 +150,8 @@ typedef struct _Graphic {
 #define VERB_PILLSACTIVE 101
 #define VERB_ONENTRY 102
 #define VERB_WILDCARD 103
-
+#define VERB_20SEC 104
+#define VERB_5SEC 105
 
 #define STRING_STARTSPACE 1
 #define STRING_ENDSPACE 2
@@ -218,6 +234,46 @@ typedef struct _Graphic {
 #define STRING_ENDING_DONTSHITPANTSOFFSITTING 79
 #define STRING_LOOKNOPANTS 80
 #define STRING_LOOKNOPANTSDOOROPEN 81
+#define STRING_AWARD1NAME 82
+#define STRING_AWARD1DESC 83
+#define STRING_AWARD2NAME 84
+#define STRING_AWARD2DESC 85
+#define STRING_AWARD3NAME 86
+#define STRING_AWARD3DESC 87
+#define STRING_AWARD4NAME 88
+#define STRING_AWARD4DESC 89
+#define STRING_AWARD5NAME 90
+#define STRING_AWARD5DESC 91
+#define STRING_AWARD6NAME 92
+#define STRING_AWARD6DESC 93
+#define STRING_AWARD7NAME 94
+#define STRING_AWARD7DESC 95
+#define STRING_AWARD8NAME 96
+#define STRING_AWARD8DESC 97
+#define STRING_AWARD9NAME 98
+#define STRING_AWARD9DESC 99
+#define STRING_AWARD10NAME 100
+#define STRING_AWARD10DESC 101
+#define STRING_AWARD11NAME 102
+#define STRING_AWARD11DESC 103
+#define STRING_AWARD12NAME 104
+#define STRING_AWARD12DESC 105
+#define STRING_AWARD13NAME 106
+#define STRING_AWARD13DESC 107
+#define STRING_AWARD14NAME 108
+#define STRING_AWARD14DESC 109
+#define STRING_AWARD15NAME 110
+#define STRING_AWARD15DESC 111
+#define STRING_AWARD16NAME 112
+#define STRING_AWARD16DESC 113
+#define STRING_AWARD17NAME 114
+#define STRING_AWARD17DESC 115
+#define STRING_AWARD18NAME 116
+#define STRING_AWARD18DESC 117
+#define STRING_AWARD19NAME 118
+#define STRING_AWARD19DESC 119
+#define STRING_AWARD20NAME 120
+#define STRING_AWARD20DESC 121
 
 #define STATE_MENU 1
 #define STATE_STANDING 2
@@ -310,3 +366,14 @@ typedef struct _Graphic {
 #define GFX_DIEPANTSOFFSITTING 43
 //#define GFX_DONTSHITPANTSOFFSITTING 44
 #define GFXCOUNT 45
+
+#define AWARD_SHITINTOILET 1
+#define AWARD_SHITONFLOOR 2
+#define AWARD_SHITINPANTSSTANDING 4
+#define AWARD_SHITINPANTSSITTING 8
+#define AWARD_DIE 16
+#define AWARD_PILLSKICKIN 32
+#define AWARD_PILLSFAIL 64
+#define AWARD_STARTINGGUN 128
+#define AWARD_TIMEOVER 256
+#define AWARD_SHITKING 512

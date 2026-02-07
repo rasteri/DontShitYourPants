@@ -1,12 +1,53 @@
-gamelogic.h(312): Warning! W138: No newline at end of file
-data.c(573): Warning! W131: No prototype found for function 'DisplayText'
-data.c(592): Warning! W202: Symbol 'pnt' has been defined, but not referenced
-data.c(711): Warning! W131: No prototype found for function 'RunAction'
-data.c(734): Warning! W131: No prototype found for function 'SetTextLine'
-data.c(913): Warning! W138: No newline at end of file
-data.c(573): Warning! W308: The function 'DisplayText' without prototyped parameters called
-data.c(573): Note! I2002: 'DisplayText' defined in: data.c(573)
-data.c(728): Warning! W308: The function 'DisplayText' without prototyped parameters called
-data.c(728): Note! I2002: 'DisplayText' defined in: data.c(573)
-data.c(734): Warning! W308: The function 'SetTextLine' without prototyped parameters called
-data.c(734): Note! I2002: 'SetTextLine' defined in: data.c(734)
+gamelogic.h(379): Warning! W138: No newline at end of file
+data.c(18): Warning! W106: Constant out of range - truncated
+data.c(18): Note! I2003: source conversion type is 'long'
+data.c(18): Note! I2004: target conversion type is 'unsigned int'
+data.c(19): Warning! W106: Constant out of range - truncated
+data.c(19): Note! I2003: source conversion type is 'long'
+data.c(19): Note! I2004: target conversion type is 'unsigned int'
+data.c(20): Warning! W106: Constant out of range - truncated
+data.c(20): Note! I2003: source conversion type is 'long'
+data.c(20): Note! I2004: target conversion type is 'unsigned int'
+data.c(21): Warning! W106: Constant out of range - truncated
+data.c(21): Note! I2003: source conversion type is 'long'
+data.c(21): Note! I2004: target conversion type is 'unsigned int'
+data.c(22): Warning! W106: Constant out of range - truncated
+data.c(22): Note! I2003: source conversion type is 'long'
+data.c(22): Note! I2004: target conversion type is 'unsigned int'
+data.c(23): Warning! W106: Constant out of range - truncated
+data.c(23): Note! I2003: source conversion type is 'long'
+data.c(23): Note! I2004: target conversion type is 'unsigned int'
+data.c(24): Warning! W106: Constant out of range - truncated
+data.c(24): Note! I2003: source conversion type is 'long'
+data.c(24): Note! I2004: target conversion type is 'unsigned int'
+data.c(25): Warning! W106: Constant out of range - truncated
+data.c(25): Note! I2003: source conversion type is 'long'
+data.c(25): Note! I2004: target conversion type is 'unsigned int'
+data.c(26): Warning! W106: Constant out of range - truncated
+data.c(26): Note! I2003: source conversion type is 'long'
+data.c(26): Note! I2004: target conversion type is 'unsigned int'
+data.c(27): Warning! W106: Constant out of range - truncated
+data.c(27): Note! I2003: source conversion type is 'long'
+data.c(27): Note! I2004: target conversion type is 'unsigned int'
+data.c(28): Warning! W106: Constant out of range - truncated
+data.c(28): Note! I2003: source conversion type is 'long'
+data.c(28): Note! I2004: target conversion type is 'unsigned int'
+data.c(29): Warning! W106: Constant out of range - truncated
+data.c(29): Note! I2003: source conversion type is 'long'
+data.c(29): Note! I2004: target conversion type is 'unsigned int'
+data.c(30): Warning! W106: Constant out of range - truncated
+data.c(30): Note! I2003: source conversion type is 'long'
+data.c(30): Note! I2004: target conversion type is 'unsigned int'
+data.c(31): Warning! W106: Constant out of range - truncated
+data.c(31): Note! I2003: source conversion type is 'long'
+data.c(31): Note! I2004: target conversion type is 'unsigned int'
+data.c(766): Warning! W131: No prototype found for function 'DisplayText'
+data.c(785): Warning! W202: Symbol 'pnt' has been defined, but not referenced
+data.c(942): Warning! W131: No prototype found for function 'SetTextLine'
+data.c(1150): Warning! W138: No newline at end of file
+data.c(766): Warning! W308: The function 'DisplayText' without prototyped parameters called
+data.c(766): Note! I2002: 'DisplayText' defined in: data.c(766)
+data.c(936): Warning! W308: The function 'DisplayText' without prototyped parameters called
+data.c(936): Note! I2002: 'DisplayText' defined in: data.c(766)
+data.c(942): Warning! W308: The function 'SetTextLine' without prototyped parameters called
+data.c(942): Note! I2002: 'SetTextLine' defined in: data.c(942)

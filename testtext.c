@@ -346,16 +346,6 @@ SetTextLine(int line){
     "sti" \
     modify [ax bx cx dx];
 
-void DrawText(unsigned int x, unsigned int y, unsigned char *data) {
-    unsigned char far *screenpt;
-
-    screenpt = text_mem + (y * 160) + (2 * x);
-
-    while (*data){
-        *screenpt++ = *data++;
-        *screenpt++ = 0x07;
-    }
-}
 
 void DrawTextColor(unsigned int x, unsigned int y, unsigned char color, unsigned char *data) {
     unsigned char far *screenpt;
@@ -363,6 +353,12 @@ void DrawTextColor(unsigned int x, unsigned int y, unsigned char color, unsigned
     screenpt = text_mem + (y * 160) + (2 * x);
 
     while (*data){
+        // newline
+        if (*data == '\\' && *(data+1) == 'n') {
+            data += 2;
+            y++;
+            screenpt = text_mem + (y * 160) + (2 * x);
+        }
         *screenpt++ = *data++;
         *screenpt++ = color;
     }
@@ -371,14 +367,20 @@ void DrawTextColor(unsigned int x, unsigned int y, unsigned char color, unsigned
 void * DrawPoint;
 
 void ClearLine(int line){
-    DrawText(0, line, "                                                                                ");
+    DrawTextColor(0, line, 0x0F, "                                                                                ");
 }
 
 void DisplayText(char *text){
+
+    char *newline;
+
     ClearLine(textline);
-    DrawText(0, textline, text);
+    ClearLine(textline+1);
+    DrawTextColor(2, textline, 0x07, text);
+
 }
 
+// Simple RLE decoder for gfx
 void Decode(char *gfx, int length) {
     char *writepnt = text_mem;
     unsigned int Numbytes;
@@ -389,7 +391,7 @@ void Decode(char *gfx, int length) {
     while (length-=2) {
         Numbytes = gfx[1]+1;
         while (Numbytes--) {
-            writepnt[0] = 0xDD;
+            writepnt[0] = 0xDD; // TODO this doesn't have to be done for every screen change
             writepnt[1] = gfx[0];
             writepnt += 2;
         }
@@ -441,7 +443,46 @@ void LoadGFX(int num, char * filename) {
     fclose(infile);
 }
 
+Note *CurrNote;
+unsigned int MSPerFrame = 13;
+unsigned long MSCounter = 0;
+
+void note(unsigned char note) {
+    
+    // Set timer to frequency
+    outp(0x43, 0xB6);
+    outp(0x42, NoteTable[note] & 0xFF);
+    outp(0x42, NoteTable[note] >> 8);
+    // Turn speaker on
+    outp(0x61, inp(0x61) | 3);
+}
+
+void nosound() {
+    // Turn speaker off
+    outp(0x61, inp(0x61) & 0xFC);
+}
+
+void Music_Task() 
+{
+    if (CurrNote->NoteNum != 0) {
+
+        MSCounter += MSPerFrame;
+
+        if (MSCounter >= CurrNote->Time){
+            if (CurrNote->NoteNum == 255){
+                nosound();
+            }
+            else {
+                note(CurrNote->NoteNum);
+            }
+            CurrNote++;
+        }
+    }
+}
+
 int SecondCount = 0;
+
+extern GameState *CurrState;
 
 int main(void)
 {
@@ -535,13 +576,14 @@ int main(void)
 
     rasterEnable();
 
-
     
     /*DrawText(10, 86, "The quick brown fox jumped over the lazy god.");
     DrawText(10, 87, "The quick brown fox jumped over the lazy god.");
     DrawText(10, 88, "The quick brown fox jumped over the lazy god.");*/
 
     EnterState();
+
+    CurrNote = SONG_INTRO;
 
     while (1) {
 
@@ -564,7 +606,7 @@ int main(void)
             SecondCount = 0;
             Gamelogic_SecondTick();
             sprintf(TimeBuf, "%02d:%02d", Countdown / 60, Countdown % 60);
-            DrawText(70, textline + 2, TimeBuf);
+            DrawTextColor(70, textline + 2, 0x07, TimeBuf);
         }
 
         if (kbhit()){
@@ -593,10 +635,11 @@ int main(void)
                 bufpos++;
             }
             
-            DrawText(10, textline + 2, InputBuff);
-            DrawText(8, textline + 2, ">");
+            DrawTextColor(10,  textline + 2, 0x07, InputBuff);
+            DrawTextColor(8, textline + 2, 0x07, ">");
             update_cursor(strlen(InputBuff) + 10, textline + 2);
         }
+        Music_Task();
     }
 
 

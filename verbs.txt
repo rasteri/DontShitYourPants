@@ -13,7 +13,7 @@ shit toilet
 fart lightly,lightly fart
 fart lightly second time
 fart lightly third time
-don't shit
+don't shit,dont shit
 break
 die
 pants remove,remove pants,remove up pants
@@ -99,5 +99,7 @@ take pills after taken
 
 run out of time
 pills kick in
+on entry
+wildcard
 20sec left
 5sec left

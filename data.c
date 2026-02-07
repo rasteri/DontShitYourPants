@@ -12,7 +12,167 @@ int Countdown = 40;
 int PillCountdown = 0;
 int FartCount = 0;
 
+unsigned int Awards = 0;
+
+unsigned int NoteTable[] = {
+    145940,
+    137749,
+    130018,
+    122721,
+    115833,
+    109332,
+    103196,
+    97404,
+    91937,
+    86777,
+    81906,
+    77309,
+    72970,
+    68875,
+    65009,
+    61360,
+    57917,
+    54666,
+    51598,
+    48702,
+    45968,
+    43388,
+    40953,
+    38655,
+    36485,
+    34437,
+    32505,
+    30680,
+    28958,
+    27333,
+    25799,
+    24351,
+    22984,
+    21694,
+    20477,
+    19327,
+    18243,
+    17219,
+    16252,
+    15340,
+    14479,
+    13666,
+    12899,
+    12175,
+    11492,
+    10847,
+    10238,
+    9664,
+    9121,
+    8609,
+    8126,
+    7670,
+    7240,
+    6833,
+    6450,
+    6088,
+    5746,
+    5424,
+    5119,
+    4832,
+    4561,
+    4305,
+    4063,
+    3835,
+    3620,
+    3417,
+    3225,
+    3044,
+    2873,
+    2712,
+    2560,
+    2416,
+    2280,
+    2152,
+    2032,
+    1918,
+    1810,
+    1708,
+    1612,
+    1522,
+    1437,
+    1356,
+    1280,
+    1208,
+    1140,
+    1076,
+    1016,
+    959,
+    905,
+    854,
+    806,
+    761,
+    718,
+    678,
+    640,
+    604,
+    570,
+    538,
+    508,
+    479,
+    452,
+    427,
+    403,
+    380,
+    359,
+    339,
+    320,
+    302,
+    285,
+    269,
+    254,
+    240,
+    226,
+    214,
+    202,
+    190,
+    180,
+    169,
+    160,
+    151,
+    143,
+    135,
+    127,
+    120,
+    113,
+    107,
+    101,
+    95
+};
+
+
+
+Note SONG_INTRO[] = {
+
+    {0, 44},
+    {600, 255},
+    {750, 38},
+    {1200, 41},
+    {1500, 40},
+    {1800, 255},
+    {2100, 36},
+    {2500, 39},
+    {2850, 38},
+    {3150, 255},
+    {3450, 33},
+    {3900, 36},
+    {4200, 35},
+    {4500, 255},
+    {4800, 31},
+    {5250, 255},
+    {5400, 33},
+    {6000, 255},
+    {0, 0}
+};
+
 GameAction ACTIONS_MENU[] = {
+
+    {VERB_ONENTRY, ACTION_DISPLAYNEWAWARDS, 0},
 
     {VERB_ONENTRY, ACTION_SCREENLINES, 20},
     {VERB_ONENTRY, ACTION_DISPLAYGFX, GFX_MENU},
@@ -22,6 +182,7 @@ GameAction ACTIONS_MENU[] = {
     {VERB_PLAY, ACTION_GOTOSTATE, STATE_STANDING},
     {VERB_PLAY, ACTION_TEXTOUTPUT, STRING_REALLYNEEDSHIT},
     {VERB_PLAY, ACTION_FART, 0},
+    {VERB_PLAY, ACTION_TAKEPILLS, 0},
     {VERB_PLAY, ACTION_ADDTOTIMER, 0},
 
     {VERB_DELETE, ACTION_DELETEAWARDS, 0},
@@ -39,14 +200,16 @@ GameAction ACTIONS_AWARDS[] = {
 
     {VERB_ONENTRY, ACTION_SCREENLINES, 14},
     {VERB_ONENTRY, ACTION_DISPLAYGFX, GFX_AWARDS},
-    {VERB_ONENTRY, ACTION_SETTEXTLINE, 30},
+    {VERB_ONENTRY, ACTION_SETTEXTLINE, 40},
     {VERB_ONENTRY, ACTION_DRAWMENU, 1},
+    {VERB_WILDCARD, ACTION_GOTOSTATE, STATE_MENU},
     {0, 0, 0}
 };
 
 GameAction ACTIONS_STANDING[] = {
     {VERB_ONENTRY, ACTION_SCREENLINES, 86},
     {VERB_ONENTRY, ACTION_DISPLAYGFX, GFX_STANDING},
+
     {VERB_SHIT, ACTION_GOTOSTATE, STATE_SHITPANTSSTANDING},
     {VERB_SHITPANTS, ACTION_GOTOSTATE, STATE_SHITPANTSSTANDING},
     {VERB_FART, ACTION_GOTOSTATE, STATE_FARTPANTSON},
@@ -55,10 +218,13 @@ GameAction ACTIONS_STANDING[] = {
     {VERB_DONTSHIT, ACTION_GOTOSTATE, STATE_DONTSHITPANTSON},
     {VERB_BREAK, ACTION_GOTOSTATE, STATE_BREAKPANTSON},
     {VERB_DIE, ACTION_GOTOSTATE, STATE_DIEPANTSON},
+
     {VERB_REMOVEPANTS, ACTION_GOTOSTATE, STATE_STANDINGPANTSOFF},
     {VERB_REMOVEPANTS, ACTION_TEXTOUTPUT, STRING_REMOVEPANTS},
+
     {VERB_WEARPANTS, ACTION_TEXTOUTPUT, STRING_ALREADYON},
     {VERB_OPENDOOR, ACTION_TEXTOUTPUT, STRING_PUSHDOOR},
+    
     {VERB_PULLDOOR, ACTION_GOTOSTATE, STATE_DOOROPEN},
     {VERB_PULLDOOR, ACTION_TEXTOUTPUT, STRING_PULLDOOR},
     {VERB_CLOSEDOOR, ACTION_TEXTOUTPUT, STRING_ALREADYCLOSED},
@@ -211,6 +377,7 @@ GameAction ACTIONS_SHITONFLOOR[] = {
     {VERB_ONENTRY, ACTION_SCREENLINES, 92},
     {VERB_ONENTRY, ACTION_DISPLAYGFX, GFX_SHITONFLOOR},
     {VERB_ONENTRY, ACTION_TEXTOUTPUT, STRING_ENDING_SHITONFLOOR},
+    {VERB_WILDCARD, ACTION_GIVEAWARD, AWARD_SHITONFLOOR},
     {VERB_WILDCARD, ACTION_GOTOSTATE, STATE_MENU},
     {0, 0, 0}};
 
@@ -218,6 +385,7 @@ GameAction ACTIONS_SHITINTOILET[] = {
     {VERB_ONENTRY, ACTION_SCREENLINES, 92},
     {VERB_ONENTRY, ACTION_DISPLAYGFX, GFX_SHITINTOILET},
     {VERB_ONENTRY, ACTION_TEXTOUTPUT, STRING_ENDING_SHITINTOILET},
+    {VERB_WILDCARD, ACTION_GIVEAWARD, AWARD_SHITINTOILET},
     {VERB_WILDCARD, ACTION_GOTOSTATE, STATE_MENU},
     {0, 0, 0}};
 
@@ -225,6 +393,7 @@ GameAction ACTIONS_SHITPANTSSTANDING[] = {
     {VERB_ONENTRY, ACTION_SCREENLINES, 92},
     {VERB_ONENTRY, ACTION_DISPLAYGFX, GFX_SHITPANTSSTANDING},
     {VERB_ONENTRY, ACTION_TEXTOUTPUT, STRING_ENDING_SHITPANTSSTANDING},
+    {VERB_WILDCARD, ACTION_GIVEAWARD, AWARD_SHITINPANTSSTANDING},
     {VERB_WILDCARD, ACTION_GOTOSTATE, STATE_MENU},
     {0, 0, 0}};
 
@@ -232,6 +401,7 @@ GameAction ACTIONS_SHITINPANTSSITTING[] = {
     {VERB_ONENTRY, ACTION_SCREENLINES, 92},
     {VERB_ONENTRY, ACTION_DISPLAYGFX, GFX_SHITINPANTSSITTING},
     {VERB_ONENTRY, ACTION_TEXTOUTPUT, STRING_ENDING_SHITINPANTSSITTING},
+    {VERB_WILDCARD, ACTION_GIVEAWARD, AWARD_SHITINPANTSSITTING},
     {VERB_WILDCARD, ACTION_GOTOSTATE, STATE_MENU},
     {0, 0, 0}};
 
@@ -239,8 +409,11 @@ GameAction ACTIONS_BREAKPANTSON[] = {
     {VERB_ONENTRY, ACTION_SCREENLINES, 92},
     {VERB_ONENTRY, ACTION_DISPLAYGFX, GFX_SHITPANTSSTANDING},
     {VERB_ONENTRY, ACTION_TEXTOUTPUT, STRING_ENDING_BREAKPANTSON},
+    {VERB_WILDCARD, ACTION_GIVEAWARD, AWARD_SHITINPANTSSTANDING},
     {VERB_WILDCARD, ACTION_GOTOSTATE, STATE_MENU},
-    {0, 0, 0}};
+    {0, 0, 0}
+};
+
 GameAction ACTIONS_BREAKPANTSOFF[] = {
     {VERB_ONENTRY, ACTION_SCREENLINES, 92},
     {VERB_ONENTRY, ACTION_DISPLAYGFX, GFX_SHITONFLOOR},
@@ -266,6 +439,7 @@ GameAction ACTIONS_DIEPANTSON[] = {
     {VERB_ONENTRY, ACTION_SCREENLINES, 92},
     {VERB_ONENTRY, ACTION_DISPLAYGFX, GFX_DIEPANTSON},
     {VERB_ONENTRY, ACTION_TEXTOUTPUT, STRING_ENDING_DIEPANTSON},
+    {VERB_WILDCARD, ACTION_GIVEAWARD, AWARD_DIE},
     {VERB_WILDCARD, ACTION_GOTOSTATE, STATE_MENU},
     {0, 0, 0}};
 
@@ -273,6 +447,7 @@ GameAction ACTIONS_DIEPANTSOFF[] = {
     {VERB_ONENTRY, ACTION_SCREENLINES, 92},
     {VERB_ONENTRY, ACTION_DISPLAYGFX, GFX_DIEPANTSOFF},
     {VERB_ONENTRY, ACTION_TEXTOUTPUT, STRING_ENDING_DIEPANTSOFF},
+    {VERB_WILDCARD, ACTION_GIVEAWARD, AWARD_DIE},
     {VERB_WILDCARD, ACTION_GOTOSTATE, STATE_MENU},
     {0, 0, 0}};
 
@@ -280,6 +455,7 @@ GameAction ACTIONS_DIEPANTSONSITTING[] = {
     {VERB_ONENTRY, ACTION_SCREENLINES, 92},
     {VERB_ONENTRY, ACTION_DISPLAYGFX, GFX_DIEPANTSONSITTING},
     {VERB_ONENTRY, ACTION_TEXTOUTPUT, STRING_ENDING_DIEPANTSONSITTING},
+    {VERB_WILDCARD, ACTION_GIVEAWARD, AWARD_DIE},
     {VERB_WILDCARD, ACTION_GOTOSTATE, STATE_MENU},
     {0, 0, 0}};
 
@@ -287,6 +463,7 @@ GameAction ACTIONS_DIEPANTSOFFSITTING[] = {
     {VERB_ONENTRY, ACTION_SCREENLINES, 92},
     {VERB_ONENTRY, ACTION_DISPLAYGFX, GFX_DIEPANTSOFFSITTING},
     {VERB_ONENTRY, ACTION_TEXTOUTPUT, STRING_ENDING_DIEPANTSOFFSITTING},
+    {VERB_WILDCARD, ACTION_GIVEAWARD, AWARD_DIE},
     {VERB_WILDCARD, ACTION_GOTOSTATE, STATE_MENU},
     {0, 0, 0}};
 
@@ -322,6 +499,7 @@ GameAction ACTIONS_PILLSSTANDINGPANTSON1[] = {
     {VERB_ONENTRY, ACTION_SCREENLINES, 92},
     {VERB_ONENTRY, ACTION_DISPLAYGFX, GFX_PILLSSTANDINGPANTSON1},
     {VERB_ONENTRY, ACTION_TEXTOUTPUT, STRING_ENDING_PILLSSTANDINGPANTSON1},
+    {VERB_WILDCARD, ACTION_GIVEAWARD, AWARD_PILLSKICKIN},
     {VERB_WILDCARD, ACTION_GOTOSTATE, STATE_PILLSSTANDINGPANTSON2},
     {0, 0, 0}};
 
@@ -336,6 +514,7 @@ GameAction ACTIONS_PILLSSTANDINGPANTSON3[] = {
     {VERB_ONENTRY, ACTION_SCREENLINES, 92},
     {VERB_ONENTRY, ACTION_DISPLAYGFX, GFX_SHITPANTSSTANDING},
     {VERB_ONENTRY, ACTION_TEXTOUTPUT, STRING_ENDING_PILLSSTANDINGPANTSON3},
+    {VERB_WILDCARD, ACTION_GIVEAWARD, AWARD_PILLSFAIL},
     {VERB_WILDCARD, ACTION_GOTOSTATE, STATE_MENU},
     {0, 0, 0}};
 
@@ -343,6 +522,7 @@ GameAction ACTIONS_PILLSSTANDINGPANTSOFF1[] = {
     {VERB_ONENTRY, ACTION_SCREENLINES, 92},
     {VERB_ONENTRY, ACTION_DISPLAYGFX, GFX_PILLSSTANDINGPANTSON1},
     {VERB_ONENTRY, ACTION_TEXTOUTPUT, STRING_ENDING_PILLSSTANDINGPANTSOFF1},
+    {VERB_WILDCARD, ACTION_GIVEAWARD, AWARD_PILLSKICKIN},
     {VERB_WILDCARD, ACTION_GOTOSTATE, STATE_PILLSSTANDINGPANTSOFF2},
     {0, 0, 0}};
 
@@ -365,6 +545,7 @@ GameAction ACTIONS_PILLSSITTINGPANTSON1[] = {
     {VERB_ONENTRY, ACTION_DISPLAYGFX, GFX_PILLSSITTINGPANTSON1},
     {VERB_ONENTRY, ACTION_TEXTOUTPUT, STRING_ENDING_PILLSSITTINGPANTSON1},
     {VERB_WILDCARD, ACTION_GOTOSTATE, STATE_PILLSSITTINGPANTSON2},
+    {VERB_WILDCARD, ACTION_GIVEAWARD, AWARD_PILLSKICKIN},
     {0, 0, 0}};
 
 GameAction ACTIONS_PILLSSITTINGPANTSON2[] = {
@@ -378,6 +559,7 @@ GameAction ACTIONS_PILLSSITTINGPANTSON3[] = {
     {VERB_ONENTRY, ACTION_SCREENLINES, 92},
     {VERB_ONENTRY, ACTION_DISPLAYGFX, GFX_SHITINPANTSSITTING},
     {VERB_ONENTRY, ACTION_TEXTOUTPUT, STRING_ENDING_PILLSSITTINGPANTSON3},
+    {VERB_WILDCARD, ACTION_GIVEAWARD, AWARD_PILLSFAIL},
     {VERB_WILDCARD, ACTION_GOTOSTATE, STATE_MENU},
     {0, 0, 0}};
 
@@ -386,6 +568,7 @@ GameAction ACTIONS_PILLSSITTINGPANTSOFF1[] = {
     {VERB_ONENTRY, ACTION_DISPLAYGFX, GFX_SHITINTOILET},
     {VERB_ONENTRY, ACTION_TEXTOUTPUT, STRING_ENDING_PILLSSITTINGPANTSOFF1},
     {VERB_WILDCARD, ACTION_GOTOSTATE, STATE_PILLSSITTINGPANTSOFF2},
+    {VERB_WILDCARD, ACTION_GIVEAWARD, AWARD_PILLSKICKIN},
     {0, 0, 0}};
 
 GameAction ACTIONS_PILLSSITTINGPANTSOFF2[] = {
@@ -407,6 +590,7 @@ GameAction ACTIONS_TIMEOVERSTANDINGPANTSON[] = {
     {VERB_ONENTRY, ACTION_DISPLAYGFX, GFX_SHITPANTSSTANDING},
     {VERB_ONENTRY, ACTION_TEXTOUTPUT, STRING_ENDING_TIMEOVERSTANDINGPANTSON},
     {VERB_WILDCARD, ACTION_GOTOSTATE, STATE_MENU},
+    {VERB_WILDCARD, ACTION_GIVEAWARD, AWARD_TIMEOVER},
     {0, 0, 0}};
 
 GameAction ACTIONS_TIMEOVERSTANDINGPANTSOFF[] = {
@@ -414,6 +598,7 @@ GameAction ACTIONS_TIMEOVERSTANDINGPANTSOFF[] = {
     {VERB_ONENTRY, ACTION_DISPLAYGFX, GFX_SHITONFLOOR},
     {VERB_ONENTRY, ACTION_TEXTOUTPUT, STRING_ENDING_TIMEOVERSTANDINGPANTSOFF},
     {VERB_WILDCARD, ACTION_GOTOSTATE, STATE_MENU},
+    {VERB_WILDCARD, ACTION_GIVEAWARD, AWARD_TIMEOVER},
     {0, 0, 0}};
 
 GameAction ACTIONS_TIMEOVERSITTINGPANTSON[] = {
@@ -421,6 +606,7 @@ GameAction ACTIONS_TIMEOVERSITTINGPANTSON[] = {
     {VERB_ONENTRY, ACTION_DISPLAYGFX, GFX_SHITINPANTSSITTING},
     {VERB_ONENTRY, ACTION_TEXTOUTPUT, STRING_ENDING_TIMEOVERSITTINGPANTSON},
     {VERB_WILDCARD, ACTION_GOTOSTATE, STATE_MENU},
+    {VERB_WILDCARD, ACTION_GIVEAWARD, AWARD_TIMEOVER},
     {0, 0, 0}};
 
 GameAction ACTIONS_TIMEOVERSITTINGPANTSOFF[] = {
@@ -428,6 +614,7 @@ GameAction ACTIONS_TIMEOVERSITTINGPANTSOFF[] = {
     {VERB_ONENTRY, ACTION_DISPLAYGFX, GFX_SHITINTOILET},
     {VERB_ONENTRY, ACTION_TEXTOUTPUT, STRING_ENDING_TIMEOVERSITTINGPANTSOFF},
     {VERB_WILDCARD, ACTION_GOTOSTATE, STATE_MENU},
+    {VERB_WILDCARD, ACTION_GIVEAWARD, AWARD_TIMEOVER},
     {0, 0, 0}};
 
 GameAction ACTIONS_STARTINGGUN[] = {
@@ -435,6 +622,7 @@ GameAction ACTIONS_STARTINGGUN[] = {
     {VERB_ONENTRY, ACTION_DISPLAYGFX, GFX_SHITPANTSSTANDING},
     {VERB_ONENTRY, ACTION_TEXTOUTPUT, STRING_ENDING_STARTINGGUN},
     {VERB_WILDCARD, ACTION_GOTOSTATE, STATE_MENU},
+    {VERB_WILDCARD, ACTION_GIVEAWARD, AWARD_STARTINGGUN},
     {0, 0, 0}};
 
 GameAction ACTIONS_SHITINPANTSWHILEOFF[] = {
@@ -455,7 +643,9 @@ GameAction ACTIONS_FARTPANTSONSITTING[] = {
 GameAction ACTIONS_GLOBAL[] = {
     {VERB_FARTLIGHTLY1, ACTION_TEXTOUTPUT, STRING_FARTEDLIGHTLY1},
     {VERB_FARTLIGHTLY1, ACTION_ADDTOTIMER, 60},
+    {VERB_FARTLIGHTLY1, ACTION_FART, 1},
     {VERB_FARTLIGHTLY2, ACTION_TEXTOUTPUT, STRING_FARTEDLIGHTLY2},
+    {VERB_FARTLIGHTLY2, ACTION_FART, 1},
 
     {VERB_TAKEPILLS, ACTION_TAKEPILLS, 45},
     {VERB_TAKEPILLS, ACTION_TEXTOUTPUT, STRING_EATPILLS},
@@ -464,7 +654,7 @@ GameAction ACTIONS_GLOBAL[] = {
 
     {VERB_LOOKCLOTHES, ACTION_TEXTOUTPUT, STRING_LOOKCLOTHES},
 
-    {VERB_LOOKPILLS, ACTION_TEXTOUTPUT, STRING_LOOKCLOTHES},
+    {VERB_LOOKPILLS, ACTION_TEXTOUTPUT, STRING_LOOKPILLS},
 
     {VERB_LOOKPILLSTAKEN, ACTION_TEXTOUTPUT, STRING_ALREADYEATEN},
 
@@ -475,6 +665,9 @@ GameAction ACTIONS_GLOBAL[] = {
     {VERB_LOOKSHOES, ACTION_TEXTOUTPUT, STRING_LOOKSHOES},
     {VERB_LOOKSHIRT, ACTION_TEXTOUTPUT, STRING_LOOKSHIRT},
     {VERB_LOOKHAIR, ACTION_TEXTOUTPUT, STRING_LOOKHAIR},
+
+    {VERB_20SEC, ACTION_TEXTOUTPUT, STRING_TIMERUNNINGOUT},
+    {VERB_5SEC, ACTION_TEXTOUTPUT, STRING_PEEKING},
 };
 
 GameState GameStates[] = {
@@ -596,7 +789,7 @@ void LoadVerbs()
     {
 
         // one string per line
-        currstring = malloc(sizeof(GameVerb));
+        currstring = malloc(sizeof(GameString));
         currstring->ID = linenum;
         currstring->next = NULL;
 
@@ -701,24 +894,39 @@ GameState *CurrState = &GameStates[1];
 
 void EnterState()
 {
-
     GameAction *StateEntryAction = CurrState->Actions;
 
     while (StateEntryAction->Verb != 0)
     {
         if (StateEntryAction->Verb == VERB_ONENTRY)
         {
-            RunAction(StateEntryAction);
+            if (RunAction(StateEntryAction))
+                break; // some actions abort future ones
         }
         StateEntryAction++;
     }
 }
 
-void RunAction(GameAction *curraction)
+unsigned int OldAwards = 0;
+
+
+void DrawAward(int x, int y, int Award, int NameString, int DescString) {
+
+    DrawTextColor(x + 2, y, 0x0f, FindString(NameString));
+
+    if (Awards & Award) { 
+        DrawTextColor(x, y, 0x0c, "\xfb");
+        DrawTextColor(x + 3, y + 1, 0x0e, FindString(DescString));
+    }
+    else {
+        DrawTextColor(x + 3, y + 1, 0x0e, "??????");
+    }
+}
+
+// returns 1 if action should stop future actions from running all others
+
+int RunAction(GameAction *curraction)
 {
-
-
-        
 
     switch (curraction->Type)
     {
@@ -736,6 +944,19 @@ void RunAction(GameAction *curraction)
     case ACTION_DISPLAYGFX:
         // printf("display gfx %d\n", curraction->Action);
         DisplayGFX(curraction->Action);
+        break;
+
+    case ACTION_GIVEAWARD:
+        Awards |= curraction->Action;
+        break;
+
+    case ACTION_DISPLAYNEWAWARDS:
+        if (Awards != OldAwards){
+            CurrState = &GameStates[STATE_AWARDS];
+            OldAwards = Awards;
+            return 1;
+        }
+            
         break;
 
     case ACTION_TAKEPILLS:
@@ -770,8 +991,6 @@ void RunAction(GameAction *curraction)
     case ACTION_GOTOSTATE:
         // printf("goto state %d\n", curraction->Action);
         CurrState = &GameStates[curraction->Action];
-        // run any "on entry" actions in the new state
-        EnterState();
         break;
 
     case ACTION_DRAWMENU:
@@ -788,40 +1007,24 @@ void RunAction(GameAction *curraction)
                 break;
 
             case 1:
-                DrawTextColor(0, 14, 0x0f, "         Award 1: Thinking (and shitting) inside the box");
-                DrawTextColor(0, 15, 0x0e, "    Congratulations, all that potty training finally paid off");
 
-                DrawTextColor(0, 17, 0x0c, "\xfb");
-                DrawTextColor(2, 17, 0x0f, "Award 2: Mr. Efficient");
-                DrawTextColor(3, 18, 0x0e, "It's not his fault that door was so");
-                DrawTextColor(3, 19, 0x0e, "hard to open");
-
-                DrawTextColor(0, 21, 0x0c, "\xfb");
-                DrawTextColor(2, 21, 0x0f, "Award 3: Shitting 101");
-                DrawTextColor(3, 22, 0x0e, "Sometimes even zero effort is");
-                DrawTextColor(3, 23, 0x0e, "rewarded.");
-
-                DrawTextColor(0, 25, 0x0c, "\xfb");
-                DrawTextColor(2, 25, 0x0f, "Award 4: So close and yet so far...");
-                DrawTextColor(3, 26, 0x0e, "Pants. They get you every time...");
-                DrawTextColor(3, 27, 0x0e, "");
-
-                DrawTextColor(0, 29, 0x0c, "\xfb");
-                DrawTextColor(2, 29, 0x0f, "Award 5: Sep-poo-ku");
-                DrawTextColor(3, 30, 0x0e, "Giving up is never the answer.");
-                DrawTextColor(3, 31, 0x0e, "Or is it?");
-
-                DrawTextColor(40, 17, 0x0c, "\xfb");
-                DrawTextColor(42, 17, 0x0f, "Award 6: Holding off the inevitable");
-                DrawTextColor(43, 18, 0x0e, "How convenient that you had those");
-                DrawTextColor(43, 19, 0x0e, "pills...");
-                
+                DrawAward(0, 14, AWARD_SHITINTOILET, STRING_AWARD1NAME, STRING_AWARD1DESC);
+                DrawAward(0, 17, AWARD_SHITONFLOOR, STRING_AWARD2NAME, STRING_AWARD2DESC);
+                DrawAward(0, 21, AWARD_SHITINPANTSSTANDING, STRING_AWARD3NAME, STRING_AWARD3DESC);
+                DrawAward(0, 25, AWARD_SHITINPANTSSITTING, STRING_AWARD4NAME, STRING_AWARD4DESC);
+                DrawAward(0, 29, AWARD_DIE, STRING_AWARD5NAME, STRING_AWARD5DESC);
+                DrawAward(40, 17, AWARD_PILLSKICKIN, STRING_AWARD6NAME, STRING_AWARD6DESC);
+                DrawAward(40, 21, AWARD_PILLSFAIL, STRING_AWARD7NAME, STRING_AWARD7DESC);
+                DrawAward(40, 25, AWARD_STARTINGGUN, STRING_AWARD8NAME, STRING_AWARD8DESC);
+                DrawAward(40, 29, AWARD_TIMEOVER, STRING_AWARD9NAME, STRING_AWARD9DESC);
+                DrawAward(0, 32, AWARD_SHITKING, STRING_AWARD10NAME, STRING_AWARD10DESC);
 
             break;
         }
 
         break;
     }
+    return 0;
 }
 
 void RunVerb(int Verb)
@@ -829,8 +1032,22 @@ void RunVerb(int Verb)
     GameAction *curraction = CurrState->Actions;
     char foundone = 0;
 
+    int oldgamestate = CurrState->ID;
+
     while (curraction->Verb != 0)
     {
+
+        // different string after you take pills
+        if (pillstaken) {
+            if (Verb == VERB_TAKEPILLS)
+                Verb = VERB_TAKEPILLSTAKEN;
+            if (Verb == VERB_LOOKPILLS)
+                Verb = VERB_LOOKPILLSTAKEN;
+            if (Verb == VERB_LOOKPOCKET)
+                Verb = VERB_LOOKPOCKETEMPTY;
+
+        }
+
         // fart lightly has a use count
         if (Verb == VERB_FARTLIGHTLY1) {
             Verb += FartCount;
@@ -838,13 +1055,22 @@ void RunVerb(int Verb)
 
         if (curraction->Verb == VERB_WILDCARD || curraction->Verb == Verb)
         {
-            
-
-            RunAction(curraction);
             foundone = 1;
+            if (RunAction(curraction)){
+
+                break; // some actions abort future ones
+            }
+            
         }
 
         curraction++;
+    }
+
+    // if we changed state, run the state's entry actions
+    // keep doing so until state stabilizes
+    while (CurrState->ID != oldgamestate){
+        oldgamestate = CurrState->ID;
+        EnterState();
     }
 
     if (foundone)
@@ -876,10 +1102,21 @@ void GameLogic_TextInput(char *Text)
 
 void Gamelogic_SecondTick()
 {
+    // don't tick outside main 6 states
+    if (CurrState->ID < STATE_STANDING || CurrState->ID > STATE_ONTOILETPANTSOFF)
+        return;
 
     Countdown--;
 
-    if (!Countdown)
+    if (Countdown == 20){
+        RunVerb(VERB_20SEC);
+    }
+
+    else if (Countdown == 5){
+        RunVerb(VERB_5SEC);
+    }
+
+    else if (!Countdown)
     {
         RunVerb(VERB_TIMEOUT);
     }

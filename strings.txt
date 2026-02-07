@@ -9,7 +9,7 @@ The door is already open.
 You're already at the menu.
 You're an idiot.
 What toilet?
-You farted lightly.  Relief!, add 60sec to timer
+You farted lightly.  Relief!
 You farted already.  Another one will stain your pants.
 Why not concentrate on taking a shit instead?
 I don't know how to x
@@ -23,23 +23,23 @@ You stand up.
 You stand up even more than before.
 You quietly try to sit on the toilet with the door closed but your efforts are in vain.
 You're already sitting on the toilet.
-You're in a room with a door. You're wearing a shirt and pants.  You have no hair.
-You're in a room with a door that leads to a washroom. You're wearing a shirt and pants.  You have no hair.
+You're in a room with a door. You're wearing a shirt and pants.\nYou have no hair.
+You're in a room with a door that leads to a washroom.\nYou're wearing a shirt and pants.  You have no hair.
 It looks like a washroom.
 It's a door.
 Don't just look at the toilet, the clock is ticking!  Do something!
 You can't see into the other room.  The door's closed.
-You check your pockets.  You find some pills for stomach relief.  It says they take 45 seconds to start working.
+You check your pockets.  You find some pills for stomach relief.\nIt says they take 45 seconds to start working.
 Your pockets are empty.
 Upon closer inspection, you realize you're wearing your shirt backwards.
 You should be more specific.
-They're pills to relieve stomach problems.  It says they take 45 seconds to start working.
+They're pills to relieve stomach problems.\nIt says they take 45 seconds to start working.
 You already ate the pills.
 You eat the pills.  Hopefully they'll start working in time.
 You shed a single tear.
 You have feet.
 You really need to take a shit...
-You're running out of time.  You need to find a way to reduce the pressure in your gut.
+You're running out of time.\nYou need to find a way to reduce the pressure in your gut.
 OMG IT'S PEEKING ITS HEAD!  DO SOMETHING ABOUT THE GAS BUILD UP!
 You just shit on the floor! Congratulations!
 You just shit in the toilet! Congratulations!
@@ -47,35 +47,65 @@ You just shit your pants! Game over!
 You forgot to take your pants off! You just shit your pants! Game over!
 You shit your pants anyway! Game over!
 The exertion causes you to shit your pants! Game over!
-You farted too hard and shit your pants! Maybe next time you shouldn't push it so hard.
-You farted too hard but your pants are off so you shit the floor! Still, you shouldn't push it so hard.
-Your vision fades and you hear a soft 'pbffffff' as you shit your pants. Game over.
-Your vision fades and you hear a soft 'pbffffff' as you shit, but your pants are off. So... congratulations?
-You shit anyway, but all is forgiven because your pants are off. Congratulations!
-The exertion causes you to shit, but your pants are off anyway. Close call! Congratulations!
-The pills worked! You didn't shit your pants. Congratulations! - standing pants on
-Uh oh. Wait a minute... - standing pants on
-Awww, you just shit your pants!  Maybe they didn't work so well... - standing pants on
+You farted too hard and shit your pants!\nMaybe next time you shouldn't push it so hard.
+You farted too hard but your pants are off so you shit the floor!\nStill, you shouldn't push it so hard.
+Your vision fades and you hear a soft 'pbffffff' as you shit your pants.\nGame over.
+Your vision fades and you hear a soft 'pbffffff' as you shit,\nbut your pants are off. So... congratulations?
+You shit anyway, but all is forgiven because your pants are off.\nCongratulations!
+The exertion causes you to shit, but your pants are off anyway. Close call!\nCongratulations!
+The pills worked! You didn't shit your pants. Congratulations!
+Uh oh. Wait a minute...
+Awww, you just shit your pants!  Maybe they didn't work so well...
 NULL
-The game hasn't started yet but you just couldn't help yourself. You just shit your pants. Game over. 
-The pills worked! You didn't shit your pants. Congratulations! - standing pants off
-Uh oh. Wait a minute... - standing pants off
-THIS HAS YET TO BE WRITTEN - standing pants off
-The pills worked! You didn't shit your pants. Congratulations! - sitting pants on
-Uh oh. Wait a minute... - sitting pants on
-Awww, you just shit your pants!  Maybe they didn't work so well... - sitting pants on
-he pills worked! You didn't shit your pants. Congratulations! - sitting pants off
-Uh oh. Wait a minute... - sitting pants off
-THIS HAS YET TO BE WRITTEN - BELT AND BRACES AWARD? - sitting pants off
-You couldn't hold it anymore, you just shit your pants! Game over! - standing
-You couldn't hold it anymore, you just shit your pants! Game over! - sitting
-You couldn't hold it anymore, you had to shit!\nGood thing your pants were off. Congratulations! - standing
-You couldn't hold it anymore, you had to shit!\nGood thing your pants were off. Congratulations! - sitting
-For some reason, despite your pants being off, you chose to shit in them anyway. Game over!
-You farted too hard and shit your pants! Maybe next time you shouldn't push it so hard. -- on toilet
-You shit your pants anyway! Game over! -- on toilet
-Your vision fades and you hear a soft 'pbffffff' as you shit your pants. Game over. - on toilet
-Your vision fades and you hear a soft 'pbffffff' as you shit, but your pants are off. So... congratulations? - on toilet
-You shit anyway, but all is forgiven because your pants are off. Congratulations! - on toilet
-You're in a room with a door. You're wearing a shirt.  You have no hair.
-You're in a room with a door that leads to a washroom. You're wearing a shirt.  You have no hair.
+The game hasn't started yet but you just couldn't help yourself.\nYou just shit your pants. Game over. 
+The pills worked! You didn't shit your pants. Congratulations!
+Uh oh. Wait a minute...
+The pills didn't work, but your pants were off anyway. Congratulations!
+The pills worked! You didn't shit your pants. Congratulations!
+Uh oh. Wait a minute...
+Awww, you just shit your pants!  Maybe they didn't work so well...
+he pills worked! You didn't shit your pants. Congratulations!
+Uh oh. Wait a minute...
+The pills didn't work, but your pants were off anyway. Congratulations!
+You couldn't hold it anymore, you just shit your pants! Game over!
+You couldn't hold it anymore, you just shit your pants! Game over!
+You couldn't hold it anymore, you had to shit!\nGood thing your pants were off. Congratulations!
+You couldn't hold it anymore, you had to shit!\nGood thing your pants were off. Congratulations!
+For some reason, despite your pants being off,\nyou chose to shit in them anyway. Game over!
+You farted too hard and shit your pants!\nMaybe next time you shouldn't push it so hard.
+You shit your pants anyway! Game over!
+Your vision fades and you hear a soft 'pbffffff' as you shit your pants.\nGame over.
+Your vision fades and you hear a soft 'pbffffff' as you shit,\nbut your pants are off. So... congratulations?
+You shit anyway, but all is forgiven because your pants are off.\nCongratulations!
+You're in a room with a door. You're wearing a shirt. You have no hair.
+You're in a room with a door that leads to a washroom.\nYou're wearing a shirt. You have no hair.
+Award 1: Thinking (and shitting) inside the box
+Congratulations, all that potty training finally paid off
+Award 2: Mr. Efficient
+It's not his fault that door was so\nhard to open.
+Award 3: Shitting 101
+Sometimes even zero effort\nis rewarded.
+Award 4: So close and yet so far...
+Pants. They get you every time...
+Award 5: Sep-poo-ku
+Giving up is never the answer.\nOr is it?
+Award 6: Holding off the inevitable
+How convenient that you had those\npills...
+Award 7: The inevitable...
+...to not poop\nfor an extra five seconds.
+Award 8: Shitting at the starting gun
+You shit before the game began!
+Award 9: Slow typer
+If only you had a little more time...\nand a higher IQ.
+Final Award: You are the Shit King!
+And you have a crown to prove it!
+Award 11: Snatch defeat from victory
+Failed on a technicality.
+Award 12: You're not the boss of me
+Nice try.
+Award 13: Belt and Suspenders
+You must be fun at parties.
+Award 14: Tempting fate
+Tried to warn you...
+AWard 15: Heartbreak Hotel
+Shit King of Rock and Roll!
