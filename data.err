@@ -1,4 +1,4 @@
-gamelogic.h(379): Warning! W138: No newline at end of file
+gamelogic.h(385): Warning! W138: No newline at end of file
 data.c(18): Warning! W106: Constant out of range - truncated
 data.c(18): Note! I2003: source conversion type is 'long'
 data.c(18): Note! I2004: target conversion type is 'unsigned int'
@@ -41,13 +41,13 @@ data.c(30): Note! I2004: target conversion type is 'unsigned int'
 data.c(31): Warning! W106: Constant out of range - truncated
 data.c(31): Note! I2003: source conversion type is 'long'
 data.c(31): Note! I2004: target conversion type is 'unsigned int'
-data.c(766): Warning! W131: No prototype found for function 'DisplayText'
-data.c(785): Warning! W202: Symbol 'pnt' has been defined, but not referenced
-data.c(942): Warning! W131: No prototype found for function 'SetTextLine'
-data.c(1150): Warning! W138: No newline at end of file
-data.c(766): Warning! W308: The function 'DisplayText' without prototyped parameters called
-data.c(766): Note! I2002: 'DisplayText' defined in: data.c(766)
-data.c(936): Warning! W308: The function 'DisplayText' without prototyped parameters called
-data.c(936): Note! I2002: 'DisplayText' defined in: data.c(766)
-data.c(942): Warning! W308: The function 'SetTextLine' without prototyped parameters called
-data.c(942): Note! I2002: 'SetTextLine' defined in: data.c(942)
+data.c(850): Warning! W131: No prototype found for function 'DisplayText'
+data.c(869): Warning! W202: Symbol 'pnt' has been defined, but not referenced
+data.c(1043): Warning! W131: No prototype found for function 'SetTextLine'
+data.c(1237): Warning! W138: No newline at end of file
+data.c(850): Warning! W308: The function 'DisplayText' without prototyped parameters called
+data.c(850): Note! I2002: 'DisplayText' defined in: data.c(850)
+data.c(1037): Warning! W308: The function 'DisplayText' without prototyped parameters called
+data.c(1037): Note! I2002: 'DisplayText' defined in: data.c(850)
+data.c(1043): Warning! W308: The function 'SetTextLine' without prototyped parameters called
+data.c(1043): Note! I2002: 'SetTextLine' defined in: data.c(1043)

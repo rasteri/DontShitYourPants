@@ -370,6 +370,10 @@ void ClearLine(int line){
     DrawTextColor(0, line, 0x0F, "                                                                                ");
 }
 
+void ClearScreen(){
+    memset(text_mem, 0x00, 16384);
+}
+
 void DisplayText(char *text){
 
     char *newline;
@@ -400,7 +404,7 @@ void Decode(char *gfx, int length) {
 }
 
 void DisplayGFX(int id){
-    memset(text_mem, 0x00, 16000);
+    memset(text_mem, 0x00, gfxlines * 160);
     if (Graphics[id].Length != 0) {
         Decode(Graphics[id].Data, Graphics[id].Length);
     }
@@ -444,7 +448,7 @@ void LoadGFX(int num, char * filename) {
 }
 
 Note *CurrNote;
-unsigned int MSPerFrame = 13;
+unsigned int MSPerFrame = 14;
 unsigned long MSCounter = 0;
 
 void note(unsigned char note) {
@@ -480,6 +484,11 @@ void Music_Task()
     }
 }
 
+void PlaySound(Note *Song){
+    CurrNote = Song;
+    MSCounter = 0;
+}
+
 int SecondCount = 0;
 
 extern GameState *CurrState;
@@ -503,9 +512,7 @@ int main(void)
 
     memset(InputBuff, 0x00, 100);    
 
-    /*sound(200);
-    delay(500);
-    nosound();*/
+    CurrNote = SOUND_INTRO;
 
     Gamelogic_Init();
 
@@ -582,8 +589,6 @@ int main(void)
     DrawText(10, 88, "The quick brown fox jumped over the lazy god.");*/
 
     EnterState();
-
-    CurrNote = SONG_INTRO;
 
     while (1) {
 

@@ -1,19 +1,19 @@
-gamelogic.h(379): Warning! W138: No newline at end of file
+gamelogic.h(385): Warning! W138: No newline at end of file
 testtext.c(97): Warning! W202: Symbol 'i' has been defined, but not referenced
 testtext.c(120): Warning! W202: Symbol 'i' has been defined, but not referenced
 testtext.c(143): Warning! W202: Symbol 'i' has been defined, but not referenced
 testtext.c(166): Warning! W202: Symbol 'i' has been defined, but not referenced
 testtext.c(206): Warning! W304: Return type 'int' assumed for function 'SetTextLine'
 testtext.c(208): Warning! W107: Missing return value for function 'SetTextLine'
-testtext.c(375): Warning! W202: Symbol 'newline' has been defined, but not referenced
-testtext.c(584): Warning! W131: No prototype found for function 'EnterState'
-testtext.c(594): Warning! W131: No prototype found for function 'raster_loop_250_frames_cga'
-testtext.c(598): Warning! W131: No prototype found for function 'raster_loop_250_frames_vga'
-testtext.c(607): Warning! W131: No prototype found for function 'Gamelogic_SecondTick'
-testtext.c(647): Warning! W201: Unreachable code
-testtext.c(498): Warning! W202: Symbol 'ReadGfx' has been defined, but not referenced
-testtext.c(502): Warning! W202: Symbol 'secs' has been defined, but not referenced
-testtext.c(497): Warning! W202: Symbol 'fsize' has been defined, but not referenced
-testtext.c(492): Warning! W202: Symbol 'buf' has been defined, but not referenced
-testtext.c(502): Warning! W202: Symbol 'mins' has been defined, but not referenced
-testtext.c(652): Warning! W138: No newline at end of file
+testtext.c(379): Warning! W202: Symbol 'newline' has been defined, but not referenced
+testtext.c(593): Warning! W131: No prototype found for function 'EnterState'
+testtext.c(601): Warning! W131: No prototype found for function 'raster_loop_250_frames_cga'
+testtext.c(605): Warning! W131: No prototype found for function 'raster_loop_250_frames_vga'
+testtext.c(614): Warning! W131: No prototype found for function 'Gamelogic_SecondTick'
+testtext.c(654): Warning! W201: Unreachable code
+testtext.c(507): Warning! W202: Symbol 'ReadGfx' has been defined, but not referenced
+testtext.c(511): Warning! W202: Symbol 'secs' has been defined, but not referenced
+testtext.c(506): Warning! W202: Symbol 'fsize' has been defined, but not referenced
+testtext.c(501): Warning! W202: Symbol 'buf' has been defined, but not referenced
+testtext.c(511): Warning! W202: Symbol 'mins' has been defined, but not referenced
+testtext.c(659): Warning! W138: No newline at end of file

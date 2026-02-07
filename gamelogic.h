@@ -5,6 +5,7 @@ void GameLogic_TextInput(char *Text);
 void Decode(char *gfx, int length);
 void DrawTextColor(unsigned int x, unsigned int y, unsigned char color, unsigned char *data);
 void SetRows(int rows);
+void ClearScreen();
 
 extern int Countdown;
 // linked list of synonyms
@@ -54,6 +55,7 @@ typedef struct _GameString {
 #define ACTION_FART 12
 #define ACTION_GIVEAWARD 13
 #define ACTION_DISPLAYNEWAWARDS 14
+#define ACTION_CLEARSCREEN 15
 
 // An action that gets taken
 typedef struct _gameaction {
@@ -101,11 +103,15 @@ typedef struct _Note {
     unsigned char NoteNum;
 
 } Note;
-
+void PlaySound(Note *Song);
 extern Note SONG_INTRO[];
 extern unsigned int NoteTable[];
 int RunAction(GameAction *curraction);
 
+#define SOUND_INTRO 0
+#define SOUND_SUCCESS 1
+#define SOUND_FAILURE 2
+#define SOUND_AWARD 3
 
 #define VERB_PLAY 1
 #define VERB_DELETE 2
