@@ -21,6 +21,8 @@ unsigned char far *text_mem = MK_FP(0xB000, 0x8000);
 #define rasterDisable() outp(CGA_MODE_CTRL, 0x01)
 #define rasterEnable()  outp(CGA_MODE_CTRL, 0x09)
 
+int graphicsmode = 0;
+
 /* 160x100 CGA CRTC setup */
 unsigned char cga160crtc[] = {
     113, /* R0  Horizontal total */
@@ -64,7 +66,6 @@ Start Address 0000
 
 Graphic Graphics[GFXCOUNT];
 
-/* ---------- Video mode setup ---------- */
 
 void set_160x100_mode_cga(void)
 {
@@ -94,7 +95,7 @@ void set_160x100_mode_cga(void)
 void set_160x100_mode_ega200(void)
 {
     union REGS r;
-    int i;
+
 
     /* BIOS mode 3 (80x25 text) */
     r.h.ah = 0x00;
@@ -117,7 +118,6 @@ void set_160x100_mode_ega200(void)
 void set_160x100_mode_ega(void)
 {
     union REGS r;
-    int i;
 
     /* BIOS mode 3 (80x25 text) */
     r.h.ah = 0x00;
@@ -140,7 +140,6 @@ void set_160x100_mode_ega(void)
 void set_160x100_mode_vga(void)
 {
     union REGS r;
-    int i;
 
     /* BIOS mode 3 (80x25 text) */
     r.h.ah = 0x00;
@@ -163,7 +162,6 @@ void set_160x100_mode_vga(void)
 void set_160x100_mode_vga_200(void)
 {
     union REGS r;
-    int i;
 
     /* BIOS mode 3 (80x25 text) */
     //r.h.ah = 0x00;
@@ -203,9 +201,12 @@ void SetRows(int rows) {
     textline = gfxlines;
 }
 
-SetTextLine(int line){
+void SetTextLine(int line){
     textline = line;
 }
+
+
+
 
 #pragma aux raster_loop_250_frames_cga = \
     "cli" \
@@ -376,8 +377,6 @@ void ClearScreen(){
 
 void DisplayText(char *text){
 
-    char *newline;
-
     ClearLine(textline);
     ClearLine(textline+1);
     DrawTextColor(2, textline, 0x07, text);
@@ -412,21 +411,21 @@ void DisplayGFX(int id){
 
 void enable_cursor(unsigned char cursor_start, unsigned char cursor_end)
 {
-	outp(0x3D4, 0x0A);
-	outp(0x3D5, (inp(0x3D5) & 0xC0) | cursor_start);
+        outp(0x3D4, 0x0A);
+        outp(0x3D5, (inp(0x3D5) & 0xC0) | cursor_start);
 
-	outp(0x3D4, 0x0B);
-	outp(0x3D5, (inp(0x3D5) & 0xE0) | cursor_end);
+        outp(0x3D4, 0x0B);
+        outp(0x3D5, (inp(0x3D5) & 0xE0) | cursor_end);
 }
 
 void update_cursor(int x, int y)
 {
-	unsigned int pos = y * 80 + x;
+        unsigned int pos = y * 80 + x;
 
-	outp(0x3D4, 0x0F);
-	outp(0x3D5, (unsigned char) (pos & 0xFF));
-	outp(0x3D4, 0x0E);
-	outp(0x3D5, (unsigned char) ((pos >> 8) & 0xFF));
+        outp(0x3D4, 0x0F);
+        outp(0x3D5, (unsigned char) (pos & 0xFF));
+        outp(0x3D4, 0x0E);
+        outp(0x3D5, (unsigned char) ((pos >> 8) & 0xFF));
 }
 
 void LoadGFX(int num, char * filename) {
@@ -447,77 +446,56 @@ void LoadGFX(int num, char * filename) {
     fclose(infile);
 }
 
-Note *CurrNote;
-unsigned int MSPerFrame = 14;
-unsigned long MSCounter = 0;
+void GFX_DrawScreenSplit() {
+    // draw first x lines in 160x100 mode
+    if (gfxlines) {
+        switch (graphicsmode) {
+            case 0x31:
+                    raster_loop_250_frames_cga();
+                break;
 
-void note(unsigned char note) {
-    
-    // Set timer to frequency
-    outp(0x43, 0xB6);
-    outp(0x42, NoteTable[note] & 0xFF);
-    outp(0x42, NoteTable[note] >> 8);
-    // Turn speaker on
-    outp(0x61, inp(0x61) | 3);
-}
-
-void nosound() {
-    // Turn speaker off
-    outp(0x61, inp(0x61) & 0xFC);
-}
-
-void Music_Task() 
-{
-    if (CurrNote->NoteNum != 0) {
-
-        MSCounter += MSPerFrame;
-
-        if (MSCounter >= CurrNote->Time){
-            if (CurrNote->NoteNum == 255){
-                nosound();
-            }
-            else {
-                note(CurrNote->NoteNum);
-            }
-            CurrNote++;
+            case 0x34:
+                    raster_loop_250_frames_vga();
+                break;
         }
     }
 }
 
-void PlaySound(Note *Song){
-    CurrNote = Song;
-    MSCounter = 0;
-}
+void GFX_Init() {
+    printf("1 CGA, 2 EGA200, 3 EGA350, 4 VGA, 5 VGA 200\n");
 
-int SecondCount = 0;
+    graphicsmode = getch();
 
-extern GameState *CurrState;
 
-int main(void)
-{
-    union REGS r;
+    switch (graphicsmode){
+        case 0x31:
+            row_multiplier = 2;
+            set_160x100_mode_cga();
+            break;
 
-    int i;
-    char buf[10];
-    char inkey;
+        case 0x32:
+            set_160x100_mode_ega200();
+            break;
 
-    char InputBuff[100];
-    int bufpos = 0;
-    long fsize;
-    char *ReadGfx;
+        case 0x33:
+            set_160x100_mode_ega();
+            break;
 
-    char TimeBuf[10];
+        case 0x34:
+            row_multiplier = 4;
+            set_160x100_mode_vga();
+            break;
 
-    int mins, secs;
+        case 0x35:
+            set_160x100_mode_vga_200();
+            break;
 
-    memset(InputBuff, 0x00, 100);    
+        default:
+            printf("invalid selection %x\n", graphicsmode);
+            exit(0);
+    }
 
-    CurrNote = SONG_INTRO;
-
-    Gamelogic_Init();
-
-    //enable_cursor(0,7);
-    update_cursor(0,0);
+    rasterEnable();
 
     memset(Graphics, 0x00, sizeof(Graphics));
 
@@ -546,112 +524,5 @@ int main(void)
     LoadGFX(GFX_DIEPANTSONSITTING, "42.bin");
     LoadGFX(GFX_DIEPANTSOFFSITTING, "43.bin");
 
-    printf("1 CGA, 2 EGA200, 3 EGA350, 4 VGA, 5 VGA 200\n");
 
-    i = getch();    
-    
-
-    switch (i){
-        case 0x31:
-            row_multiplier = 2;
-            set_160x100_mode_cga();
-            break;
-
-        case 0x32:
-            set_160x100_mode_ega200();
-            break;
-
-        case 0x33:
-            set_160x100_mode_ega();
-            break;
-
-        case 0x34:
-            row_multiplier = 4;
-            set_160x100_mode_vga();
-            break;
-        
-        case 0x35:
-            set_160x100_mode_vga_200();
-            break;
-
-        default:
-            printf("invalid selection %x\n", i);
-            exit(0);
-    }
-
-
-
-    rasterEnable();
-
-    
-    /*DrawText(10, 86, "The quick brown fox jumped over the lazy god.");
-    DrawText(10, 87, "The quick brown fox jumped over the lazy god.");
-    DrawText(10, 88, "The quick brown fox jumped over the lazy god.");*/
-
-    EnterState();
-
-    while (1) {
-
-        // draw first x lines in 160x100 mode
-        if (gfxlines){
-            switch (i) {
-                case 0x31:
-                        raster_loop_250_frames_cga();
-                    break;
-
-                case 0x34:
-                        raster_loop_250_frames_vga();
-                    break;
-            }
-        }
-
-
-        SecondCount++;
-        if (SecondCount == 60){
-            SecondCount = 0;
-            Gamelogic_SecondTick();
-            sprintf(TimeBuf, "%02d:%02d", Countdown / 60, Countdown % 60);
-            DrawTextColor(70, textline + 2, 0x07, TimeBuf);
-        }
-
-        if (kbhit()){
-            inkey = getch();
-            //delete
-            if (inkey == '\b'){
-                if (bufpos) {
-                    bufpos--;
-                    InputBuff[bufpos] = 0;
-                }
-                ClearLine(textline + 2);
-            }
-            //enter
-            else if (inkey == '\r'){
-                if (strcmp(InputBuff, "exit") == 0)
-                    exit(0);
-                GameLogic_TextInput(InputBuff);
-                bufpos = 0;
-                InputBuff[bufpos] = 0;
-                InputBuff[bufpos+1] = 0;
-                ClearLine(textline + 2);
-            }
-            else {
-                InputBuff[bufpos] = inkey;
-                InputBuff[bufpos+1] = 0;
-                bufpos++;
-            }
-            
-            DrawTextColor(10,  textline + 2, 0x07, InputBuff);
-            DrawTextColor(8, textline + 2, 0x07, ">");
-            update_cursor(strlen(InputBuff) + 10, textline + 2);
-        }
-        Music_Task();
-    }
-
-
-    /* Restore normal text mode */
-    r.h.ah = 0x00;
-    r.h.al = 0x03;
-    int86(0x10, &r, &r);
-
-    return 0;
 }

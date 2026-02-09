@@ -1,13 +1,4 @@
 
-void DisplayGFX(int id);
-void Gamelogic_Init();
-void GameLogic_TextInput(char *Text);
-void Decode(char *gfx, int length);
-void DrawTextColor(unsigned int x, unsigned int y, unsigned char color, unsigned char *data);
-void SetRows(int rows);
-void ClearScreen();
-
-extern int Countdown;
 // linked list of synonyms
 typedef struct _Synonym {
 
@@ -40,23 +31,6 @@ typedef struct _GameString {
 
 } GameString;
 
-#define ACTION_NONE 0
-#define ACTION_TEXTOUTPUT 1
-#define ACTION_GOTOSTATE 2
-#define ACTION_DELETEAWARDS 3
-#define ACTION_EXITGAME 4
-#define ACTION_ADDTOTIMER 5
-#define ACTION_TAKEPILLS 6
-#define ACTION_PLAYSOUND 7
-#define ACTION_DISPLAYGFX 8
-#define ACTION_SCREENLINES 9
-#define ACTION_DRAWMENU 10
-#define ACTION_SETTEXTLINE 11
-#define ACTION_FART 12
-#define ACTION_GIVEAWARD 13
-#define ACTION_DISPLAYNEWAWARDS 14
-#define ACTION_CLEARSCREEN 15
-
 // An action that gets taken
 typedef struct _gameaction {
 
@@ -82,8 +56,6 @@ typedef struct _GameState {
 
 } GameState;
 
-extern unsigned int split_rows;
-
 typedef struct _Graphic {
 
     long Length;
@@ -103,10 +75,56 @@ typedef struct _Note {
     unsigned char NoteNum;
 
 } Note;
-void PlaySound(Note *Song);
-extern Note SONG_INTRO[];
-extern unsigned int NoteTable[];
+
+
+void DisplayGFX(int id);
+void Decode(char *gfx, int length);
+void DrawTextColor(unsigned int x, unsigned int y, unsigned char color, unsigned char *data);
+void SetRows(int rows);
+void ClearScreen();
+void DisplayText(char *text);
+void SetTextLine(int line);
+void GFX_Init();
+void GFX_DrawScreenSplit();
+void ClearLine(int line);
+
+void Gamelogic_Init();
+void Gamelogic_SecondTick();
+void GameLogic_TextInput(char *Text);
 int RunAction(GameAction *curraction);
+void EnterState();
+
+void PlaySound(Note *Song);
+void Music_Task();
+
+void Frontend_Exit();
+
+extern unsigned int split_rows;
+extern Note SONG_INTRO[];
+extern unsigned long NoteTable[];
+extern GameState GameStates[];
+extern int Countdown;
+extern Note *JukeBox[];
+extern GameAction ACTIONS_GLOBAL[];
+extern unsigned int textline;
+
+#define ACTION_NONE 0
+#define ACTION_TEXTOUTPUT 1
+#define ACTION_GOTOSTATE 2
+#define ACTION_DELETEAWARDS 3
+#define ACTION_EXITGAME 4
+#define ACTION_ADDTOTIMER 5
+#define ACTION_TAKEPILLS 6
+#define ACTION_PLAYSOUND 7
+#define ACTION_DISPLAYGFX 8
+#define ACTION_SCREENLINES 9
+#define ACTION_DRAWMENU 10
+#define ACTION_SETTEXTLINE 11
+#define ACTION_FART 12
+#define ACTION_GIVEAWARD 13
+#define ACTION_DISPLAYNEWAWARDS 14
+#define ACTION_CLEARSCREEN 15
+
 
 #define SOUND_INTRO 0
 #define SOUND_SUCCESS 1
@@ -122,7 +140,7 @@ int RunAction(GameAction *curraction);
 #define VERB_CREDITS 7
 #define VERB_SHIT 8
 #define VERB_SHITPANTS 9
-#define VERB_SHITONFLOOR 10 
+#define VERB_SHITONFLOOR 10
 #define VERB_FART 11
 #define VERB_SHITTOILET 12
 #define VERB_FARTLIGHTLY1 13

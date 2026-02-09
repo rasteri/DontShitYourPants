@@ -2,7 +2,7 @@ play,start
 delete
 awards
 menu
-quit
+quit,exit
 "menu","play","awards"
 credits
 shit,take shit,shit yourself
