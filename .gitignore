@@ -5,3 +5,5 @@ floppy/
 
 *.obj
 .err
+
+*.err

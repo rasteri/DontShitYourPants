@@ -145,7 +145,6 @@ int main(void)
     int bufpos = 0;
 
     char TimeBuf[10];
-    char OldVal
 
     memset(InputBuff, 0x00, 100);
 
