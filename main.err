@@ -1,5 +1,0 @@
-main.c(196): Warning! W131: No prototype found for function 'update_cursor'
-main.c(202): Warning! W201: Unreachable code
-main.c(207): Warning! W138: No newline at end of file
-main.c(196): Warning! W308: The function 'update_cursor' without prototyped parameters called
-main.c(196): Note! I2002: 'update_cursor' defined in: main.c(196)

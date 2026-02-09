@@ -1,2 +1,0 @@
-gfx.c(454): Warning! W131: No prototype found for function 'raster_loop_250_frames_cga'
-gfx.c(458): Warning! W131: No prototype found for function 'raster_loop_250_frames_vga'
