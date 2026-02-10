@@ -56,7 +56,7 @@ int FindVerb(char *TextEntry)
         currverb = currverb->next;
     }
 
-    DisplayText("Can't find verb");
+    DisplayText("Can't do that.");
     return 0;
 }
 
@@ -407,11 +407,17 @@ void RunVerb(int Verb)
 
         if (curraction->Verb == VERB_WILDCARD || curraction->Verb == Verb)
         {
+            foundone = 1;
             RunAction(curraction);
         }
 
         curraction++;
     }
+
+    if (foundone)
+    return;
+
+    DisplayText("Can't do that");
 }
 
 void Gamelogic_Init()
