@@ -6,10 +6,10 @@ quit,exit
 "menu","play","awards"
 credits
 shit,take shit,shit yourself
-shit pants,shit your pants
-shit on floor
+shit pants,shit your pants,shit in pants
+shit on floor,shit floor
 fart
-shit toilet
+shit toilet,shit in toilet
 fart lightly,lightly fart
 fart lightly second time
 fart lightly third time

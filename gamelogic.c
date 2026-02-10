@@ -14,7 +14,6 @@ int FartCount = 0;
 
 unsigned long Awards = 0;
 
-
 char *FindString(int id)
 {
 
@@ -258,6 +257,15 @@ int RunAction(GameAction *curraction)
 
     case ACTION_GIVEAWARD:
         Awards |= curraction->Action;
+        // All awards, give tenth award too
+        if ((Awards & 0x1FF) == 0x1FF)
+        Awards |= AWARD_SHITKING;
+        SaveAwards();
+        break;
+
+
+    case ACTION_DELETEAWARDS:
+        Awards = 0;
         SaveAwards();
         break;
 
