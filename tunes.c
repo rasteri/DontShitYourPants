@@ -204,11 +204,22 @@ Note SONG_AWARD[] = {
     {0, 0}
 };
 
+Note SONG_ALLSHOOKUP[] = {
+
+    {0, 41},
+    {166, 44},
+    {500, 46},
+    {800, 255},
+    {0, 0}
+};
+
+
 Note *JukeBox[] = {
     SONG_INTRO,
     SONG_SUCCESS,
     SONG_FAILURE,
-    SONG_AWARD
+    SONG_AWARD,
+    SONG_ALLSHOOKUP
 };
 
 

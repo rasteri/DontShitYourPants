@@ -44,34 +44,6 @@ char kbd_US [128] =
 
 };
 
-#define KB_BUF_SIZE 16
-
-
-volatile unsigned char kb_buf[KB_BUF_SIZE];
-volatile unsigned char kb_head = 0;
-volatile unsigned char kb_tail = 0;
-
-
-int kb_available(void)
-{
-    return kb_head != kb_tail;
-}
-
-unsigned char kb_read(void)
-{
-    unsigned char c;
-
-    if (kb_head == kb_tail)
-        return 0;
-
-    _disable();
-    c = kb_buf[kb_tail];
-    kb_tail = (kb_tail + 1) % KB_BUF_SIZE;
-    _enable();
-
-    return c;
-}
-
 static void interrupt keyb_int()
 {
     /*unsigned char sixone;
@@ -145,6 +117,8 @@ int main(void)
     int bufpos = 0;
 
     char TimeBuf[10];
+    unsigned int i = 0;
+    unsigned int exitframe = 0;
 
     memset(InputBuff, 0x00, 100);
 
@@ -164,11 +138,13 @@ int main(void)
             SecondCount = 0;
             Gamelogic_SecondTick();
             sprintf(TimeBuf, "%02d:%02d", Countdown / 60, Countdown % 60);
+            //sprintf(TimeBuf, "%d", keybuf_head);
             DrawTextColor(70, textline + 2, 0x07, TimeBuf);
         }
 
-        if (kbhit()){
-            inkey = getch();//kbd_US[kb_read()];
+        if (kbhit())
+        {
+            inkey = getch();
             //delete
             if (inkey == '\b'){
                 if (bufpos) {
@@ -195,6 +171,7 @@ int main(void)
             DrawTextColor(8, textline + 2, 0x07, ">");
             update_cursor(strlen(InputBuff) + 10, textline + 2);
         }
+
         Music_Task();
     }
 

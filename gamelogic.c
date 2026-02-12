@@ -183,7 +183,7 @@ void LoadVerbs()
     }*/
 }
 
-GameState *CurrState = &GameStates[1];
+GameState *CurrState = &GameStates[STATE_MENU];
 
 void EnterState()
 {
@@ -256,7 +256,9 @@ int RunAction(GameAction *curraction)
         break;
 
     case ACTION_GIVEAWARD:
+
         Awards |= curraction->Action;
+
         // All awards, give tenth award too
         if ((Awards & 0x1FF) == 0x1FF)
         Awards |= AWARD_SHITKING;
@@ -287,6 +289,9 @@ int RunAction(GameAction *curraction)
         {
             PillCountdown = 45;
         }
+        else {
+            PillCountdown = 0;
+        }
         break;
 
     // If action is 0, set to 0
@@ -310,6 +315,10 @@ int RunAction(GameAction *curraction)
         break;
 
     case ACTION_GOTOSTATE:
+        // only goto elvis state if we've taken pills
+        if (curraction->Action == STATE_ELVIS && !pillstaken){
+            break;
+        }
         CurrState = &GameStates[curraction->Action];
         break;
 
@@ -342,6 +351,21 @@ int RunAction(GameAction *curraction)
                 DrawAward(40, 25, AWARD_STARTINGGUN, STRING_AWARD8NAME, STRING_AWARD8DESC);
                 DrawAward(40, 29, AWARD_TIMEOVER, STRING_AWARD9NAME, STRING_AWARD9DESC);
                 DrawAward(0, 32, AWARD_SHITKING, STRING_AWARD10NAME, STRING_AWARD10DESC);
+
+            break;
+
+            case 2:
+                DrawTextColor(34, 14, 0x09, "Bonus Awards");
+                DrawAward(0, 17, AWARD_SHITPANTSWHILEOFF, STRING_AWARD11NAME, STRING_AWARD11DESC);
+                DrawAward(0, 21, AWARD_DONTSHIT, STRING_AWARD12NAME, STRING_AWARD12DESC);
+                DrawAward(0, 25, AWARD_BELTSUSPENDERS, STRING_AWARD13NAME, STRING_AWARD13DESC);
+                DrawAward(40, 17, AWARD_FART, STRING_AWARD14NAME, STRING_AWARD14DESC);
+                DrawAward(40, 21, AWARD_SHITONBATHROOMFLOOR, STRING_AWARD15NAME, STRING_AWARD15DESC);
+                DrawAward(40, 25, AWARD_ELVIS, STRING_AWARD16NAME, STRING_AWARD16DESC);
+                /*DrawAward(40, 21, AWARD_PILLSFAIL, STRING_AWARD17NAME, STRING_AWARD17DESC);
+                DrawAward(40, 25, AWARD_STARTINGGUN, STRING_AWARD18NAME, STRING_AWARD18DESC);
+                DrawAward(40, 29, AWARD_TIMEOVER, STRING_AWARD19NAME, STRING_AWARD19DESC);
+                DrawAward(0, 32, AWARD_SHITKING, STRING_AWARD20NAME, STRING_AWARD20DESC);*/
 
             break;
         }
@@ -417,7 +441,7 @@ void RunVerb(int Verb)
     if (foundone)
     return;
 
-    DisplayText("Can't do that");
+    DisplayText("Can't do that.");
 }
 
 void Gamelogic_Init()
@@ -437,6 +461,7 @@ void Gamelogic_SecondTick()
     if (CurrState->ID < STATE_STANDING || CurrState->ID > STATE_ONTOILETPANTSOFF)
         return;
 
+    // Run countdown timer
     Countdown--;
 
     if (Countdown == 20){
@@ -452,6 +477,7 @@ void Gamelogic_SecondTick()
         RunVerb(VERB_TIMEOUT);
     }
 
+    // Countdown for pills kicking in
     if (PillCountdown)
     {
 

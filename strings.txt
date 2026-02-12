@@ -80,7 +80,7 @@ You shit anyway, but all is forgiven because your pants are off.\nCongratulation
 You're in a room with a door. You're wearing a shirt. You have no hair.
 You're in a room with a door that leads to a washroom.\nYou're wearing a shirt. You have no hair.
 Award 1: Thinking (and shitting) inside the box
-Congratulations, all that potty training finally paid off
+Congratulations, all that potty training finally paid off.
 Award 2: Mr. Efficient
 It's not his fault that door was so\nhard to open.
 Award 3: Shitting 101
@@ -107,8 +107,8 @@ Award 13: Belt and Suspenders
 You must be fun at parties.
 Award 14: Tempting fate
 Tried to warn you...
-Award 15: Eh...
-Close enough.
+Award 15: The ol' Switcherpoo
+Succeeded on a technicality
 AWard 16: Heartbreak Hotel
 Shit King of Rock and Roll!
 
@@ -119,4 +119,5 @@ Shit King of Rock and Roll!
 
 
 
-That's....\n            ...never mind. Congratulations!
+You missed the toilet, but also your pants. Congratulations!
+Bless my soul, what's wrong with you?

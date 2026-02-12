@@ -67,6 +67,8 @@ Start Address 0000
 Graphic Graphics[GFXCOUNT];
 
 
+void raster_loop_frames(void);
+
 void set_160x100_mode_cga(void)
 {
     union REGS r;
@@ -330,9 +332,13 @@ void SetTextLine(int line){
     "in  al,dx" \
     "test al,01h" \
     "jnz h1" \
+    "sti" \
+    "cli" \
 "h2:" \
     "in  al,dx" \
     "test al,01h" \
+    "sti" \
+    "cli" \
     "jz  h2" \
     "loop scan_loop" \
     /* switch to 14 scanline rows */ \
@@ -524,5 +530,6 @@ void GFX_Init() {
     LoadGFX(GFX_DIEPANTSONSITTING, "42.bin");
     LoadGFX(GFX_DIEPANTSOFFSITTING, "43.bin");
     LoadGFX(GFX_SHITONBATHROOMFLOOR, "45.bin");
+    LoadGFX(GFX_ELVIS, "46.bin");
 
 }
