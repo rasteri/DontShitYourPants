@@ -44,6 +44,9 @@ char kbd_US [128] =
 
 };
 
+
+
+
 static void interrupt keyb_int()
 {
     /*unsigned char sixone;
@@ -99,6 +102,7 @@ extern GameState *CurrState;
 void Frontend_Exit(){
     union REGS r;
 
+    unhook_keyb_int();
     /* Restore normal text mode */
     r.h.ah = 0x00;
     r.h.al = 0x03;
@@ -107,16 +111,16 @@ void Frontend_Exit(){
     exit(0);
 }
 
+char InputBuff[100];
+char TimeBuf[30];
+
 int main(void)
 {
     union REGS r;
-
     char inkey;
 
-    char InputBuff[100];
     int bufpos = 0;
 
-    char TimeBuf[10];
     unsigned int i = 0;
     unsigned int exitframe = 0;
 
@@ -128,6 +132,7 @@ int main(void)
     GFX_Init();
 
     EnterState();
+    hook_keyb_int();
 
     while (1) {
 
@@ -137,44 +142,62 @@ int main(void)
         if (SecondCount == 60){
             SecondCount = 0;
             Gamelogic_SecondTick();
-            sprintf(TimeBuf, "%02d:%02d", Countdown / 60, Countdown % 60);
-            //sprintf(TimeBuf, "%d", keybuf_head);
-            DrawTextColor(70, textline + 2, 0x07, TimeBuf);
+            //sprintf(TimeBuf, "%02d:%02d", Countdown / 60, Countdown % 60);
+            //sprintf(TimeBuf, "%d-%d",bufpos, keybuf_head);
+            //DrawTextColor(70, textline + 2, 0x07, TimeBuf);
         }
 
-        if (kbhit())
+        sprintf(TimeBuf, "%d-%d- %02X,%02X  ",bufpos, keybuf_head, keybuf[0], keybuf[1]);
+        DrawTextColor(60, textline + 2, 0x07, TimeBuf);
+
+        for(i=0;i<keybuf_head;i++)
         {
-            inkey = getch();
+            // no breaks
+            if (keybuf[i] & 0x80)
+                continue;
+
+            if (keybuf[i] == 0)
+                continue;                
+
+            inkey = kbd_US[keybuf[i]];
+
             //delete
             if (inkey == '\b'){
                 if (bufpos) {
                     bufpos--;
-                    InputBuff[bufpos] = 0;
+                    DrawChar(4 + bufpos, textline + 2, ' ');
+                    InputBuff[bufpos] = 0; 
                 }
-                ClearLine(textline + 2);
             }
             //enter
-            else if (inkey == '\r'){
+            else if (inkey == '\n'){
                 GameLogic_TextInput(InputBuff);
                 bufpos = 0;
                 InputBuff[bufpos] = 0;
                 InputBuff[bufpos+1] = 0;
                 ClearLine(textline + 2);
             }
-            else {
+            else if (inkey != 0) {
+                DrawChar(4 + bufpos, textline + 2, inkey);
                 InputBuff[bufpos] = inkey;
                 InputBuff[bufpos+1] = 0;
                 bufpos++;
             }
 
-            DrawTextColor(10,  textline + 2, 0x07, InputBuff);
-            DrawTextColor(8, textline + 2, 0x07, ">");
-            update_cursor(strlen(InputBuff) + 10, textline + 2);
+
         }
 
+        //DrawTextColor(4,  textline + 2, 0x07, InputBuff);
+        DrawTextColor(2, textline + 2, 0x07, ">");
+        update_cursor(strlen(InputBuff) + 4, textline + 2);
+
+        keybuf_head = 0;
         Music_Task();
+        if (exitframe++ > 400)
+            break;
     }
 
+    unhook_keyb_int();
     /* Restore normal text mode */
     r.h.ah = 0x00;
     r.h.al = 0x03;

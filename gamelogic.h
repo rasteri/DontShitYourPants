@@ -87,6 +87,7 @@ void SetTextLine(int line);
 void GFX_Init();
 void GFX_DrawScreenSplit();
 void ClearLine(int line);
+void DrawChar(unsigned int x, unsigned int y, unsigned char data);
 
 void Gamelogic_Init();
 void Gamelogic_SecondTick();
@@ -107,6 +108,12 @@ extern int Countdown;
 extern Note *JukeBox[];
 extern GameAction ACTIONS_GLOBAL[];
 extern unsigned int textline;
+
+#define KEYBUF_SIZE 32
+extern volatile unsigned char keybuf[KEYBUF_SIZE];
+extern volatile unsigned int  keybuf_head;
+extern volatile unsigned char last_keybyte;
+
 
 #define ACTION_NONE 0
 #define ACTION_TEXTOUTPUT 1

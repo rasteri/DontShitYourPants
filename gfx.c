@@ -209,6 +209,11 @@ void SetTextLine(int line){
 
 
 
+volatile unsigned char keybuf[KEYBUF_SIZE];
+volatile unsigned int  keybuf_head = 0;
+volatile unsigned char last_keybyte = 0;
+
+void raster_loop_frames(void);
 
 #pragma aux raster_loop_250_frames_cga = \
     "cli" \
@@ -243,6 +248,32 @@ void SetTextLine(int line){
     "in  al,dx" \
     "test al,01h" \
     "jz  h2" \
+    /* ---- XT keyboard sample + acknowledge ---- */ \
+    "in  al,60h" \
+    "cmp al,last_keybyte" \
+    "je  kb_skip" \
+    "mov last_keybyte,al" \
+    "mov si,keybuf_head" \
+    "mov keybuf[si],al" \
+    "inc si" \
+    "and si,0FFh" \
+    "mov keybuf_head,si" \
+"h3:" \
+    "in  al,dx" \
+    "test al,01h" \
+    "jnz h3" \
+"h4:" \
+    "in  al,dx" \
+    "test al,01h" \
+    "jz  h4" \
+    /* strobe bit 7 of port 0x61 */ \
+    "in  al,61h" \
+    "or  al,80h" \
+    "out 61h,al" \
+    "and al,7Fh" \
+    "out 61h,al" \
+    "dec cx" \
+    "kb_skip:" \
     "loop scan_loop" \
     /* switch to 8 scanline rows */ \
     "mov dx,03D4h" \
@@ -340,6 +371,23 @@ void SetTextLine(int line){
     "sti" \
     "cli" \
     "jz  h2" \
+    /* ---- XT keyboard sample + acknowledge ---- */ \
+    "in  al,60h" \
+    "cmp al,last_keybyte" \
+    "je  kb_skip" \
+    "mov last_keybyte,al" \
+    "mov si,keybuf_head" \
+    "mov keybuf[si],al" \
+    "inc si" \
+    "and si,0FFh" \
+    "mov keybuf_head,si" \
+    /* strobe bit 7 of port 0x61 */ \
+    "in  al,61h" \
+    "or  al,80h" \
+    "out 61h,al" \
+    "and al,7Fh" \
+    "out 61h,al" \
+"kb_skip:" \
     "loop scan_loop" \
     /* switch to 14 scanline rows */ \
     "mov dx,03D4h" \
@@ -353,6 +401,12 @@ void SetTextLine(int line){
     "sti" \
     modify [ax bx cx dx];
 
+void DrawChar(unsigned int x, unsigned int y, unsigned char data) {
+    unsigned char far *screenpt;
+    screenpt = text_mem + (y * 160) + (2 * x);
+    *screenpt++ = data;
+    *screenpt = 0x07;
+}
 
 void DrawTextColor(unsigned int x, unsigned int y, unsigned char color, unsigned char *data) {
     unsigned char far *screenpt;

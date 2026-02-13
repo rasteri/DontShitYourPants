@@ -183,7 +183,7 @@ void LoadVerbs()
     }*/
 }
 
-GameState *CurrState = &GameStates[STATE_MENU];
+GameState *CurrState = &GameStates[STATE_STANDING];
 
 void EnterState()
 {
