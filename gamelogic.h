@@ -96,6 +96,7 @@ void GFX_Init();
 void GFX_DrawScreenSplit();
 void ClearLine(int line);
 void DrawChar(unsigned int x, unsigned int y, unsigned char data);
+void GFX_DrawSprite(int id, int x, int y);
 
 void Gamelogic_Init();
 void Gamelogic_SecondTick();
@@ -116,6 +117,7 @@ extern int Countdown;
 extern Note *JukeBox[];
 extern GameAction ACTIONS_GLOBAL[];
 extern unsigned int textline;
+extern int CrownX, CrownY;
 
 #define KEYBUF_SIZE 32
 extern volatile unsigned char keybuf[KEYBUF_SIZE];
@@ -141,14 +143,14 @@ extern volatile unsigned char last_keybyte;
 #define ACTION_GIVEAWARD 13
 #define ACTION_DISPLAYNEWAWARDS 14
 #define ACTION_CLEARSCREEN 15
-
+#define ACTION_CROWNX 16
+#define ACTION_CROWNY 17
 
 #define SOUND_INTRO 0
 #define SOUND_SUCCESS 1
 #define SOUND_FAILURE 2
 #define SOUND_AWARD 3
 #define SOUND_ELVIS 4
-
 
 #define VERB_PLAY 1
 #define VERB_DELETE 2
@@ -415,7 +417,8 @@ extern volatile unsigned char last_keybyte;
 //#define GFX_DONTSHITPANTSOFFSITTING 44
 #define GFX_SHITONBATHROOMFLOOR 45
 #define GFX_ELVIS 46
-#define GFXCOUNT 47
+#define GFX_CROWN 47
+#define GFXCOUNT 48
 
 #define AWARD_SHITINTOILET 1
 #define AWARD_SHITONFLOOR 2

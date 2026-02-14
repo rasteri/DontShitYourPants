@@ -11,7 +11,7 @@
 /* CGA text memory */
 unsigned char far *text_mem = MK_FP(0xB000, 0x8000);
 
-
+int CrownX = 0, CrownY = 0;
 
 int graphicsmode = 0;
 
@@ -467,6 +467,47 @@ void Decode(char *gfx, int length) {
         gfx += 2;
     }
 }
+// Sprites can be transparent and aren't RLE'd
+// first byte is just colour
+//second byte is
+// bit0 - transparent first pixel
+// bit1 - transparent second pixel
+// bit2 - newline
+void DecodeSprite(char *gfx, int length, int x, int y) {
+    char *writepnt = text_mem + (y * 160) + (2 * x);
+    unsigned int Numbytes;
+    unsigned char writebyte = 0;
+
+    length += 2;
+
+    while (length -= 2) {
+        writebyte = 0;
+
+        if ((gfx[1] & 0x01)){
+            writebyte |= writepnt[1] & 0x0F;
+        } else {
+            writebyte |= gfx[0] & 0x0F;
+        }
+        if ((gfx[1] & 0x02)){
+            writebyte |= writepnt[1] & 0xF0;
+        } else {
+            writebyte |= gfx[0] & 0xF0;
+        }
+
+        if (y >= 0){
+            writepnt[0] = 0xDD;
+            writepnt[1] = writebyte;
+        }
+
+        //newline   
+        if ((gfx[1] & 0x04)){
+            y++;
+            writepnt = text_mem + (y * 160) + (2 * x);
+        }
+        else writepnt += 2;
+        gfx += 2;
+    }
+}
 
 void DisplayGFX(int id){
     rasterDisable();
@@ -476,6 +517,11 @@ void DisplayGFX(int id){
     }
     rasterEnable();
 }
+
+void GFX_DrawSprite(int id, int x, int y){
+    DecodeSprite(Graphics[id].Data, Graphics[id].Length, x, y);
+}
+
 
 void enable_cursor(unsigned char cursor_start, unsigned char cursor_end)
 {
@@ -513,6 +559,7 @@ void LoadGFX(int num, char * filename) {
     fread(Graphics[num].Data, Graphics[num].Length, 1, infile);
     fclose(infile);
 }
+
 
 void GFX_DrawScreenSplit() {
     // draw first x lines in 160x100 mode
@@ -590,5 +637,5 @@ void GFX_Init() {
     LoadGFX(GFX_DIEPANTSOFFSITTING, "43.bin");
     LoadGFX(GFX_SHITONBATHROOMFLOOR, "45.bin");
     LoadGFX(GFX_ELVIS, "46.bin");
-
+    LoadGFX(GFX_CROWN, "crown.bin");
 }

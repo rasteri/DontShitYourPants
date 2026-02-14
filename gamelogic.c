@@ -241,9 +241,19 @@ int RunAction(GameAction *curraction)
     {
     case ACTION_CLEARSCREEN:
         ClearScreen();
+        CrownX = 0;
+        CrownY = 0;
         break;
     case ACTION_TEXTOUTPUT:
         DisplayText(FindString(curraction->Action));
+        break;
+    case ACTION_CROWNX:
+        CrownX = curraction->Action;
+        break;
+    case ACTION_CROWNY:
+        CrownY = curraction->Action;
+        if (Awards & AWARD_SHITKING)
+            GFX_DrawSprite(GFX_CROWN, CrownX, CrownY);
         break;
     case ACTION_SCREENLINES:
         SetRows(curraction->Action);

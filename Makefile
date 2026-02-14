@@ -30,7 +30,7 @@ $(OBJDIR)/dontshit.exe: makebuilddir $(OBJS)
 	copy *.bin floppy
 	bfi -t=4 -f=autofloppy.img .\floppy
 	copy autofloppy.img C:\martypc\media\floppies
-#	$(DOSBOX) -conf dosbox.conf
+	$(DOSBOX) -conf dosbox.conf
 
 .DEFAULT_GOAL := all
 
