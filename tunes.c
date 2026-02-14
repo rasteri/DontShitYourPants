@@ -224,7 +224,7 @@ Note *JukeBox[] = {
 
 
 Note *CurrNote;
-unsigned int MSPerFrame = 14;
+unsigned int MSPerFrame = 17;
 unsigned long MSCounter = 0;
 
 void note(unsigned char note) {

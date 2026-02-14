@@ -129,10 +129,13 @@ int main(void)
     PlaySound(JukeBox[SOUND_INTRO]);
 
     Gamelogic_Init();
+    
     GFX_Init();
-
+    rasterDisable();
     EnterState();
     hook_keyb_int();
+
+    rasterEnable();
 
     while (1) {
 
@@ -142,13 +145,13 @@ int main(void)
         if (SecondCount == 60){
             SecondCount = 0;
             Gamelogic_SecondTick();
-            //sprintf(TimeBuf, "%02d:%02d", Countdown / 60, Countdown % 60);
+            sprintf(TimeBuf, "%02d:%02d", Countdown / 60, Countdown % 60);
             //sprintf(TimeBuf, "%d-%d",bufpos, keybuf_head);
-            //DrawTextColor(70, textline + 2, 0x07, TimeBuf);
+            DrawTextColor(70, textline + 2, 0x07, TimeBuf);
         }
 
-        sprintf(TimeBuf, "%d-%d- %02X,%02X  ",bufpos, keybuf_head, keybuf[0], keybuf[1]);
-        DrawTextColor(60, textline + 2, 0x07, TimeBuf);
+        /*sprintf(TimeBuf, "%d-%d- %02X,%02X  ",bufpos, keybuf_head, keybuf[0], keybuf[1]);
+        DrawTextColor(60, textline + 2, 0x07, TimeBuf);*/
 
         for(i=0;i<keybuf_head;i++)
         {
@@ -193,8 +196,8 @@ int main(void)
 
         keybuf_head = 0;
         Music_Task();
-        if (exitframe++ > 400)
-            break;
+        //if (exitframe++ > 400)
+        //    break;
     }
 
     unhook_keyb_int();

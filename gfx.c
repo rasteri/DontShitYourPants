@@ -7,19 +7,11 @@
 
 #include "gamelogic.h"
 
-/* CGA ports */
-#define CGA_CRTC_INDEX  0x3D4
-#define CGA_CRTC_DATA   0x3D5
-#define CGA_STATUS      0x3DA
-
-#define CGA_MODE_CTRL   0x3D8
 
 /* CGA text memory */
 unsigned char far *text_mem = MK_FP(0xB000, 0x8000);
 
-/* Disable/enable video output (prevents snow while programming CRTC) */
-#define rasterDisable() outp(CGA_MODE_CTRL, 0x01)
-#define rasterEnable()  outp(CGA_MODE_CTRL, 0x09)
+
 
 int graphicsmode = 0;
 
@@ -85,8 +77,6 @@ void set_160x100_mode_cga(void)
     r.h.bl = 0x00;
     int86(0x10, &r, &r);
 
-    rasterDisable();
-
     for (i = 0; i < sizeof(cga160crtc); i++)
     {
         outp(CGA_CRTC_INDEX, i);
@@ -110,8 +100,6 @@ void set_160x100_mode_ega200(void)
     r.h.bl = 0x00;
     int86(0x10, &r, &r);
 
-    rasterDisable();
-
     // only need to set 2 scanline mode
     outp(CGA_CRTC_INDEX, 9);
     outp(CGA_CRTC_DATA, 1);
@@ -132,7 +120,6 @@ void set_160x100_mode_ega(void)
     r.h.bl = 0x00;
     int86(0x10, &r, &r);
 
-    rasterDisable();
 
     // only need to set 3 scanline mode
     outp(CGA_CRTC_INDEX, 9);
@@ -154,7 +141,6 @@ void set_160x100_mode_vga(void)
     r.h.bl = 0x00;
     int86(0x10, &r, &r);
 
-    rasterDisable();
 
     // only need to set 4 scanline mode
     outp(CGA_CRTC_INDEX, 9);
@@ -181,8 +167,6 @@ void set_160x100_mode_vga_200(void)
     r.h.al = 0x00;
     r.h.bl = 0x30;
     int86(0x10, &r, &r);
-
-    //rasterDisable();
 
     // only need to set 2 scanline mode
     // TODO, this seems to reset the VGA back to 400-line mode, so this mode doesn't work
@@ -226,6 +210,24 @@ void raster_loop_frames(void);
     "test al,08h" \
     "jnz  vb1" \
 "vb2:" \
+    /* ---- XT keyboard sample + acknowledge */ \
+    "in  al,60h" \
+    "cmp al,last_keybyte" \
+    "je  kb_skip1" \
+    "mov last_keybyte,al" \
+    "mov si,keybuf_head" \
+    "mov keybuf[si],al" \
+    "inc si" \
+    "and si,0FFh" \
+    "mov keybuf_head,si" \
+    /* strobe bit 7 of port 0x61 */ \
+    "in  al,61h" \
+    "or  al,80h" \
+    "out 61h,al" \
+    "and al,7Fh" \
+    "out 61h,al" \
+    "kb_skip1:" \
+    \
     "in  al,dx" \
     "test al,08h" \
     "jz vb2" \
@@ -247,8 +249,11 @@ void raster_loop_frames(void);
 "h2:" \
     "in  al,dx" \
     "test al,01h" \
-    "jz  h2" \
-    /* ---- XT keyboard sample + acknowledge ---- */ \
+    "jz  h2" \ 
+    /* Don't check keyboard if we only have 1 scanline left because otherwise we'll underflow cx */ \
+    "cmp cx,01h" \
+    "je kb_skip" \
+    /* ---- XT keyboard sample + acknowledge  */ \
     "in  al,60h" \
     "cmp al,last_keybyte" \
     "je  kb_skip" \
@@ -258,6 +263,7 @@ void raster_loop_frames(void);
     "inc si" \
     "and si,0FFh" \
     "mov keybuf_head,si" \
+    /* wait for next scanline because we don't have enough time left in this scanline*/ \
 "h3:" \
     "in  al,dx" \
     "test al,01h" \
@@ -272,7 +278,7 @@ void raster_loop_frames(void);
     "out 61h,al" \
     "and al,7Fh" \
     "out 61h,al" \
-    "dec cx" \
+    "dec cx" \ 
     "kb_skip:" \
     "loop scan_loop" \
     /* switch to 8 scanline rows */ \
@@ -463,10 +469,12 @@ void Decode(char *gfx, int length) {
 }
 
 void DisplayGFX(int id){
+    rasterDisable();
     memset(text_mem, 0x00, gfxlines * 160);
     if (Graphics[id].Length != 0) {
         Decode(Graphics[id].Data, Graphics[id].Length);
     }
+    rasterEnable();
 }
 
 void enable_cursor(unsigned char cursor_start, unsigned char cursor_end)
@@ -526,7 +534,6 @@ void GFX_Init() {
 
     graphicsmode = getch();
 
-
     switch (graphicsmode){
         case 0x31:
             row_multiplier = 2;
@@ -554,8 +561,6 @@ void GFX_Init() {
             printf("invalid selection %x\n", graphicsmode);
             exit(0);
     }
-
-    rasterEnable();
 
     memset(Graphics, 0x00, sizeof(Graphics));
 

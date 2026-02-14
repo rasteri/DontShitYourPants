@@ -1,4 +1,12 @@
 
+
+/* CGA ports */
+#define CGA_CRTC_INDEX  0x3D4
+#define CGA_CRTC_DATA   0x3D5
+#define CGA_STATUS      0x3DA
+
+#define CGA_MODE_CTRL   0x3D8
+
 // linked list of synonyms
 typedef struct _Synonym {
 
@@ -114,6 +122,8 @@ extern volatile unsigned char keybuf[KEYBUF_SIZE];
 extern volatile unsigned int  keybuf_head;
 extern volatile unsigned char last_keybyte;
 
+#define rasterDisable() outp(CGA_MODE_CTRL, 0x01)
+#define rasterEnable()  outp(CGA_MODE_CTRL, 0x09)
 
 #define ACTION_NONE 0
 #define ACTION_TEXTOUTPUT 1
