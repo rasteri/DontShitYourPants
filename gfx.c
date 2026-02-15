@@ -84,10 +84,19 @@ void set_160x100_mode_cga(void)
     }
 }
 
+unsigned char OldEGASwitches;
+unsigned char far *ega_switches;
+
 void set_160x100_mode_ega200(void)
 {
     union REGS r;
 
+    ega_switches = (unsigned char far *)MK_FP(0x40, 0x88);
+
+    OldEGASwitches = *ega_switches;
+
+    /* Clear EGA 350-line flag (bit 3) -> force 200-line mode */
+    *ega_switches &= ~(1 << 3);
 
     /* BIOS mode 3 (80x25 text) */
     r.h.ah = 0x00;
@@ -103,27 +112,6 @@ void set_160x100_mode_ega200(void)
     // only need to set 2 scanline mode
     outp(CGA_CRTC_INDEX, 9);
     outp(CGA_CRTC_DATA, 1);
-}
-
-void set_160x100_mode_ega(void)
-{
-    union REGS r;
-
-    /* BIOS mode 3 (80x25 text) */
-    r.h.ah = 0x00;
-    r.h.al = 0x03;
-    int86(0x10, &r, &r);
-
-    /* disable blink */
-    r.h.ah = 0x10;
-    r.h.al = 0x03;
-    r.h.bl = 0x00;
-    int86(0x10, &r, &r);
-
-
-    // only need to set 3 scanline mode
-    outp(CGA_CRTC_INDEX, 9);
-    outp(CGA_CRTC_DATA, 2);
 }
 
 void set_160x100_mode_vga(void)
@@ -147,39 +135,15 @@ void set_160x100_mode_vga(void)
     outp(CGA_CRTC_DATA, 3);
 }
 
-void set_160x100_mode_vga_200(void)
-{
-    union REGS r;
-
-    /* BIOS mode 3 (80x25 text) */
-    //r.h.ah = 0x00;
-    //r.h.al = 0x03;
-    //int86(0x10, &r, &r);
-
-    /* disable blink */
-    r.h.ah = 0x10;
-    r.h.al = 0x03;
-    r.h.bl = 0x00;
-    int86(0x10, &r, &r);
-
-    /* 200 line mode */
-    r.h.ah = 0x12;
-    r.h.al = 0x00;
-    r.h.bl = 0x30;
-    int86(0x10, &r, &r);
-
-    // only need to set 2 scanline mode
-    // TODO, this seems to reset the VGA back to 400-line mode, so this mode doesn't work
-    outp(CGA_CRTC_INDEX, 9);
-    outp(CGA_CRTC_DATA, 1);
-}
-
 void raster_loop_250_frames(void);
 
 unsigned int row_multiplier = 2;
 unsigned int split_rows = 344;
 unsigned int gfxlines = 86;
 unsigned int textline = 86;
+
+unsigned char gfx_rows = 1;
+unsigned char text_rows = 9;
 
 void SetRows(int rows) {
     gfxlines = rows;
@@ -199,7 +163,7 @@ volatile unsigned char last_keybyte = 0;
 
 void raster_loop_frames(void);
 
-#pragma aux raster_loop_250_frames_cga = \
+#pragma aux raster_split = \
     "cli" \
     "mov bx,250"            /* frame counter */ \
 "frame_loop:" \
@@ -231,12 +195,12 @@ void raster_loop_frames(void);
     "in  al,dx" \
     "test al,08h" \
     "jz vb2" \
-    /* restore 2-scanline rows (CRTC reg 9 = 1) */ \
+    /* restore 2/4-scanline rows (CRTC reg) */ \
     "mov dx,03D4h" \
     "mov al,09h" \
     "out dx,al" \
     "inc dx" \
-    "mov al,01h" \
+    "mov al,gfx_rows" \
     "out dx,al" \
     /* back to CGA status */ \
     "mov dx,03DAh" \
@@ -281,131 +245,18 @@ void raster_loop_frames(void);
     "dec cx" \ 
     "kb_skip:" \
     "loop scan_loop" \
-    /* switch to 8 scanline rows */ \
+    /* switch to 8/16 scanline rows */ \
     "mov dx,03D4h" \
     "mov al,09h" \
     "out dx,al" \
     "inc dx" \
-    "mov al,07h" \
+    "mov al,text_rows" \
     "out dx,al" \
     /* next frame */ \
     "dec bx" \
     "sti" \
     modify [ax bx cx dx];
 
-#pragma aux raster_loop_250_frames_ega = \
-    "cli" \
-    "mov bx,250"            /* frame counter */ \
-"frame_loop:" \
-    "mov dx,03DAh"          /* CGA status port */ \
-    /* wait for VBLANK start */ \
-"vb1:" \
-    "in  al,dx" \
-    "test al,08h" \
-    "jnz  vb1" \
-"vb2:" \
-    "in  al,dx" \
-    "test al,08h" \
-    "jz vb2" \
-    /* restore 3-scanline rows (CRTC reg 9 = 2) */ \
-    "mov dx,03D4h" \
-    "mov al,09h" \
-    "out dx,al" \
-    "inc dx" \
-    "mov al,02h" \
-    "out dx,al" \
-    /* back to CGA status */ \
-    "mov dx,03DAh" \
-    "mov cx,258"           /* split at scanline 100 */ \
-"scan_loop:" \
-"h1:" \
-    "in  al,dx" \
-    "test al,01h" \
-    "jnz h1" \
-"h2:" \
-    "in  al,dx" \
-    "test al,01h" \
-    "jz  h2" \
-    "loop scan_loop" \
-    /* switch to 14 scanline rows */ \
-    "mov dx,03D4h" \
-    "mov al,09h" \
-    "out dx,al" \
-    "inc dx" \
-    "mov al,13" \
-    "out dx,al" \
-    /* next frame */ \
-    "dec bx" \
-    "jnz frame_loop" \
-    "sti" \
-    modify [ax bx cx dx];
-
-#pragma aux raster_loop_250_frames_vga = \
-    "cli" \
-    "mov bx,250"            /* frame counter */ \
-"frame_loop:" \
-    "mov dx,03DAh"          /* CGA status port */ \
-    /* wait for VBLANK start */ \
-"vb1:" \
-    "in  al,dx" \
-    "test al,08h" \
-    "jnz  vb1" \
-"vb2:" \
-    "in  al,dx" \
-    "test al,08h" \
-    "jz vb2" \
-    /* restore 4-scanline rows (CRTC reg 9 = 3) */ \
-    "mov dx,03D4h" \
-    "mov al,09h" \
-    "out dx,al" \
-    "inc dx" \
-    "mov al,03h" \
-    "out dx,al" \
-    /* back to CGA status */ \
-    "mov dx,03DAh" \
-    "mov cx,split_rows"           /* split at scanline 100 */ \
-"scan_loop:" \
-"h1:" \
-    "in  al,dx" \
-    "test al,01h" \
-    "jnz h1" \
-    "sti" \
-    "cli" \
-"h2:" \
-    "in  al,dx" \
-    "test al,01h" \
-    "sti" \
-    "cli" \
-    "jz  h2" \
-    /* ---- XT keyboard sample + acknowledge ---- */ \
-    "in  al,60h" \
-    "cmp al,last_keybyte" \
-    "je  kb_skip" \
-    "mov last_keybyte,al" \
-    "mov si,keybuf_head" \
-    "mov keybuf[si],al" \
-    "inc si" \
-    "and si,0FFh" \
-    "mov keybuf_head,si" \
-    /* strobe bit 7 of port 0x61 */ \
-    "in  al,61h" \
-    "or  al,80h" \
-    "out 61h,al" \
-    "and al,7Fh" \
-    "out 61h,al" \
-"kb_skip:" \
-    "loop scan_loop" \
-    /* switch to 14 scanline rows */ \
-    "mov dx,03D4h" \
-    "mov al,09h" \
-    "out dx,al" \
-    "inc dx" \
-    "mov al,15" \
-    "out dx,al" \
-    /* next frame */ \
-    "dec bx" \
-    "sti" \
-    modify [ax bx cx dx];
 
 void DrawChar(unsigned int x, unsigned int y, unsigned char data) {
     unsigned char far *screenpt;
@@ -564,44 +415,48 @@ void LoadGFX(int num, char * filename) {
 void GFX_DrawScreenSplit() {
     // draw first x lines in 160x100 mode
     if (gfxlines) {
-        switch (graphicsmode) {
-            case 0x31:
-                    raster_loop_250_frames_cga();
-                break;
-
-            case 0x34:
-                    raster_loop_250_frames_vga();
-                break;
-        }
+        raster_split();
     }
 }
 
+void GFX_Exit() {
+    union REGS r;
+    if (graphicsmode == 0x32){
+        *ega_switches = OldEGASwitches;
+    }
+
+    /* Restore normal text mode */
+    r.h.ah = 0x00;
+    r.h.al = 0x03;
+    int86(0x10, &r, &r);
+    
+}
+
 void GFX_Init() {
-    printf("1 CGA, 2 EGA200, 3 EGA350, 4 VGA, 5 VGA 200\n");
+    printf("1 CGA, 2 EGA, 3 VGA\n");
 
     graphicsmode = getch();
 
     switch (graphicsmode){
         case 0x31:
             row_multiplier = 2;
+            gfx_rows = 1;
+            text_rows = 7;
             set_160x100_mode_cga();
             break;
 
         case 0x32:
+            row_multiplier = 2;
+            gfx_rows = 1;
+            text_rows = 7;
             set_160x100_mode_ega200();
             break;
 
         case 0x33:
-            set_160x100_mode_ega();
-            break;
-
-        case 0x34:
             row_multiplier = 4;
+            gfx_rows = 3;
+            text_rows = 15;
             set_160x100_mode_vga();
-            break;
-
-        case 0x35:
-            set_160x100_mode_vga_200();
             break;
 
         default:

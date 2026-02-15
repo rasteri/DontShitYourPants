@@ -97,6 +97,7 @@ void GFX_DrawScreenSplit();
 void ClearLine(int line);
 void DrawChar(unsigned int x, unsigned int y, unsigned char data);
 void GFX_DrawSprite(int id, int x, int y);
+void GFX_Exit();
 
 void Gamelogic_Init();
 void Gamelogic_SecondTick();

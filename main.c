@@ -116,7 +116,6 @@ char TimeBuf[30];
 
 int main(void)
 {
-    union REGS r;
     char inkey;
 
     int bufpos = 0;
@@ -190,21 +189,15 @@ int main(void)
 
         }
 
-        //DrawTextColor(4,  textline + 2, 0x07, InputBuff);
         DrawTextColor(2, textline + 2, 0x07, ">");
         update_cursor(strlen(InputBuff) + 4, textline + 2);
 
         keybuf_head = 0;
         Music_Task();
-        //if (exitframe++ > 400)
-        //    break;
     }
 
     unhook_keyb_int();
-    /* Restore normal text mode */
-    r.h.ah = 0x00;
-    r.h.al = 0x03;
-    int86(0x10, &r, &r);
+    GFX_Exit();
 
     return 0;
 }
