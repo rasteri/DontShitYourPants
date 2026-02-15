@@ -266,7 +266,6 @@ int RunAction(GameAction *curraction)
         break;
 
     case ACTION_GIVEAWARD:
-
         Awards |= curraction->Action;
 
         // All awards, give tenth award too
@@ -278,6 +277,7 @@ int RunAction(GameAction *curraction)
 
     case ACTION_DELETEAWARDS:
         Awards = 0;
+        OldAwards = Awards;
         SaveAwards();
         break;
 
