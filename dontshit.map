@@ -1,7 +1,7 @@
 Open Watcom Linker Version 2.0 beta Jan 23 2026 02:58:42 (64-bit)
 Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 Portions Copyright (c) 1985-2002 Sybase, Inc. All Rights Reserved.
-Created on:       26/02/14 23:15:53
+Created on:       26/02/14 23:18:40
 Executable Image: dontshit.exe
 creating a DOS executable
 
@@ -520,4 +520,4 @@ C:\WATCOM\lib286\dos\clibl.lib
 Stack size:  0800 (2048.)
 Memory size:  8870 (34928.)
 Entry point address: 0000:2292
-Link time: 00:00.05
+Link time: 00:00.04
