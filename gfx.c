@@ -370,7 +370,9 @@ void DisplayGFX(int id){
 }
 
 void GFX_DrawSprite(int id, int x, int y){
+    rasterDisable();
     DecodeSprite(Graphics[id].Data, Graphics[id].Length, x, y);
+    rasterEnable();
 }
 
 
