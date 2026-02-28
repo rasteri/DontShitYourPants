@@ -1,0 +1,15 @@
+!define BLANK ""
+C:\code\DontShitYourPants\debugtest\main.obj : C:\code\DontShitYourPants\deb&
+ugtest\main.c .AUTODEPEND
+ @C:
+ cd C:\code\DontShitYourPants\debugtest
+ *wcc main.c -fo=.obj -i="C:\WATCOM/h" -w4 -e25 -zq -od -d2 -bt=dos -ml
+
+C:\code\DontShitYourPants\debugtest\dbgtest.exe : C:\code\DontShitYourPants\&
+debugtest\main.obj .AUTODEPEND
+ @C:
+ cd C:\code\DontShitYourPants\debugtest
+ @%write dbgtest.lk1 FIL main.obj
+ @%append dbgtest.lk1 
+ *wlink name dbgtest d all sys dos op m op maxe=25 op q op symf @dbgtest.lk1
+

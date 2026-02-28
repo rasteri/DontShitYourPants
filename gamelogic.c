@@ -183,7 +183,7 @@ void LoadVerbs()
     }*/
 }
 
-GameState *CurrState = &GameStates[STATE_MENU];
+GameState *CurrState = &GameStates[STATE_STANDING];
 
 void EnterState()
 {
@@ -256,7 +256,7 @@ int RunAction(GameAction *curraction)
             GFX_DrawSprite(GFX_CROWN, CrownX, CrownY);
         break;
     case ACTION_SCREENLINES:
-        SetRows(curraction->Action);
+        SetGFXLines(curraction->Action);
         break;
     case ACTION_SETTEXTLINE:
         SetTextLine(curraction->Action);
@@ -273,7 +273,6 @@ int RunAction(GameAction *curraction)
         Awards |= AWARD_SHITKING;
         SaveAwards();
         break;
-
 
     case ACTION_DELETEAWARDS:
         Awards = 0;

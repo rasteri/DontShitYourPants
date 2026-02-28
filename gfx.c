@@ -15,6 +15,8 @@ int CrownX = 0, CrownY = 0;
 
 int graphicsmode = 0;
 
+char TextAtTop = 0;
+
 /* 160x100 CGA CRTC setup */
 unsigned char cga160crtc[] = {
     113, /* R0  Horizontal total */
@@ -24,7 +26,7 @@ unsigned char cga160crtc[] = {
     127, /* R4  Vertical total */
     6,   /* R5  Vertical total adjust */
     100, /* R6  Vertical displayed */
-    112, /* R7  Vertical sync position */
+    112,  /* R7  Vertical sync position */
     2,   /* R8  Interlace mode */
     1,   /* R9  Max scan line */
     6,  /* R10 Cursor start */
@@ -66,12 +68,14 @@ void set_160x100_mode_cga(void)
     union REGS r;
     int i;
 
-    /* BIOS mode 3 (80x25 text) */
+    rasterDisable();
+
+    // BIOS mode 3 (80x25 text)
     r.h.ah = 0x00;
     r.h.al = 0x03;
     int86(0x10, &r, &r);
 
-    /* disable blink */
+    // disable blink 
     r.h.ah = 0x10;
     r.h.al = 0x03;
     r.h.bl = 0x00;
@@ -82,11 +86,12 @@ void set_160x100_mode_cga(void)
         outp(CGA_CRTC_INDEX, i);
         outp(CGA_CRTC_DATA, cga160crtc[i]);
     }
+    
+   rasterEnable();
 }
 
 unsigned char OldEGASwitches;
 unsigned char far *ega_switches;
-
 void set_160x100_mode_ega200(void)
 {
     union REGS r;
@@ -109,9 +114,24 @@ void set_160x100_mode_ega200(void)
     r.h.bl = 0x00;
     int86(0x10, &r, &r);
 
-    // only need to set 2 scanline mode
-    outp(CGA_CRTC_INDEX, 9);
-    outp(CGA_CRTC_DATA, 1);
+}
+
+void set_160x100_mode_ega350(void)
+{
+    union REGS r;
+    int i;
+
+    /* BIOS mode 3 (80x25 text) */
+    r.h.ah = 0x00;
+    r.h.al = 0x03;
+    int86(0x10, &r, &r);
+
+    /* disable blink */
+    r.h.ah = 0x10;
+    r.h.al = 0x03;
+    r.h.bl = 0x00;
+    int86(0x10, &r, &r);
+
 }
 
 void set_160x100_mode_vga(void)
@@ -128,33 +148,65 @@ void set_160x100_mode_vga(void)
     r.h.al = 0x03;
     r.h.bl = 0x00;
     int86(0x10, &r, &r);
-
-
-    // only need to set 4 scanline mode
-    outp(CGA_CRTC_INDEX, 9);
-    outp(CGA_CRTC_DATA, 3);
 }
 
 void raster_loop_250_frames(void);
 
-unsigned int row_multiplier = 2;
-unsigned int split_rows = 344;
-unsigned int gfxlines = 86;
-unsigned int textline = 86;
+void raster_split_nopoll(void);
 
-unsigned char gfx_rows = 1;
-unsigned char text_rows = 9;
+// How many lines one char (i.e. one vertical "pixel" in 160x100 mode) take up
+// 2 on CGA/EGA200, 3 on EGA350, 4 on VGA
+unsigned int GFXLinesPerChar = 2;
 
-void SetRows(int rows) {
-    gfxlines = rows;
-    split_rows = rows * row_multiplier;
-    textline = gfxlines;
+// 1 less than GFXLinesPerChar
+unsigned int GFXRegisterMode = 1;
+
+// How many scanlines a line of text takes up
+// again varies depending on gfx card
+unsigned int TextLinesPerChar = 8;
+
+// The value that gets put in the CRTCs MaximumScanLineAddress reg above the split point
+unsigned char AboveSplitMode;
+
+// Line to split at, this is in raw screen output scanlines
+unsigned int SplitAtLine;
+
+// Value that gets put in the CRTCs MaximumScanLineAddress reg below the split point
+unsigned char BelowSplitMode;
+
+// The vertical gfx height in chars
+// note this is not the number of scanlines, which will be 2x/3x/4x this depending on screen mode
+unsigned int GFXVerticalHeight = 86;
+
+// What character line text begins at
+unsigned int TextLine;
+
+// Char line to draw GFX at, always 0 when text at bottom
+unsigned char GFXLine;
+
+void SetGFXLines(int lines) {
+
+    GFXVerticalHeight = lines;
+
+    if (TextAtTop && CurrState->ID != STATE_MENU) {
+        GFXLine = 3;
+        AboveSplitMode = TextLinesPerChar - 1;
+        SplitAtLine = GFXLine * TextLinesPerChar;
+        BelowSplitMode = GFXRegisterMode;
+        TextLine = 0;
+    } else {
+        GFXLine = 0;
+        AboveSplitMode = GFXRegisterMode;
+        SplitAtLine = GFXVerticalHeight * GFXLinesPerChar;
+        BelowSplitMode = TextLinesPerChar - 1;
+        TextLine = GFXVerticalHeight;
+    }
+    
 }
 
-void SetTextLine(int line){
-    textline = line;
+void SetTextLine(int line) {
+    TextLine = line;
 }
-
 
 
 volatile unsigned char keybuf[KEYBUF_SIZE];
@@ -162,101 +214,6 @@ volatile unsigned int  keybuf_head = 0;
 volatile unsigned char last_keybyte = 0;
 
 void raster_loop_frames(void);
-
-#pragma aux raster_split = \
-    "cli" \
-    "mov bx,250"            /* frame counter */ \
-"frame_loop:" \
-    "mov dx,03DAh"          /* CGA status port */ \
-    /* wait for VBLANK start */ \
-"vb1:" \
-    "in  al,dx" \
-    "test al,08h" \
-    "jnz  vb1" \
-"vb2:" \
-    /* ---- XT keyboard sample + acknowledge */ \
-    "in  al,60h" \
-    "cmp al,last_keybyte" \
-    "je  kb_skip1" \
-    "mov last_keybyte,al" \
-    "mov si,keybuf_head" \
-    "mov keybuf[si],al" \
-    "inc si" \
-    "and si,0FFh" \
-    "mov keybuf_head,si" \
-    /* strobe bit 7 of port 0x61 */ \
-    "in  al,61h" \
-    "or  al,80h" \
-    "out 61h,al" \
-    "and al,7Fh" \
-    "out 61h,al" \
-    "kb_skip1:" \
-    \
-    "in  al,dx" \
-    "test al,08h" \
-    "jz vb2" \
-    /* restore 2/4-scanline rows (CRTC reg) */ \
-    "mov dx,03D4h" \
-    "mov al,09h" \
-    "out dx,al" \
-    "inc dx" \
-    "mov al,gfx_rows" \
-    "out dx,al" \
-    /* back to CGA status */ \
-    "mov dx,03DAh" \
-    "mov cx,split_rows"           /* split at scanline 100 */ \
-"scan_loop:" \
-"h1:" \
-    "in  al,dx" \
-    "test al,01h" \
-    "jnz h1" \
-"h2:" \
-    "in  al,dx" \
-    "test al,01h" \
-    "jz  h2" \ 
-    /* Don't check keyboard if we only have 1 scanline left because otherwise we'll underflow cx */ \
-    "cmp cx,01h" \
-    "je kb_skip" \
-    /* ---- XT keyboard sample + acknowledge  */ \
-    "in  al,60h" \
-    "cmp al,last_keybyte" \
-    "je  kb_skip" \
-    "mov last_keybyte,al" \
-    "mov si,keybuf_head" \
-    "mov keybuf[si],al" \
-    "inc si" \
-    "and si,0FFh" \
-    "mov keybuf_head,si" \
-    /* wait for next scanline because we don't have enough time left in this scanline*/ \
-"h3:" \
-    "in  al,dx" \
-    "test al,01h" \
-    "jnz h3" \
-"h4:" \
-    "in  al,dx" \
-    "test al,01h" \
-    "jz  h4" \
-    /* strobe bit 7 of port 0x61 */ \
-    "in  al,61h" \
-    "or  al,80h" \
-    "out 61h,al" \
-    "and al,7Fh" \
-    "out 61h,al" \
-    "dec cx" \ 
-    "kb_skip:" \
-    "loop scan_loop" \
-    /* switch to 8/16 scanline rows */ \
-    "mov dx,03D4h" \
-    "mov al,09h" \
-    "out dx,al" \
-    "inc dx" \
-    "mov al,text_rows" \
-    "out dx,al" \
-    /* next frame */ \
-    "dec bx" \
-    "sti" \
-    modify [ax bx cx dx];
-
 
 void DrawChar(unsigned int x, unsigned int y, unsigned char data) {
     unsigned char far *screenpt;
@@ -284,26 +241,26 @@ void DrawTextColor(unsigned int x, unsigned int y, unsigned char color, unsigned
 
 void * DrawPoint;
 
-void ClearLine(int line){
+void ClearLine(int line) {
     DrawTextColor(0, line, 0x0F, "                                                                                ");
 }
 
-void ClearScreen(){
+void ClearScreen() {
     memset(text_mem, 0x00, 16384);
 }
 
-void DisplayText(char *text){
-
-    ClearLine(textline);
-    ClearLine(textline+1);
-    DrawTextColor(2, textline, 0x07, text);
-
+void DisplayText(char *text) {
+    ClearLine(TextLine);
+    ClearLine(TextLine+1);
+    DrawTextColor(2, TextLine, 0x07, text);
 }
 
 // Simple RLE decoder for gfx
 void Decode(char *gfx, int length) {
-    char *writepnt = text_mem;
+    char *writepnt;
     unsigned int Numbytes;
+
+    writepnt = text_mem + (GFXLine * 160);
 
     //gfx[0] is value
     //gfx[1] is number bytes
@@ -325,7 +282,7 @@ void Decode(char *gfx, int length) {
 // bit1 - transparent second pixel
 // bit2 - newline
 void DecodeSprite(char *gfx, int length, int x, int y) {
-    char *writepnt = text_mem + (y * 160) + (2 * x);
+    char *writepnt = text_mem + (GFXLine * 160) + (y * 160) + (2 * x);
     unsigned int Numbytes;
     unsigned char writebyte = 0;
 
@@ -361,18 +318,15 @@ void DecodeSprite(char *gfx, int length, int x, int y) {
 }
 
 void DisplayGFX(int id){
-    rasterDisable();
-    memset(text_mem, 0x00, gfxlines * 160);
+    //memset(text_mem, 0x00, gfxlines * 160);
+    memset(text_mem, 0x00, 16000);
     if (Graphics[id].Length != 0) {
         Decode(Graphics[id].Data, Graphics[id].Length);
     }
-    rasterEnable();
 }
 
 void GFX_DrawSprite(int id, int x, int y){
-    rasterDisable();
     DecodeSprite(Graphics[id].Data, Graphics[id].Length, x, y);
-    rasterEnable();
 }
 
 
@@ -415,9 +369,8 @@ void LoadGFX(int num, char * filename) {
 
 
 void GFX_DrawScreenSplit() {
-    // draw first x lines in 160x100 mode
-    if (gfxlines) {
-        raster_split();
+    if (GFXVerticalHeight) {
+        raster_split_nopoll();
     }
 }
 
@@ -435,29 +388,32 @@ void GFX_Exit() {
 }
 
 void GFX_Init() {
-    printf("1 CGA, 2 EGA, 3 VGA\n");
+    printf("1 CGA, 2 EGA200, 3 EGA350, 4 VGA\n");
 
     graphicsmode = getch();
 
     switch (graphicsmode){
         case 0x31:
-            row_multiplier = 2;
-            gfx_rows = 1;
-            text_rows = 7;
+            GFXLinesPerChar = 2;
+            TextLinesPerChar = 8;
             set_160x100_mode_cga();
             break;
 
         case 0x32:
-            row_multiplier = 2;
-            gfx_rows = 1;
-            text_rows = 7;
+            GFXLinesPerChar = 2;
+            TextLinesPerChar = 8;
             set_160x100_mode_ega200();
             break;
 
         case 0x33:
-            row_multiplier = 4;
-            gfx_rows = 3;
-            text_rows = 15;
+            GFXLinesPerChar = 3;
+            TextLinesPerChar = 14;
+            set_160x100_mode_ega350();
+            break;
+
+        case 0x34:
+            GFXLinesPerChar = 4;
+            TextLinesPerChar = 16;
             set_160x100_mode_vga();
             break;
 
@@ -465,6 +421,29 @@ void GFX_Init() {
             printf("invalid selection %x\n", graphicsmode);
             exit(0);
     }
+
+    GFXRegisterMode = GFXLinesPerChar - 1;
+
+    printf("1 Text Above (slow machines), 2 Text Below (fast machines)\n");
+    printf("(yes, the position of the text really does make a huge difference in performance...)\n");
+
+    graphicsmode = getch();
+
+    switch (graphicsmode){
+        case 0x31:
+                TextAtTop = 1;
+            break;
+
+        case 0x32:
+            TextAtTop = 0;
+            break;
+
+        default:
+            printf("invalid selection %x\n", graphicsmode);
+            exit(0);
+    }
+
+
 
     memset(Graphics, 0x00, sizeof(Graphics));
 

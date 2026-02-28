@@ -21,7 +21,8 @@ $(OBJDIR)/%.obj : %.c
 	$(CC) $(CFLAGS) -fr=$@.err -fo=$@ $<
 
 $(OBJDIR)/dontshit.exe: makebuilddir $(OBJS)
-	$(LINK) name dontshit d all sys dos op m op maxe=25 op q op symf file { $(OBJS) }
+	wasm raster.asm
+	$(LINK) name dontshit d all sys dos op m op maxe=25 op q op symf file { $(OBJS) raster.obj }
 	del /Q floppy\*.* 
 	copy dontshit.exe floppy
 	copy strings.txt floppy

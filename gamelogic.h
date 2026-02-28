@@ -88,7 +88,7 @@ typedef struct _Note {
 void DisplayGFX(int id);
 void Decode(char *gfx, int length);
 void DrawTextColor(unsigned int x, unsigned int y, unsigned char color, unsigned char *data);
-void SetRows(int rows);
+void SetGFXLines(int rows);
 void ClearScreen();
 void DisplayText(char *text);
 void SetTextLine(int line);
@@ -110,15 +110,17 @@ void Music_Task();
 
 void Frontend_Exit();
 
-extern unsigned int split_rows;
+extern unsigned int SplitAtLine;
 extern Note SONG_INTRO[];
 extern unsigned long NoteTable[];
 extern GameState GameStates[];
 extern int Countdown;
 extern Note *JukeBox[];
 extern GameAction ACTIONS_GLOBAL[];
-extern unsigned int textline;
+extern unsigned int TextLine;
 extern int CrownX, CrownY;
+
+extern GameState *CurrState;
 
 #define KEYBUF_SIZE 32
 extern volatile unsigned char keybuf[KEYBUF_SIZE];

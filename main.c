@@ -121,7 +121,7 @@ int main(void)
     int bufpos = 0;
 
     unsigned int i = 0;
-    unsigned int exitframe = 0;
+    unsigned int exitframe = 200;
 
     memset(InputBuff, 0x00, 100);
 
@@ -130,11 +130,9 @@ int main(void)
     Gamelogic_Init();
     
     GFX_Init();
-    rasterDisable();
     EnterState();
-    hook_keyb_int();
+    //hook_keyb_int();
 
-    rasterEnable();
 
     while (1) {
 
@@ -146,41 +144,42 @@ int main(void)
             Gamelogic_SecondTick();
             sprintf(TimeBuf, "%02d:%02d", Countdown / 60, Countdown % 60);
             //sprintf(TimeBuf, "%d-%d",bufpos, keybuf_head);
-            DrawTextColor(70, textline + 2, 0x07, TimeBuf);
+            DrawTextColor(70, TextLine + 2, 0x07, TimeBuf);
         }
 
         /*sprintf(TimeBuf, "%d-%d- %02X,%02X  ",bufpos, keybuf_head, keybuf[0], keybuf[1]);
         DrawTextColor(60, textline + 2, 0x07, TimeBuf);*/
 
-        for(i=0;i<keybuf_head;i++)
+        while (kbhit())//for(i=0;i<keybuf_head;i++)
         {
             // no breaks
-            if (keybuf[i] & 0x80)
+            /*(if (keybuf[i] & 0x80)
                 continue;
 
             if (keybuf[i] == 0)
                 continue;                
 
-            inkey = kbd_US[keybuf[i]];
+            inkey = kbd_US[keybuf[i]];*/
+            inkey = getch();
 
             //delete
             if (inkey == '\b'){
                 if (bufpos) {
                     bufpos--;
-                    DrawChar(4 + bufpos, textline + 2, ' ');
+                    DrawChar(4 + bufpos, TextLine + 2, ' ');
                     InputBuff[bufpos] = 0; 
                 }
             }
             //enter
-            else if (inkey == '\n'){
+            else if (inkey == '\r' || inkey == '\n'){
                 GameLogic_TextInput(InputBuff);
                 bufpos = 0;
                 InputBuff[bufpos] = 0;
                 InputBuff[bufpos+1] = 0;
-                ClearLine(textline + 2);
+                ClearLine(TextLine + 2);
             }
             else if (inkey != 0) {
-                DrawChar(4 + bufpos, textline + 2, inkey);
+                DrawChar(4 + bufpos, TextLine + 2, inkey);
                 InputBuff[bufpos] = inkey;
                 InputBuff[bufpos+1] = 0;
                 bufpos++;
@@ -189,14 +188,14 @@ int main(void)
 
         }
 
-        DrawTextColor(2, textline + 2, 0x07, ">");
-        update_cursor(strlen(InputBuff) + 4, textline + 2);
+        DrawTextColor(2, TextLine + 2, 0x07, ">");
+        update_cursor(strlen(InputBuff) + 4, TextLine + 2);
 
         keybuf_head = 0;
         Music_Task();
     }
 
-    unhook_keyb_int();
+    //unhook_keyb_int();
     GFX_Exit();
 
     return 0;
