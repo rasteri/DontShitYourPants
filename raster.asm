@@ -1,8 +1,3 @@
-; ==========================================
-; raster.asm
-; Watcom WASM syntax (16-bit real mode DOS)
-; ==========================================
-
 .286
 .model small
 .code
@@ -27,6 +22,7 @@ vb1:
     test al,08h
     jnz  vb1
 
+
 vb2:
     in  al,dx
     test al,08h
@@ -42,7 +38,6 @@ vb2:
     inc dx
     mov al,_GFXRegisterMode
     out dx,al
-
 
 ; GA status
     mov dx,03DAh
