@@ -178,20 +178,31 @@ unsigned char BelowSplitMode;
 // note this is not the number of scanlines, which will be 2x/3x/4x this depending on screen mode
 unsigned int GFXVerticalHeight = 86;
 
+// The vertical gfx height in scanlines
+unsigned int GFXVerticalLines;
+
+// The vertical height of the text window in chars
+// note this is not the number of scanlines, which will be 2x/3x/4x this depending on screen modes
+unsigned int TextVerticalHeight;
+
+// The vertical text height in scanlines
+unsigned int TextVerticalLines;
+
 // What character line text begins at
 unsigned int TextLine;
 
 // Char line to draw GFX at, always 0 when text at bottom
 unsigned char GFXLine;
 
-void SetGFXLines(int lines) {
+void RecalcScreenGeometry() {
 
-    GFXVerticalHeight = lines;
+    GFXVerticalLines = GFXVerticalHeight * GFXLinesPerChar;
+    TextVerticalLines = TextVerticalHeight * TextLinesPerChar;
 
     if (TextAtTop && CurrState->ID != STATE_MENU) {
-        GFXLine = 3;
+        GFXLine = TextVerticalHeight;
         AboveSplitMode = TextLinesPerChar - 1;
-        SplitAtLine = GFXLine * TextLinesPerChar;
+        SplitAtLine = TextVerticalLines;
         BelowSplitMode = GFXRegisterMode;
         TextLine = 0;
     } else {
@@ -201,13 +212,17 @@ void SetGFXLines(int lines) {
         BelowSplitMode = TextLinesPerChar - 1;
         TextLine = GFXVerticalHeight;
     }
-    
 }
 
-void SetTextLine(int line) {
-    TextLine = line;
+void SetGFXLines(int lines) {
+    GFXVerticalHeight = lines;
+    RecalcScreenGeometry();
 }
 
+void SetTextLines(int lines) {
+    TextVerticalHeight = lines;
+    RecalcScreenGeometry();
+}
 
 volatile unsigned char keybuf[KEYBUF_SIZE];
 volatile unsigned int  keybuf_head = 0;
@@ -317,9 +332,12 @@ void DecodeSprite(char *gfx, int length, int x, int y) {
     }
 }
 
+void ClearGFX() {
+    memset(text_mem + (GFXLine * 160), 0x00, GFXVerticalHeight * 160);
+}
+
 void DisplayGFX(int id){
-    //memset(text_mem, 0x00, gfxlines * 160);
-    memset(text_mem, 0x00, 16000);
+    ClearGFX();
     if (Graphics[id].Length != 0) {
         Decode(Graphics[id].Data, Graphics[id].Length);
     }

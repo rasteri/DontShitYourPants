@@ -255,11 +255,11 @@ int RunAction(GameAction *curraction)
         if (Awards & AWARD_SHITKING)
             GFX_DrawSprite(GFX_CROWN, CrownX, CrownY);
         break;
-    case ACTION_SCREENLINES:
+    case ACTION_GFXLINES:
         SetGFXLines(curraction->Action);
         break;
-    case ACTION_SETTEXTLINE:
-        SetTextLine(curraction->Action);
+    case ACTION_TEXTLINES:
+        SetTextLines(curraction->Action);
         break;
     case ACTION_DISPLAYGFX:
         DisplayGFX(curraction->Action);

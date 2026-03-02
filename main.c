@@ -44,57 +44,6 @@ char kbd_US [128] =
 
 };
 
-
-
-
-static void interrupt keyb_int()
-{
-    /*unsigned char sixone;
-    unsigned char scancode;
-    unsigned char next_head;
-
-    scancode = inp(0x60);     // read scancode
-
-    // ignore break codes
-    if (!(scancode & 0x80)) {
-        next_head = (kb_head + 1) % KB_BUF_SIZE;
-
-        //only store if buffer not full
-        if (next_head != kb_tail) {
-            kb_buf[kb_head] = scancode;
-            kb_head = next_head;
-        }
-    }
-
-    // for XT, need to strobe bit7 of 0x61 to acknowledge
-    sixone = inp(0x61);
-    sixone |= 0x80;
-    outp(0x61, sixone);
-    sixone &= ~0x80;
-    outp(0x61, sixone);*/
-
-    outp(0x20, 0x20);         // EOI to PIC
-
-}
-
-
-void interrupt (*old_keyb_int)();
-
-void hook_keyb_int(void)
-{
-    old_keyb_int = _dos_getvect(0x09);
-    _dos_setvect(0x09, keyb_int);
-}
-
-void unhook_keyb_int(void)
-{
-    if (old_keyb_int != NULL)
-    {
-        _dos_setvect(0x09, old_keyb_int);
-        old_keyb_int = NULL;
-    }
-}
-
 int SecondCount = 0;
 
 extern GameState *CurrState;
@@ -102,7 +51,6 @@ extern GameState *CurrState;
 void Frontend_Exit(){
     union REGS r;
 
-    unhook_keyb_int();
     /* Restore normal text mode */
     r.h.ah = 0x00;
     r.h.al = 0x03;
@@ -131,35 +79,20 @@ int main(void)
     
     GFX_Init();
     EnterState();
-    //hook_keyb_int();
-
 
     while (1) {
-
         GFX_DrawScreenSplit();
 
         SecondCount++;
-        if (SecondCount == 60){
+        if (SecondCount == 60) {
             SecondCount = 0;
             Gamelogic_SecondTick();
             sprintf(TimeBuf, "%02d:%02d", Countdown / 60, Countdown % 60);
-            //sprintf(TimeBuf, "%d-%d",bufpos, keybuf_head);
             DrawTextColor(70, TextLine + 2, 0x07, TimeBuf);
         }
 
-        /*sprintf(TimeBuf, "%d-%d- %02X,%02X  ",bufpos, keybuf_head, keybuf[0], keybuf[1]);
-        DrawTextColor(60, textline + 2, 0x07, TimeBuf);*/
-
-        while (kbhit())//for(i=0;i<keybuf_head;i++)
+        while (kbhit())
         {
-            // no breaks
-            /*(if (keybuf[i] & 0x80)
-                continue;
-
-            if (keybuf[i] == 0)
-                continue;                
-
-            inkey = kbd_US[keybuf[i]];*/
             inkey = getch();
 
             //delete
@@ -184,8 +117,6 @@ int main(void)
                 InputBuff[bufpos+1] = 0;
                 bufpos++;
             }
-
-
         }
 
         DrawTextColor(2, TextLine + 2, 0x07, ">");
@@ -195,7 +126,6 @@ int main(void)
         Music_Task();
     }
 
-    //unhook_keyb_int();
     GFX_Exit();
 
     return 0;

@@ -91,7 +91,7 @@ void DrawTextColor(unsigned int x, unsigned int y, unsigned char color, unsigned
 void SetGFXLines(int rows);
 void ClearScreen();
 void DisplayText(char *text);
-void SetTextLine(int line);
+void SetTextLines(int lines);
 void GFX_Init();
 void GFX_DrawScreenSplit();
 void ClearLine(int line);
@@ -139,9 +139,9 @@ extern volatile unsigned char last_keybyte;
 #define ACTION_TAKEPILLS 6
 #define ACTION_PLAYSOUND 7
 #define ACTION_DISPLAYGFX 8
-#define ACTION_SCREENLINES 9
+#define ACTION_GFXLINES 9
 #define ACTION_DRAWMENU 10
-#define ACTION_SETTEXTLINE 11
+#define ACTION_TEXTLINES 11
 #define ACTION_FART 12
 #define ACTION_GIVEAWARD 13
 #define ACTION_DISPLAYNEWAWARDS 14

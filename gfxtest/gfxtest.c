@@ -268,8 +268,8 @@ void SetGFXLines(int rows) {
     TextLine = GFXVerticalHeight;
 }
 
-void SetTextLine(int line){
-    TextLine = line;
+void SetTextLines(int line){
+    
 }
 
 
