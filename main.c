@@ -7,48 +7,12 @@
 
 #include "gamelogic.h"
 
-
-char kbd_US [128] =
-{
-    0,  27, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '\b',
-  '\t', /* <-- Tab */
-  'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\n',
-    0, /* <-- control key */
-  'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\'', '`',  0, '\\', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/',   0,
-  '*',
-    0,  /* Alt */
-  ' ',  /* Space bar */
-    0,  /* Caps lock */
-    0,  /* 59 - F1 key ... > */
-    0,   0,   0,   0,   0,   0,   0,   0,
-    0,  /* < ... F10 */
-    0,  /* 69 - Num lock*/
-    0,  /* Scroll Lock */
-    0,  /* Home key */
-    0,  /* Up Arrow */
-    0,  /* Page Up */
-  '-',
-    0,  /* Left Arrow */
-    0,
-    0,  /* Right Arrow */
-  '+',
-    0,  /* 79 - End key*/
-    0,  /* Down Arrow */
-    0,  /* Page Down */
-    0,  /* Insert Key */
-    0,  /* Delete Key */
-    0,   0,   0,
-    0,  /* F11 Key */
-    0,  /* F12 Key */
-    0,  /* All other keys are undefined */
-
-};
-
 int SecondCount = 0;
 
 extern GameState *CurrState;
 
-void Frontend_Exit(){
+void Frontend_Exit()
+{
     union REGS r;
 
     /* Restore normal text mode */
@@ -76,15 +40,18 @@ int main(void)
     PlaySound(JukeBox[SOUND_INTRO]);
 
     Gamelogic_Init();
-    
+
     GFX_Init();
     EnterState();
 
-    while (1) {
+    while (1)
+    {
         GFX_DrawScreenSplit();
 
+        if (CurrState->ID <= STATE_ONTOILETPANTSOFF && CurrState->ID >= STATE_STANDING)
         SecondCount++;
-        if (SecondCount == 60) {
+        if (SecondCount == 60)
+        {
             SecondCount = 0;
             Gamelogic_SecondTick();
             sprintf(TimeBuf, "%02d:%02d", Countdown / 60, Countdown % 60);
@@ -94,28 +61,35 @@ int main(void)
         while (kbhit())
         {
             inkey = getch();
-
-            //delete
-            if (inkey == '\b'){
-                if (bufpos) {
-                    bufpos--;
-                    DrawChar(4 + bufpos, TextLine + 2, ' ');
-                    InputBuff[bufpos] = 0; 
-                }
-            }
-            //enter
-            else if (inkey == '\r' || inkey == '\n'){
+            // enter
+            if (inkey == '\r' || inkey == '\n')
+            {
                 GameLogic_TextInput(InputBuff);
                 bufpos = 0;
                 InputBuff[bufpos] = 0;
-                InputBuff[bufpos+1] = 0;
+                InputBuff[bufpos + 1] = 0;
                 ClearLine(TextLine + 2);
             }
-            else if (inkey != 0) {
-                DrawChar(4 + bufpos, TextLine + 2, inkey);
-                InputBuff[bufpos] = inkey;
-                InputBuff[bufpos+1] = 0;
-                bufpos++;
+            else if (CurrState->ID <= STATE_CREDITS) // only display text line on some states
+            {
+                // delete
+                if (inkey == '\b')
+                {
+                    if (bufpos)
+                    {
+                        bufpos--;
+                        DrawChar(4 + bufpos, TextLine + 2, ' ');
+                        InputBuff[bufpos] = 0;
+                    }
+                }
+
+                else if (inkey != 0)
+                {
+                    DrawChar(4 + bufpos, TextLine + 2, inkey);
+                    InputBuff[bufpos] = inkey;
+                    InputBuff[bufpos + 1] = 0;
+                    bufpos++;
+                }
             }
         }
 

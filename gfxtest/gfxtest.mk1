@@ -1,4 +1,10 @@
 !define BLANK ""
+C:\code\DontShitYourPants\gfxtest\raster.obj : C:\code\DontShitYourPants\gfx&
+test\raster.asm .AUTODEPEND
+ @C:
+ cd C:\code\DontShitYourPants\gfxtest
+ *wasm raster.asm -fo=.obj -i="C:\WATCOM/h" -ml -d1 -w4 -e25 -zq
+
 C:\code\DontShitYourPants\gfxtest\gfxtest.obj : C:\code\DontShitYourPants\gf&
 xtest\gfxtest.c .AUTODEPEND
  @C:
@@ -6,10 +12,10 @@ xtest\gfxtest.c .AUTODEPEND
  *wcc gfxtest.c -fo=.obj -i="C:\WATCOM/h" -w4 -e25 -zq -od -d2 -bt=dos -ml
 
 C:\code\DontShitYourPants\gfxtest\gfxtest.exe : C:\code\DontShitYourPants\gf&
-xtest\gfxtest.obj .AUTODEPEND
+xtest\raster.obj C:\code\DontShitYourPants\gfxtest\gfxtest.obj .AUTODEPEND
  @C:
  cd C:\code\DontShitYourPants\gfxtest
- @%write gfxtest.lk1 FIL gfxtest.obj
+ @%write gfxtest.lk1 FIL raster.obj,gfxtest.obj
  @%append gfxtest.lk1 
  *wlink name gfxtest d all sys dos op m op maxe=25 op q op symf @gfxtest.lk1
 

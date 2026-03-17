@@ -98,6 +98,7 @@ void ClearLine(int line);
 void DrawChar(unsigned int x, unsigned int y, unsigned char data);
 void GFX_DrawSprite(int id, int x, int y);
 void GFX_Exit();
+void SetTextWindowLine(int line);
 
 void Gamelogic_Init();
 void Gamelogic_SecondTick();
@@ -148,6 +149,7 @@ extern volatile unsigned char last_keybyte;
 #define ACTION_CLEARSCREEN 15
 #define ACTION_CROWNX 16
 #define ACTION_CROWNY 17
+#define ACTION_TEXTWINDOWLINE 18
 
 #define SOUND_INTRO 0
 #define SOUND_SUCCESS 1

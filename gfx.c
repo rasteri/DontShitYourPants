@@ -188,18 +188,27 @@ unsigned int TextVerticalHeight;
 // The vertical text height in scanlines
 unsigned int TextVerticalLines;
 
-// What character line text begins at
+// What character line the text "window" begins at
 unsigned int TextLine;
 
 // Char line to draw GFX at, always 0 when text at bottom
 unsigned char GFXLine;
+
+// Guess what this does
+char HideTextInput = 0;
 
 void RecalcScreenGeometry() {
 
     GFXVerticalLines = GFXVerticalHeight * GFXLinesPerChar;
     TextVerticalLines = TextVerticalHeight * TextLinesPerChar;
 
-    if (TextAtTop && CurrState->ID != STATE_MENU) {
+    if (CurrState->ID == STATE_MENU || CurrState->ID == STATE_AWARDS || CurrState->ID == STATE_AWARDS2) {
+        GFXLine = 0;
+        AboveSplitMode = GFXRegisterMode;
+        SplitAtLine = GFXVerticalHeight * GFXLinesPerChar;
+        BelowSplitMode = TextLinesPerChar - 1;
+        TextLine = 32;
+    } else if (TextAtTop) {
         GFXLine = TextVerticalHeight;
         AboveSplitMode = TextLinesPerChar - 1;
         SplitAtLine = TextVerticalLines;
@@ -212,6 +221,8 @@ void RecalcScreenGeometry() {
         BelowSplitMode = TextLinesPerChar - 1;
         TextLine = GFXVerticalHeight;
     }
+
+    
 }
 
 void SetGFXLines(int lines) {
@@ -222,6 +233,10 @@ void SetGFXLines(int lines) {
 void SetTextLines(int lines) {
     TextVerticalHeight = lines;
     RecalcScreenGeometry();
+}
+
+void SetTextWindowLine(int line) {
+    TextLine = line;
 }
 
 volatile unsigned char keybuf[KEYBUF_SIZE];
@@ -406,6 +421,26 @@ void GFX_Exit() {
 }
 
 void GFX_Init() {
+    char tat = 0;
+
+    printf("1 Text Above (slow machines), 2 Text Below (fast machines)\n");
+
+    tat = getch();
+
+    switch (tat){
+        case 0x31:
+            TextAtTop = 1;
+            break;
+
+        case 0x32:
+            TextAtTop = 0;
+            break;
+
+        default:
+            printf("invalid selection %x\n", tat);
+            exit(0);
+    }
+
     printf("1 CGA, 2 EGA200, 3 EGA350, 4 VGA\n");
 
     graphicsmode = getch();
@@ -442,24 +477,6 @@ void GFX_Init() {
 
     GFXRegisterMode = GFXLinesPerChar - 1;
 
-    printf("1 Text Above (slow machines), 2 Text Below (fast machines)\n");
-    printf("(yes, the position of the text really does make a huge difference in performance...)\n");
-
-    graphicsmode = getch();
-
-    switch (graphicsmode){
-        case 0x31:
-                TextAtTop = 1;
-            break;
-
-        case 0x32:
-            TextAtTop = 0;
-            break;
-
-        default:
-            printf("invalid selection %x\n", graphicsmode);
-            exit(0);
-    }
 
 
 

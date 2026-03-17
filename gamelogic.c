@@ -183,7 +183,7 @@ void LoadVerbs()
     }*/
 }
 
-GameState *CurrState = &GameStates[STATE_STANDING];
+GameState *CurrState = &GameStates[STATE_MENU];
 
 void EnterState()
 {
@@ -259,6 +259,9 @@ int RunAction(GameAction *curraction)
         SetGFXLines(curraction->Action);
         break;
     case ACTION_TEXTLINES:
+        SetTextLines(curraction->Action);
+        break;
+    case ACTION_TEXTWINDOWLINE:
         SetTextLines(curraction->Action);
         break;
     case ACTION_DISPLAYGFX:
