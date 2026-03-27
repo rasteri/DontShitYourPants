@@ -99,6 +99,7 @@ void DrawChar(unsigned int x, unsigned int y, unsigned char data);
 void GFX_DrawSprite(int id, int x, int y);
 void GFX_Exit();
 void SetTextWindowLine(int line);
+void get_cursor_pos(int *row, int *col);
 
 void Gamelogic_Init();
 void Gamelogic_SecondTick();
@@ -196,12 +197,14 @@ extern volatile unsigned char last_keybyte;
 #define VERB_LOOKPOCKETEMPTY 37
 #define VERB_LOOKPILLSTAKEN 38
 #define VERB_TAKEPILLSTAKEN 39
+#define VERB_UNK 60
 #define VERB_TIMEOUT 100
 #define VERB_PILLSACTIVE 101
 #define VERB_ONENTRY 102
 #define VERB_WILDCARD 103
 #define VERB_20SEC 104
 #define VERB_5SEC 105
+
 
 #define STRING_STARTSPACE 1
 #define STRING_ENDSPACE 2
@@ -326,6 +329,8 @@ extern volatile unsigned char last_keybyte;
 #define STRING_AWARD20DESC 121
 #define STRING_ENDING_SHITONBATHROOMFLOOR 122
 #define STRING_ELVIS 123
+#define STRING_UNK1 124
+#define STRING_UNK2 124
 
 #define STATE_MENU 1
 #define STATE_STANDING 2
@@ -374,7 +379,10 @@ extern volatile unsigned char last_keybyte;
 #define STATE_SHITONBATHROOMFLOOR 45
 #define STATE_AWARDS2 46
 #define STATE_ELVIS 47
-#define STATECOUNT 48
+#define STATE_UNK1 48
+#define STATE_UNK2 49
+#define STATE_UNK3 50
+#define STATECOUNT 51
 
 #define GFX_MENU 1
 #define GFX_STANDING 2
@@ -423,7 +431,9 @@ extern volatile unsigned char last_keybyte;
 #define GFX_SHITONBATHROOMFLOOR 45
 #define GFX_ELVIS 46
 #define GFX_CROWN 47
-#define GFXCOUNT 48
+#define GFX_UNK1 48
+#define GFX_UNK2 49
+#define GFXCOUNT 50
 
 #define AWARD_SHITINTOILET 1
 #define AWARD_SHITONFLOOR 2

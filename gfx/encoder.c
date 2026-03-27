@@ -3,6 +3,9 @@
 Simple RLE format
 Value then number of bytes
 Also there's a sprite format with transparency and no RLE
+
+Invocation - 
+encoder.exe in out mode [width]
 */
 
 
@@ -30,7 +33,7 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
-    printf("reading %s, writing %s, mode %s, width %d\n", argv[1], argv[2], argv[3], argv[4]);
+    printf("reading %s, writing %s, mode %s, width %s\n", argv[1], argv[2], argv[3], argv[4]);
 
     if (strcmp(argv[3], "s") == 0){
         if (argc < 5){

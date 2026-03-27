@@ -252,6 +252,7 @@ void DrawChar(unsigned int x, unsigned int y, unsigned char data) {
     *screenpt = 0x07;
 }
 
+
 void DrawTextColor(unsigned int x, unsigned int y, unsigned char color, unsigned char *data) {
     unsigned char far *screenpt;
 
@@ -382,6 +383,20 @@ void update_cursor(int x, int y)
         outp(0x3D5, (unsigned char) ((pos >> 8) & 0xFF));
 }
 
+
+void get_cursor_pos(int *row, int *col)
+{
+    union REGS regs;
+
+    regs.h.ah = 0x03;   // BIOS: Read cursor position
+    regs.h.bh = 0x00;   // Page number (0 for active page)
+
+    int86(0x10, &regs, &regs);
+
+    *row = regs.h.dh;   // Row (0-based)
+    *col = regs.h.dl;   // Column (0-based)
+}
+
 void LoadGFX(int num, char * filename) {
     FILE *infile;
     infile = fopen(filename, "rb");
@@ -508,5 +523,8 @@ void GFX_Init() {
     LoadGFX(GFX_DIEPANTSOFFSITTING, "43.bin");
     LoadGFX(GFX_SHITONBATHROOMFLOOR, "45.bin");
     LoadGFX(GFX_ELVIS, "46.bin");
+    LoadGFX(GFX_UNK1, "48.bin");
+    LoadGFX(GFX_UNK2, "unk.bin");
     LoadGFX(GFX_CROWN, "crown.bin");
+
 }
