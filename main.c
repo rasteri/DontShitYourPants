@@ -7,6 +7,9 @@
 
 #include "gamelogic.h"
 
+/* CGA text memory */
+unsigned char far *text_mem = MK_FP(0xB000, 0x8000);
+
 int SecondCount = 0;
 
 extern GameState *CurrState;
@@ -27,8 +30,6 @@ char InputBuff[100];
 char TimeBuf[30];
 char OutputBuff[100];
 
-
-
 int main(void)
 {
     char inkey;
@@ -40,6 +41,9 @@ int main(void)
     unsigned int curpos = 0;
     int x = 0, y = 0;
     unsigned char substate = 0;
+    char *pt;
+    unsigned char cnt;
+    unsigned char bmm = 0;
 
     memset(InputBuff, 0x00, 100);
 
@@ -55,13 +59,15 @@ int main(void)
 
         // do something altogether different
         if (CurrState->ID == STATE_UNK2) {
+            //ClearScreen();
+            //GFX_DrawSprite(GFX_UNK2, 25, 3);
             GFX_Exit();
-            GFX_DrawSprite(GFX_UNK2, 25, 3);
-
+            DisableBlink();
+            DisplayGFX(GFX_UNK1);
             DrawTextColor(0, 0, 0x07, "ERROR : Causality Violation");
+            DrawTextColor(0, 1, 0x07, "                                                     ");
             y = 2;
             CurrState->ID = STATE_UNK3;
-
         }
         else if (CurrState->ID == STATE_UNK3) {
 
@@ -80,6 +86,7 @@ int main(void)
                     y++;
                     switch (substate) {
                         case 0:
+                        case 2:
                             DrawTextColor(0, y, 0x07, "Bad command or file name");
                             break;
 
@@ -87,17 +94,17 @@ int main(void)
                             DrawTextColor(0, y, 0x07, "Bad command or filename");
                             break;
 
-                        case 2:
-                            DrawTextColor(0, y, 0x07, "What have you done to me?");
+                        case 3:
+                            DrawTextColor(32, 12, 0x40, "  ");
+                            DrawTextColor(32, 13, 0x40, "  ");
+                            DrawTextColor(32, 14, 0x40, "  ");
+                            DrawTextColor(32, 15, 0x40, "  ");
+                            DrawTextColor(36, 16, 0x40, "  ");
+                            DrawTextColor(0, y, 0x07, "Bad command or filename");
                             break;
 
-                        case 3:
-                            DrawTextColor(29, 11, 0x40, "  ");
-                            DrawTextColor(29, 12, 0x40, "  ");
-                            DrawTextColor(29, 13, 0x40, "  ");
-                            DrawTextColor(29, 14, 0x40, "  ");
-                            DrawTextColor(33, 15, 0x40, "  ");                            
-                            DrawTextColor(0, y, 0x04, "WHAT HAVE YOU DONE TO ME?!");
+                        case 4:
+                            outp(0x64, 0xFE);
                             break;
                     }
                     y += 2;
@@ -119,6 +126,38 @@ int main(void)
         else {
 
             GFX_DrawScreenSplit();
+            if (CurrState->ID == STATE_UNK1){
+
+                pt = text_mem + 68;
+                cnt = 100;
+                while (cnt--){
+                    *pt = bmm++;
+                    *(pt+1) = 0x07;
+                    pt += 160;
+                }
+            } else if (CurrState->ID == STATE_AWARDS2) {
+                pt = text_mem + (29 * 160) + 16;
+                cnt = 2;
+                while (cnt--){
+                    *pt = bmm++;
+                    //*(pt+1) = 0x0F;
+                    pt += 2;
+                }
+                pt = text_mem + (29 * 160) + 24;
+                cnt = 17;
+                while (cnt--){
+                    *pt = bmm++;
+                    //*(pt+1) = 0x0F;
+                    pt += 2;
+                }
+                pt = text_mem + (30 * 160) + 6;
+                cnt = 25;
+                while (cnt--){
+                    *pt = bmm++;
+                    //*(pt+1) = 0x0e;
+                    pt += 2;
+                }
+            }
 
             if (CurrState->ID <= STATE_ONTOILETPANTSOFF && CurrState->ID >= STATE_STANDING)
             SecondCount++;
@@ -140,8 +179,9 @@ int main(void)
                     GameLogic_TextInput(InputBuff);
                     bufpos = 0;
                     InputBuff[bufpos] = 0;
-                    InputBuff[bufpos + 1] = 0;
-                    ClearLine(TextLine + 2);
+                    InputBuff[bufpos + 1] = 0;        
+                    DrawTextColor(3, TextLine + 2, 0x0F, "                                                                           ");
+
                 }
                 else if (CurrState->ID <= STATE_CREDITS) // only display text line on some states
                 {
@@ -164,10 +204,10 @@ int main(void)
                         bufpos++;
                     }
                 }
+                update_cursor(strlen(InputBuff) + 4, TextLine + 2);
             }
 
-            DrawTextColor(2, TextLine + 2, 0x07, ">");
-            update_cursor(strlen(InputBuff) + 4, TextLine + 2);
+
 
             keybuf_head = 0;
             Music_Task();

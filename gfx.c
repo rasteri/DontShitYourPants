@@ -61,6 +61,14 @@ Start Address 0000
 Graphic Graphics[GFXCOUNT];
 
 
+void DisableBlink(void) {
+    union REGS r;
+    r.h.ah = 0x10;
+    r.h.al = 0x03;
+    r.h.bl = 0x00;
+    int86(0x10, &r, &r);
+}
+
 void raster_loop_frames(void);
 
 void set_160x100_mode_cga(void)
@@ -75,11 +83,7 @@ void set_160x100_mode_cga(void)
     r.h.al = 0x03;
     int86(0x10, &r, &r);
 
-    // disable blink 
-    r.h.ah = 0x10;
-    r.h.al = 0x03;
-    r.h.bl = 0x00;
-    int86(0x10, &r, &r);
+    DisableBlink();
 
     for (i = 0; i < sizeof(cga160crtc); i++)
     {
@@ -108,11 +112,7 @@ void set_160x100_mode_ega200(void)
     r.h.al = 0x03;
     int86(0x10, &r, &r);
 
-    /* disable blink */
-    r.h.ah = 0x10;
-    r.h.al = 0x03;
-    r.h.bl = 0x00;
-    int86(0x10, &r, &r);
+    DisableBlink();
 
 }
 
@@ -126,11 +126,7 @@ void set_160x100_mode_ega350(void)
     r.h.al = 0x03;
     int86(0x10, &r, &r);
 
-    /* disable blink */
-    r.h.ah = 0x10;
-    r.h.al = 0x03;
-    r.h.bl = 0x00;
-    int86(0x10, &r, &r);
+    DisableBlink();
 
 }
 
@@ -143,11 +139,7 @@ void set_160x100_mode_vga(void)
     r.h.al = 0x03;
     int86(0x10, &r, &r);
 
-    /* disable blink */
-    r.h.ah = 0x10;
-    r.h.al = 0x03;
-    r.h.bl = 0x00;
-    int86(0x10, &r, &r);
+    DisableBlink();
 }
 
 void raster_loop_250_frames(void);
@@ -222,6 +214,8 @@ void RecalcScreenGeometry() {
         TextLine = GFXVerticalHeight;
     }
 
+    ClearLine(TextLine + 2);
+    DrawTextColor(2, TextLine + 2, 0x07, ">");
     
 }
 
