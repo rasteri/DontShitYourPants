@@ -515,7 +515,12 @@ void Gamelogic_SecondTick()
 
     else if (!Countdown)
     {
-        RunVerb(VERB_TIMEOUT);
+        if (PillCountdown < 2)
+            RunVerb(VERB_UNK);
+        else
+            RunVerb(VERB_TIMEOUT);
+
+        return;
     }
 
     // Countdown for pills kicking in
@@ -526,7 +531,10 @@ void Gamelogic_SecondTick()
 
         if (!PillCountdown)
         {
-            RunVerb(VERB_PILLSACTIVE);
+            if (Countdown < 2)
+                RunVerb(VERB_UNK);
+            else
+                RunVerb(VERB_PILLSACTIVE);
         }
     }
 }
