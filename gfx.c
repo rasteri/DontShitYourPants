@@ -150,6 +150,7 @@ void raster_split_nopoll(void);
 // 2 on CGA/EGA200, 3 on EGA350, 4 on VGA
 unsigned int GFXLinesPerChar = 2;
 
+// What CRTC R9 (Max scan line) is set to for GFX window
 // 1 less than GFXLinesPerChar
 unsigned int GFXRegisterMode = 1;
 
@@ -186,9 +187,6 @@ unsigned int TextLine;
 // Char line to draw GFX at, always 0 when text at bottom
 unsigned char GFXLine;
 
-// Guess what this does
-char HideTextInput = 0;
-
 void RecalcScreenGeometry() {
 
     GFXVerticalLines = GFXVerticalHeight * GFXLinesPerChar;
@@ -213,9 +211,6 @@ void RecalcScreenGeometry() {
         BelowSplitMode = TextLinesPerChar - 1;
         TextLine = GFXVerticalHeight;
     }
-
-    ClearLine(TextLine + 2);
-    DrawTextColor(2, TextLine + 2, 0x07, ">");
     
 }
 
@@ -224,9 +219,13 @@ void SetGFXLines(int lines) {
     RecalcScreenGeometry();
 }
 
-void SetTextLines(int lines) {
+void SetTextLines(int lines, char HideTextInput) {
     TextVerticalHeight = lines;
     RecalcScreenGeometry();
+    if (!HideTextInput){
+        ClearLine(TextLine + 2);
+        DrawTextColor(2, TextLine + 2, 0x07, ">");
+    }
 }
 
 void SetTextWindowLine(int line) {

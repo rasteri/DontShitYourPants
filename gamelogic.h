@@ -91,7 +91,7 @@ void DrawTextColor(unsigned int x, unsigned int y, unsigned char color, unsigned
 void SetGFXLines(int rows);
 void ClearScreen();
 void DisplayText(char *text);
-void SetTextLines(int lines);
+void SetTextLines(int lines, char HideTextInput);
 void GFX_Init();
 void GFX_DrawScreenSplit();
 void ClearLine(int line);

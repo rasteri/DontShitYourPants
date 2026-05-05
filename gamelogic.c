@@ -209,7 +209,8 @@ void DrawAward(int x, int y, unsigned long Award, int NameString, int DescString
     DrawTextColor(x + 2, y, 0x0f, FindString(NameString));
 
     if (Awards & Award) {
-        DrawTextColor(x, y, 0x0c, "\xfb");
+        if (!(OldAwards & Award))
+            DrawTextColor(x, y, 0x0c, "\xfb");
         DrawTextColor(x + 3, y + 1, 0x0e, FindString(DescString));
     }
     else {
@@ -237,6 +238,14 @@ void LoadAwards() {
     }
     OldAwards = Awards;
 }
+
+/*char DebugBuff[100];
+void WriteDebug(char *bum){
+    FILE *heh;
+    heh = fopen("heh.txt", "a");
+    fwrite(bum, strlen(bum), 1, heh);
+    fclose(heh);
+}*/
 
 // returns 1 if action should stop future actions from running all others
 int RunAction(GameAction *curraction)
@@ -267,10 +276,7 @@ int RunAction(GameAction *curraction)
         SetGFXLines(curraction->Action);
         break;
     case ACTION_TEXTLINES:
-        SetTextLines(curraction->Action);
-        break;
-    case ACTION_TEXTWINDOWLINE:
-        SetTextLines(curraction->Action);
+        SetTextLines(curraction->Action, CurrState->ID > STATE_ONTOILETPANTSOFF);
         break;
     case ACTION_DISPLAYGFX:
         DisplayGFX(curraction->Action);
@@ -299,11 +305,12 @@ int RunAction(GameAction *curraction)
 
     case ACTION_PLAYSOUND:
         PlaySound(JukeBox[curraction->Action]);
+        break;
 
     case ACTION_DISPLAYNEWAWARDS:
         if (Awards != OldAwards){
             CurrState = &GameStates[STATE_AWARDS];
-            OldAwards = Awards;
+            PlaySound(JukeBox[SOUND_AWARD]);
             return 1;
         }
 
@@ -370,7 +377,6 @@ int RunAction(GameAction *curraction)
                 break;
 
             case 1:
-
                 DrawAward(10, 14, AWARD_SHITINTOILET, STRING_AWARD1NAME, STRING_AWARD1DESC);
                 DrawAward(0, 17, AWARD_SHITONFLOOR, STRING_AWARD2NAME, STRING_AWARD2DESC);
                 DrawAward(0, 21, AWARD_SHITINPANTSSTANDING, STRING_AWARD3NAME, STRING_AWARD3DESC);
@@ -389,7 +395,7 @@ int RunAction(GameAction *curraction)
                 DrawAward(40, 14, AWARD_FART, STRING_AWARD13NAME, STRING_AWARD13DESC);
                 DrawAward(40, 17, AWARD_SHITONBATHROOMFLOOR, STRING_AWARD14NAME, STRING_AWARD14DESC);
                 DrawAward(40, 21, AWARD_ELVIS, STRING_AWARD15NAME, STRING_AWARD15DESC);
-                DrawAward(10, 25, AWARD_SHITKING, STRING_AWARD20NAME, STRING_AWARD20DESC);
+                DrawAward(22, 25, AWARD_SHITKING, STRING_AWARD20NAME, STRING_AWARD20DESC);
                 if (Awards & AWARD_SHITKING)
                     DrawAward(0, 29, AWARD_UNK, STRING_AWARD16NAME, STRING_AWARD16DESC);
                 /*DrawAward(40, 21, AWARD_PILLSFAIL, STRING_AWARD17NAME, STRING_AWARD17DESC);
@@ -402,12 +408,18 @@ int RunAction(GameAction *curraction)
                         endingcount++;
                 }
 
-                if (EndingLog & 0x3FFFFFFF) // all endings found
-                    sprintf(buffage, "Endings Found : %d/%d %lx %lx", endingcount, NUMENDINGS, EndingLog, 0x3F);
-                else
-                    sprintf(buffage, "Endings Found : %d/?", endingcount);
+                /* #define ENDINGMASK ((2^NUMENDINGS) - 1)
 
-                DrawTextColor(40, 29, 0x0f, buffage);
+                if (EndingLog & ENDINGMASK == ENDINGMASK) // all endings found
+                    sprintf(buffage, "Endings Found : %d/%d", endingcount, NUMENDINGS);
+                else
+                    sprintf(buffage, "Endings Found : %d/?", endingcount);*/
+
+                sprintf(buffage, "Endings Found : %d/%d", endingcount, NUMENDINGS);
+
+                DrawTextColor(50, 33, 0x0f, buffage);
+
+                OldAwards = Awards;
                 break;
         }
 

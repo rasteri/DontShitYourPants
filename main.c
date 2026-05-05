@@ -228,7 +228,7 @@ int main(void)
                     DrawTextColor(3, TextLine + 2, 0x0F, "                                                                           ");
 
                 }
-                else if (CurrState->ID <= STATE_CREDITS) // only display text line on some states
+                else if (CurrState->ID <= STATE_ONTOILETPANTSOFF) // only display text line on some states
                 {
                     // delete
                     if (inkey == '\b')
