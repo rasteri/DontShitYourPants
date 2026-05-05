@@ -49,7 +49,7 @@ typedef struct _gameaction {
     int Type;
 
     // index of either a string for TEXTOUTPUT or a state for GOTOSTATE
-    unsigned int Action;
+    unsigned long Action;
 
 } GameAction;
 
@@ -121,6 +121,7 @@ extern Note *JukeBox[];
 extern GameAction ACTIONS_GLOBAL[];
 extern unsigned int TextLine;
 extern int CrownX, CrownY;
+extern unsigned char GFXLine;
 
 extern GameState *CurrState;
 
@@ -128,6 +129,8 @@ extern GameState *CurrState;
 extern volatile unsigned char keybuf[KEYBUF_SIZE];
 extern volatile unsigned int  keybuf_head;
 extern volatile unsigned char last_keybyte;
+
+unsigned long Awards;
 
 #define rasterDisable() outp(CGA_MODE_CTRL, 0x01)
 #define rasterEnable()  outp(CGA_MODE_CTRL, 0x09)
@@ -151,6 +154,7 @@ extern volatile unsigned char last_keybyte;
 #define ACTION_CROWNX 16
 #define ACTION_CROWNY 17
 #define ACTION_TEXTWINDOWLINE 18
+#define ACTION_LOGENDING 19
 
 #define SOUND_INTRO 0
 #define SOUND_SUCCESS 1
@@ -330,7 +334,8 @@ extern volatile unsigned char last_keybyte;
 #define STRING_ENDING_SHITONBATHROOMFLOOR 122
 #define STRING_ELVIS 123
 #define STRING_UNK1 124
-#define STRING_UNK2 124
+#define STRING_UNK2 125
+#define STRING_END 126
 
 #define STATE_MENU 1
 #define STATE_STANDING 2
@@ -382,7 +387,8 @@ extern volatile unsigned char last_keybyte;
 #define STATE_UNK1 48
 #define STATE_UNK2 49
 #define STATE_UNK3 50
-#define STATECOUNT 51
+#define STATE_END 51
+#define STATECOUNT 52
 
 #define GFX_MENU 1
 #define GFX_STANDING 2
@@ -433,7 +439,8 @@ extern volatile unsigned char last_keybyte;
 #define GFX_CROWN 47
 #define GFX_UNK1 48
 #define GFX_UNK2 49
-#define GFXCOUNT 50
+#define GFX_END 50
+#define GFXCOUNT 51
 
 #define AWARD_SHITINTOILET 1
 #define AWARD_SHITONFLOOR 2
@@ -450,5 +457,37 @@ extern volatile unsigned char last_keybyte;
 #define AWARD_FART 4096
 #define AWARD_SHITONBATHROOMFLOOR 8192
 #define AWARD_ELVIS 16384
-#define AWARD_UNK 32768
-#define AWARD_SHITKING 524288
+#define AWARD_SHITKING 32768
+#define AWARD_UNK 2147483648
+
+#define ENDING_SHITONFLOOR 1
+#define ENDING_SHITINTOILET 2
+#define ENDING_SHITPANTSSTANDING 4
+#define ENDING_SHITINPANTSSITTING 8
+#define ENDING_DONTSHITPANTSON 16
+#define ENDING_BREAKPANTSON 32
+#define ENDING_FARTPANTSON 64
+#define ENDING_FARTPANTSOFF 128
+#define ENDING_DIEPANTSON 256
+#define ENDING_DIEPANTSOFF 512
+#define ENDING_DONTSHITPANTSOFF 1024
+#define ENDING_BREAKPANTSOFF 2048
+#define ENDING_PILLSSTANDINGPANTSON 4096
+#define ENDING_STARTINGGUN 8192
+#define ENDING_PILLSSTANDINGPANTSOFF 16384
+#define ENDING_PILLSSITTINGPANTSON 32768
+#define ENDING_PILLSSITTINGPANTSOFF 65536
+#define ENDING_TIMEOVERSTANDINGPANTSON 131072
+#define ENDING_TIMEOVERSITTINGPANTSON 262144
+#define ENDING_TIMEOVERSTANDINGPANTSOFF 524288
+#define ENDING_TIMEOVERSITTINGPANTSOFF 1048576
+#define ENDING_SHITINPANTSWHILEOFF 2097152
+#define ENDING_FARTPANTSONSITTING 4194304
+#define ENDING_DONTSHITPANTSONSITTING 8388608
+#define ENDING_DIEPANTSONSITTING 16777216
+#define ENDING_DIEPANTSOFFSITTING 33554432
+#define ENDING_DONTSHITPANTSOFFSITTING 67108864
+#define ENDING_SHITONBATHROOMFLOOR 134217728
+#define ENDING_ELVIS 268435456
+#define ENDING_UNK 536870912
+#define NUMENDINGS 30

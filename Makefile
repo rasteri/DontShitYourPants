@@ -2,6 +2,7 @@ CC = wcc
 LINK = wlink
 OBJDIR = ./build
 DOSBOX = "C:\DOSBox-X\dosbox-x.exe"
+RM = "c:\Program Files (x86)\GnuWin32\bin\rm.exe"
 
 OBJS = \
 $(OBJDIR)/main.obj \

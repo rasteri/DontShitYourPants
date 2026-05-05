@@ -519,6 +519,7 @@ void GFX_Init() {
     LoadGFX(GFX_ELVIS, "46.bin");
     LoadGFX(GFX_UNK1, "48.bin");
     LoadGFX(GFX_UNK2, "unk.bin");
+    LoadGFX(GFX_END, "50.bin");
     LoadGFX(GFX_CROWN, "crown.bin");
 
 }

@@ -3,6 +3,7 @@
 #include <conio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <math.h>
 #include "gamelogic.h"
 
 GameVerb *firstverb = NULL;
@@ -13,6 +14,9 @@ int PillCountdown = 0;
 int FartCount = 0;
 
 unsigned long Awards = 0;
+unsigned long OldAwards = 0;
+unsigned long EndingLog = 0;
+
 
 char *FindString(int id)
 {
@@ -200,10 +204,7 @@ void EnterState()
     }
 }
 
-unsigned int OldAwards = 0;
-
-
-void DrawAward(int x, int y, int Award, int NameString, int DescString) {
+void DrawAward(int x, int y, unsigned long Award, int NameString, int DescString) {
 
     DrawTextColor(x + 2, y, 0x0f, FindString(NameString));
 
@@ -221,6 +222,7 @@ void SaveAwards() {
     SaveFile = fopen("save.bum", "wb");
 
     fwrite(&Awards, sizeof(Awards), 1, SaveFile);
+    fwrite(&EndingLog, sizeof(EndingLog), 1, SaveFile);
     fclose (SaveFile);
 }
 
@@ -228,14 +230,20 @@ void LoadAwards() {
     FILE *SaveFile;
     SaveFile = fopen("save.bum", "rb");
 
-    fread(&Awards, sizeof(Awards), 1, SaveFile);
-    fclose (SaveFile);
+    if (SaveFile){
+        fread(&Awards, sizeof(Awards), 1, SaveFile);
+        fread(&EndingLog, sizeof(EndingLog), 1, SaveFile);
+        fclose (SaveFile);
+    }
     OldAwards = Awards;
 }
 
 // returns 1 if action should stop future actions from running all others
 int RunAction(GameAction *curraction)
 {
+    char buffage[40];
+    int endingcount = 0;
+    int x = 0;
 
     switch (curraction->Type)
     {
@@ -272,14 +280,20 @@ int RunAction(GameAction *curraction)
         Awards |= curraction->Action;
 
         // All awards, give tenth award too
-        if ((Awards & 0x1FF) == 0x1FF)
+        if ((Awards & 0x3FFF) == 0x3FFF)
         Awards |= AWARD_SHITKING;
+        SaveAwards();
+        break;
+
+    case ACTION_LOGENDING:
+        EndingLog |= curraction->Action;
         SaveAwards();
         break;
 
     case ACTION_DELETEAWARDS:
         Awards = 0;
         OldAwards = Awards;
+        EndingLog = 0;
         SaveAwards();
         break;
 
@@ -332,6 +346,10 @@ int RunAction(GameAction *curraction)
             break;
         }
         CurrState = &GameStates[curraction->Action];
+
+        if (curraction->Action == STATE_STANDING && (Awards & AWARD_UNK))
+            CurrState = &GameStates[STATE_END];
+            
         break;
 
     case ACTION_EXITGAME:
@@ -372,11 +390,24 @@ int RunAction(GameAction *curraction)
                 DrawAward(40, 17, AWARD_SHITONBATHROOMFLOOR, STRING_AWARD14NAME, STRING_AWARD14DESC);
                 DrawAward(40, 21, AWARD_ELVIS, STRING_AWARD15NAME, STRING_AWARD15DESC);
                 DrawAward(10, 25, AWARD_SHITKING, STRING_AWARD20NAME, STRING_AWARD20DESC);
-                DrawAward(0, 29, AWARD_UNK, STRING_AWARD16NAME, STRING_AWARD16DESC);
+                if (Awards & AWARD_SHITKING)
+                    DrawAward(0, 29, AWARD_UNK, STRING_AWARD16NAME, STRING_AWARD16DESC);
                 /*DrawAward(40, 21, AWARD_PILLSFAIL, STRING_AWARD17NAME, STRING_AWARD17DESC);
                 DrawAward(40, 25, AWARD_STARTINGGUN, STRING_AWARD18NAME, STRING_AWARD18DESC);
                 DrawAward(40, 29, AWARD_TIMEOVER, STRING_AWARD19NAME, STRING_AWARD19DESC);
                 DrawAward(0, 32, AWARD_SHITKING, STRING_AWARD20NAME, STRING_AWARD20DESC);*/
+
+                for (x = 0; x < NUMENDINGS; x++) {
+                    if (EndingLog & ((unsigned long)0x00000001 << (unsigned long)x))
+                        endingcount++;
+                }
+
+                if (EndingLog & 0x3FFFFFFF) // all endings found
+                    sprintf(buffage, "Endings Found : %d/%d %lx %lx", endingcount, NUMENDINGS, EndingLog, 0x3F);
+                else
+                    sprintf(buffage, "Endings Found : %d/?", endingcount);
+
+                DrawTextColor(40, 29, 0x0f, buffage);
                 break;
         }
 

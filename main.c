@@ -30,6 +30,10 @@ char InputBuff[100];
 char TimeBuf[30];
 char OutputBuff[100];
 
+void reboot(void){
+    outp(0x64, 0xFE);
+}
+
 int main(void)
 {
     char inkey;
@@ -41,9 +45,12 @@ int main(void)
     unsigned int curpos = 0;
     int x = 0, y = 0;
     unsigned char substate = 0;
+    unsigned char subsubstate = 0;
     char *pt;
     unsigned char cnt;
     unsigned char bmm = 0;
+
+    unsigned char deleteprogress = 0;
 
     memset(InputBuff, 0x00, 100);
 
@@ -63,6 +70,7 @@ int main(void)
             //GFX_DrawSprite(GFX_UNK2, 25, 3);
             GFX_Exit();
             DisableBlink();
+            GFXLine = 0;
             DisplayGFX(GFX_UNK1);
             DrawTextColor(0, 0, 0x07, "ERROR : Causality Violation");
             DrawTextColor(0, 1, 0x07, "                                                     ");
@@ -77,6 +85,7 @@ int main(void)
 
             x = strlen(OutputBuff);
             update_cursor(x, y);
+
 
             while(1) {
                 inkey = getch();
@@ -100,11 +109,11 @@ int main(void)
                             DrawTextColor(32, 14, 0x40, "  ");
                             DrawTextColor(32, 15, 0x40, "  ");
                             DrawTextColor(36, 16, 0x40, "  ");
-                            DrawTextColor(0, y, 0x07, "Bad command or filename");
+                            DrawTextColor(0, y, 0x40, "YOU CANNOT ENTER");
                             break;
 
                         case 4:
-                            outp(0x64, 0xFE);
+                            reboot();
                             break;
                     }
                     y += 2;
@@ -120,6 +129,39 @@ int main(void)
                         y++;
                     }
                     update_cursor(x, y);
+                    sprintf(OutputBuff, "%d,%d", x, y);
+                    DrawTextColor(0, 24, 0x07, OutputBuff);
+
+                    //always column 40, starting at line 4
+                    if (x == 40) {
+                        if (y == 4 && subsubstate == 0) {
+                            DrawTextColor(43, 19, 0x07, "?????????");
+                            subsubstate++;
+                        } else if (y == 6 && subsubstate == 1) {
+                            DrawTextColor(43, 19, 0x07, "What are you doing?");
+                            subsubstate++;
+                        } else if (y == 9 && subsubstate == 2) {
+                            DrawTextColor(43, 19, 0x04, "WHAT ARE YOU DOING?!");
+                            subsubstate++;
+                        } else if (y == 12 && subsubstate == 3) {
+                            DrawTextColor(43, 19, 0x04, "STOP!!!!!!!!!!!!!!!!!!!!");
+                            subsubstate++;
+                        } else if (y == 15 && subsubstate == 4) {
+                            DrawTextColor(43, 19, 0x04, "YOU CANNOT DESTROY ME!!!!!");
+                            subsubstate++;
+                        } else if (y == 18 && subsubstate == 5) {
+                            DrawTextColor(43, 19, 0x04, "IF I DIE, IT ALL ENDS     ");
+                            subsubstate++;
+                        } else if (y == 21 && subsubstate == 6) {
+                            DrawTextColor(43, 22, 0x07, "..........................");
+                            subsubstate++;
+                        } else if (y == 22 && subsubstate == 7) {
+                            Awards |= AWARD_UNK;
+                            SaveAwards();
+                            reboot();
+                        }
+                    }
+
                 }
             }
         }
@@ -135,7 +177,7 @@ int main(void)
                     *(pt+1) = 0x07;
                     pt += 160;
                 }
-            } else if (CurrState->ID == STATE_AWARDS2) {
+            } else if (CurrState->ID == STATE_AWARDS2 && (Awards & AWARD_SHITKING)) {
                 pt = text_mem + (29 * 160) + 16;
                 cnt = 2;
                 while (cnt--){
@@ -143,19 +185,22 @@ int main(void)
                     //*(pt+1) = 0x0F;
                     pt += 2;
                 }
-                pt = text_mem + (29 * 160) + 24;
-                cnt = 17;
-                while (cnt--){
-                    *pt = bmm++;
-                    //*(pt+1) = 0x0F;
-                    pt += 2;
-                }
-                pt = text_mem + (30 * 160) + 6;
-                cnt = 25;
-                while (cnt--){
-                    *pt = bmm++;
-                    //*(pt+1) = 0x0e;
-                    pt += 2;
+                if (!(Awards & AWARD_UNK)) {
+
+                    pt = text_mem + (29 * 160) + 24;
+                    cnt = 17;
+                    while (cnt--){
+                        *pt = bmm++;
+                        //*(pt+1) = 0x0F;
+                        pt += 2;
+                    }
+                    pt = text_mem + (30 * 160) + 6;
+                    cnt = 25;
+                    while (cnt--){
+                        *pt = bmm++;
+                        //*(pt+1) = 0x0e;
+                        pt += 2;
+                    }
                 }
             }
 
