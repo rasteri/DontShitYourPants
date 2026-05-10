@@ -92,6 +92,7 @@ void set_160x100_mode_cga(void)
     }
     
    rasterEnable();
+   MSPerFrame = 17;
 }
 
 unsigned char OldEGASwitches;
@@ -113,7 +114,7 @@ void set_160x100_mode_ega200(void)
     int86(0x10, &r, &r);
 
     DisableBlink();
-
+    MSPerFrame = 17;
 }
 
 void set_160x100_mode_ega350(void)
@@ -127,7 +128,7 @@ void set_160x100_mode_ega350(void)
     int86(0x10, &r, &r);
 
     DisableBlink();
-
+    MSPerFrame = 17;
 }
 
 void set_160x100_mode_vga(void)
@@ -140,6 +141,7 @@ void set_160x100_mode_vga(void)
     int86(0x10, &r, &r);
 
     DisableBlink();
+    MSPerFrame = 14;
 }
 
 void raster_loop_250_frames(void);
@@ -484,9 +486,6 @@ void GFX_Init() {
     }
 
     GFXRegisterMode = GFXLinesPerChar - 1;
-
-
-
 
     memset(Graphics, 0x00, sizeof(Graphics));
 

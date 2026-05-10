@@ -37,8 +37,8 @@ look shoes
 look pockets while empty
 look pills after taken
 take pills after taken
-
-
+idfa
+idkfa
 
 
 

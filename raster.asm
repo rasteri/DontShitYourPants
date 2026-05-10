@@ -1,4 +1,4 @@
-.286
+.8086
 .model small
 .code
 
@@ -8,10 +8,10 @@ EXTRN _SplitAtLine:WORD
 EXTRN _BelowSplitMode:BYTE
 EXTRN _AboveSplitMode:BYTE
 EXTRN _GFXRegisterMode:BYTE
+
+
+
 raster_split_nopoll_ PROC
-
-
-
 frame_loop:
 
     mov dx,03DAh          ; CGA status port

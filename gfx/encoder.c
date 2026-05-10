@@ -28,12 +28,14 @@ int main(int argc, char *argv[]) {
 
     unsigned char firsttime = 1;
 
+    printf ("usage - encoder [in] [out] [mode]\n");
+
     if (argc < 4) {
         printf("No file specified\n");
         exit(1);
     }
 
-    printf("reading %s, writing %s, mode %s, width %s\n", argv[1], argv[2], argv[3], argv[4]);
+    printf("reading %s, writing %s, mode %s, width %s\nModes - s for sprite, b for background, r for raw memory", argv[1], argv[2], argv[3], argv[4]);
 
     if (strcmp(argv[3], "s") == 0){
         if (argc < 5){
@@ -45,6 +47,9 @@ int main(int argc, char *argv[]) {
     }
     else if (strcmp(argv[3], "b") == 0){
         mode = 0;
+    }
+    else if (strcmp(argv[3], "r") == 0){
+        mode = 2;
     }
     else {
         printf("Invalid mode\n");
@@ -118,6 +123,19 @@ int main(int argc, char *argv[]) {
 
             outbuf[0] = (inbuf[0] & 0x0F) | ((inbuf[2] & 0x0F) << 4);
             outbuf[1] = mask;
+            fwrite(outbuf, 2, 1, fileout);
+        }
+    }
+    // raw memory mode, construct a raw screen dump
+    // first byte is always 0xDD
+    // second byte is colour
+    else if (mode == 2) {
+        int widthcounter = 0;
+        while (fread(inbuf, 4, 1, file)) // 2 pixels at a time
+        {
+            outbuf[0] = 0xDD;
+            outbuf[1] = (inbuf[0] & 0x0F) | ((inbuf[2] & 0x0F) << 4);
+
             fwrite(outbuf, 2, 1, fileout);
         }
     }

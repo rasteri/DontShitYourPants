@@ -122,6 +122,9 @@ extern GameAction ACTIONS_GLOBAL[];
 extern unsigned int TextLine;
 extern int CrownX, CrownY;
 extern unsigned char GFXLine;
+extern int endingcount;
+
+extern unsigned int MSPerFrame;
 
 extern GameState *CurrState;
 
@@ -155,6 +158,8 @@ unsigned long Awards;
 #define ACTION_CROWNY 17
 #define ACTION_TEXTWINDOWLINE 18
 #define ACTION_LOGENDING 19
+#define ACTION_IDFA 20
+#define ACTION_IDKFA 21
 
 #define SOUND_INTRO 0
 #define SOUND_SUCCESS 1
@@ -201,6 +206,8 @@ unsigned long Awards;
 #define VERB_LOOKPOCKETEMPTY 37
 #define VERB_LOOKPILLSTAKEN 38
 #define VERB_TAKEPILLSTAKEN 39
+#define VERB_IDFA 40
+#define VERB_IDKFA 41
 #define VERB_UNK 60
 #define VERB_TIMEOUT 100
 #define VERB_PILLSACTIVE 101

@@ -34,6 +34,12 @@ void reboot(void){
     outp(0x64, 0xFE);
 }
 
+void lz4_decompress();
+
+unsigned char lz4test[1000];
+
+void far *inb, *outb;
+
 int main(void)
 {
     char inkey;
@@ -51,6 +57,19 @@ int main(void)
     unsigned char bmm = 0;
 
     unsigned char deleteprogress = 0;
+    FILE *bum;
+
+    bum = fopen("standing.lz4", "rb");
+    if (bum == NULL) 
+        exit(1);
+    printf("%u\n", fread(lz4test, 785, 1, bum));
+    fclose(bum);
+
+    getch();
+    inb = lz4test;
+    outb = text_mem;
+    lz4_decompress();
+    while(1);
 
     memset(InputBuff, 0x00, 100);
 
@@ -60,6 +79,8 @@ int main(void)
 
     GFX_Init();
     EnterState();
+
+
 
     while (1)
     {
@@ -109,7 +130,7 @@ int main(void)
                             DrawTextColor(32, 14, 0x40, "  ");
                             DrawTextColor(32, 15, 0x40, "  ");
                             DrawTextColor(36, 16, 0x40, "  ");
-                            DrawTextColor(0, y, 0x40, "YOU CANNOT ENTER");
+                            DrawTextColor(0, y, 0x04, "YOU CANNOT ENTER");
                             break;
 
                         case 4:
@@ -177,7 +198,7 @@ int main(void)
                     *(pt+1) = 0x07;
                     pt += 160;
                 }
-            } else if (CurrState->ID == STATE_AWARDS2 && (Awards & AWARD_SHITKING)) {
+            } else if (CurrState->ID == STATE_AWARDS2 && (endingcount == NUMENDINGS - 1)) {
                 pt = text_mem + (29 * 160) + 16;
                 cnt = 2;
                 while (cnt--){
@@ -188,7 +209,7 @@ int main(void)
                 if (!(Awards & AWARD_UNK)) {
 
                     pt = text_mem + (29 * 160) + 24;
-                    cnt = 17;
+                    cnt = 19;
                     while (cnt--){
                         *pt = bmm++;
                         //*(pt+1) = 0x0F;

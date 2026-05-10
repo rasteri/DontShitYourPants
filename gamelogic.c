@@ -12,6 +12,7 @@ unsigned char pillstaken = 0;
 int Countdown = 40;
 int PillCountdown = 0;
 int FartCount = 0;
+int endingcount = 0;
 
 unsigned long Awards = 0;
 unsigned long OldAwards = 0;
@@ -251,7 +252,7 @@ void WriteDebug(char *bum){
 int RunAction(GameAction *curraction)
 {
     char buffage[40];
-    int endingcount = 0;
+
     int x = 0;
 
     switch (curraction->Type)
@@ -300,8 +301,19 @@ int RunAction(GameAction *curraction)
         Awards = 0;
         OldAwards = Awards;
         EndingLog = 0;
+        endingcount = 0;
         SaveAwards();
         break;
+
+    case ACTION_IDFA:
+        Awards = AWARD_ELVIS - 1;
+        OldAwards = Awards;
+        EndingLog = pow(2.0, NUMENDINGS - 1) - 1;
+        endingcount = NUMENDINGS - 2;
+        SaveAwards();
+        break;
+
+    
 
     case ACTION_PLAYSOUND:
         PlaySound(JukeBox[curraction->Action]);
@@ -396,17 +408,20 @@ int RunAction(GameAction *curraction)
                 DrawAward(40, 17, AWARD_SHITONBATHROOMFLOOR, STRING_AWARD14NAME, STRING_AWARD14DESC);
                 DrawAward(40, 21, AWARD_ELVIS, STRING_AWARD15NAME, STRING_AWARD15DESC);
                 DrawAward(22, 25, AWARD_SHITKING, STRING_AWARD20NAME, STRING_AWARD20DESC);
-                if (Awards & AWARD_SHITKING)
-                    DrawAward(0, 29, AWARD_UNK, STRING_AWARD16NAME, STRING_AWARD16DESC);
+
                 /*DrawAward(40, 21, AWARD_PILLSFAIL, STRING_AWARD17NAME, STRING_AWARD17DESC);
                 DrawAward(40, 25, AWARD_STARTINGGUN, STRING_AWARD18NAME, STRING_AWARD18DESC);
                 DrawAward(40, 29, AWARD_TIMEOVER, STRING_AWARD19NAME, STRING_AWARD19DESC);
                 DrawAward(0, 32, AWARD_SHITKING, STRING_AWARD20NAME, STRING_AWARD20DESC);*/
 
+                endingcount = 0; 
                 for (x = 0; x < NUMENDINGS; x++) {
                     if (EndingLog & ((unsigned long)0x00000001 << (unsigned long)x))
                         endingcount++;
                 }
+
+                if (endingcount == NUMENDINGS - 1)
+                    DrawAward(0, 29, AWARD_UNK, STRING_AWARD16NAME, STRING_AWARD16DESC);
 
                 /* #define ENDINGMASK ((2^NUMENDINGS) - 1)
 
@@ -527,7 +542,7 @@ void Gamelogic_SecondTick()
 
     else if (!Countdown)
     {
-        if (PillCountdown < 2)
+        if (PillCountdown == 1 && CurrState->ID == STATE_STANDING)
             RunVerb(VERB_UNK);
         else
             RunVerb(VERB_TIMEOUT);
@@ -543,7 +558,7 @@ void Gamelogic_SecondTick()
 
         if (!PillCountdown)
         {
-            if (Countdown < 2)
+            if (Countdown <= 2 && CurrState->ID == STATE_STANDING)
                 RunVerb(VERB_UNK);
             else
                 RunVerb(VERB_PILLSACTIVE);
