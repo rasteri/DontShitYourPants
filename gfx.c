@@ -17,6 +17,8 @@ int graphicsmode = 0;
 
 char TextAtTop = 0;
 
+void far *inb, *outb;
+
 /* 160x100 CGA CRTC setup */
 unsigned char cga160crtc[] = {
     113, /* R0  Horizontal total */
@@ -281,25 +283,11 @@ void DisplayText(char *text) {
     DrawTextColor(2, TextLine, 0x07, text);
 }
 
-// Simple RLE decoder for gfx
-void Decode(char *gfx, int length) {
-    char *writepnt;
-    unsigned int Numbytes;
 
-    writepnt = text_mem + (GFXLine * 160);
-
-    //gfx[0] is value
-    //gfx[1] is number bytes
-    length += 2;
-    while (length-=2) {
-        Numbytes = gfx[1]+1;
-        while (Numbytes--) {
-            writepnt[0] = 0xDD; // TODO this doesn't have to be done for every screen change
-            writepnt[1] = gfx[0];
-            writepnt += 2;
-        }
-        gfx += 2;
-    }
+void Decode(char far *gfx) {
+    inb = gfx;
+    outb = text_mem + (GFXLine * 160);
+    lz4_decompress();
 }
 // Sprites can be transparent and aren't RLE'd
 // first byte is just colour
@@ -347,10 +335,10 @@ void ClearGFX() {
     memset(text_mem + (GFXLine * 160), 0x00, GFXVerticalHeight * 160);
 }
 
-void DisplayGFX(int id){
+void DisplayGFX(int id){ 
     ClearGFX();
     if (Graphics[id].Length != 0) {
-        Decode(Graphics[id].Data, Graphics[id].Length);
+        Decode(Graphics[id].Data);
     }
 }
 
@@ -403,7 +391,7 @@ void LoadGFX(int num, char * filename) {
 
     fseek(infile, 0, SEEK_END);
     Graphics[num].Length = ftell(infile);
-    fseek(infile, 0, SEEK_SET);  /* same as rewind(f); */
+    fseek(infile, 0, SEEK_SET);
 
     Graphics[num].Data = malloc(Graphics[num].Length + 1);
     fread(Graphics[num].Data, Graphics[num].Length, 1, infile);
@@ -489,35 +477,34 @@ void GFX_Init() {
 
     memset(Graphics, 0x00, sizeof(Graphics));
 
-    LoadGFX(GFX_MENU, "1.bin");
-    LoadGFX(GFX_STANDING, "2.bin");
-    LoadGFX(GFX_STANDINGPANTSOFF, "3.bin");
-    LoadGFX(GFX_DOOROPEN, "4.bin");
-    LoadGFX(GFX_DOOROPENPANTSOFF, "5.bin");
-    LoadGFX(GFX_ONTOILET, "6.bin");
-    LoadGFX(GFX_ONTOILETPANTSOFF, "7.bin");
-    LoadGFX(GFX_AWARDS, "8.bin");
-    LoadGFX(GFX_SHITONFLOOR, "10.bin");
-    LoadGFX(GFX_SHITINTOILET, "11.bin");
-    LoadGFX(GFX_SHITPANTSSTANDING, "12.bin");
-    LoadGFX(GFX_SHITINPANTSSITTING, "13.bin");
-    LoadGFX(GFX_DIEPANTSON, "18.bin");
-    LoadGFX(GFX_DIEPANTSOFF, "19.bin");
-    LoadGFX(GFX_PILLSSTANDINGPANTSON1, "22.bin");
-    LoadGFX(GFX_PILLSSTANDINGPANTSON2, "23.bin");
-    LoadGFX(GFX_PILLSSTANDINGPANTSOFF1, "26.bin");
-    LoadGFX(GFX_PILLSSTANDINGPANTSOFF2, "27.bin");
-    LoadGFX(GFX_PILLSSITTINGPANTSON1, "29.bin");
-    LoadGFX(GFX_PILLSSITTINGPANTSON2, "30.bin");
-    LoadGFX(GFX_PILLSSITTINGPANTSOFF2, "33.bin");
-    LoadGFX(GFX_SHITINPANTSWHILEOFF, "39.bin");
-    LoadGFX(GFX_DIEPANTSONSITTING, "42.bin");
-    LoadGFX(GFX_DIEPANTSOFFSITTING, "43.bin");
-    LoadGFX(GFX_SHITONBATHROOMFLOOR, "45.bin");
-    LoadGFX(GFX_ELVIS, "46.bin");
-    LoadGFX(GFX_UNK1, "48.bin");
-    LoadGFX(GFX_UNK2, "unk.bin");
-    LoadGFX(GFX_END, "50.bin");
+    LoadGFX(GFX_MENU, "1.lz4");
+    LoadGFX(GFX_STANDING, "2.lz4");
+    LoadGFX(GFX_STANDINGPANTSOFF, "3.lz4");
+    LoadGFX(GFX_DOOROPEN, "4.lz4");
+    LoadGFX(GFX_DOOROPENPANTSOFF, "5.lz4");
+    LoadGFX(GFX_ONTOILET, "6.lz4");
+    LoadGFX(GFX_ONTOILETPANTSOFF, "7.lz4");
+    LoadGFX(GFX_AWARDS, "8.lz4");
+    LoadGFX(GFX_SHITONFLOOR, "10.lz4");
+    LoadGFX(GFX_SHITINTOILET, "11.lz4");
+    LoadGFX(GFX_SHITPANTSSTANDING, "12.lz4");
+    LoadGFX(GFX_SHITINPANTSSITTING, "13.lz4");
+    LoadGFX(GFX_DIEPANTSON, "18.lz4");
+    LoadGFX(GFX_DIEPANTSOFF, "19.lz4");
+    LoadGFX(GFX_PILLSSTANDINGPANTSON1, "22.lz4");
+    LoadGFX(GFX_PILLSSTANDINGPANTSON2, "23.lz4");
+    LoadGFX(GFX_PILLSSTANDINGPANTSOFF1, "26.lz4");
+    LoadGFX(GFX_PILLSSTANDINGPANTSOFF2, "27.lz4");
+    LoadGFX(GFX_PILLSSITTINGPANTSON1, "29.lz4");
+    LoadGFX(GFX_PILLSSITTINGPANTSON2, "30.lz4");
+    LoadGFX(GFX_PILLSSITTINGPANTSOFF2, "33.lz4");
+    LoadGFX(GFX_SHITINPANTSWHILEOFF, "39.lz4");
+    LoadGFX(GFX_DIEPANTSONSITTING, "42.lz4");
+    LoadGFX(GFX_DIEPANTSOFFSITTING, "43.lz4");
+    LoadGFX(GFX_SHITONBATHROOMFLOOR, "45.lz4");
+    LoadGFX(GFX_ELVIS, "46.lz4");
+    LoadGFX(GFX_UNK1, "48.lz4");
+    LoadGFX(GFX_UNK2, "unk.lz4");
+    LoadGFX(GFX_END, "50.lz4");
     LoadGFX(GFX_CROWN, "crown.bin");
-
 }

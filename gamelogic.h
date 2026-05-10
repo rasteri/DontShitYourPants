@@ -72,7 +72,7 @@ typedef struct _Graphic {
     unsigned int Lines;
 
     // pointer to le data
-    char *Data;
+    char far *Data;
 
 } Graphic;
 
@@ -86,7 +86,7 @@ typedef struct _Note {
 
 
 void DisplayGFX(int id);
-void Decode(char *gfx, int length);
+void Decode(char far *gfx);
 void DrawTextColor(unsigned int x, unsigned int y, unsigned char color, unsigned char *data);
 void SetGFXLines(int rows);
 void ClearScreen();
@@ -106,6 +106,7 @@ void Gamelogic_SecondTick();
 void GameLogic_TextInput(char *Text);
 int RunAction(GameAction *curraction);
 void EnterState();
+void lz4_decompress();
 
 void PlaySound(Note *Song);
 void Music_Task();
@@ -123,6 +124,7 @@ extern unsigned int TextLine;
 extern int CrownX, CrownY;
 extern unsigned char GFXLine;
 extern int endingcount;
+
 
 extern unsigned int MSPerFrame;
 
@@ -448,6 +450,7 @@ unsigned long Awards;
 #define GFX_UNK2 49
 #define GFX_END 50
 #define GFXCOUNT 51
+extern Graphic Graphics[GFXCOUNT];
 
 #define AWARD_SHITINTOILET 1
 #define AWARD_SHITONFLOOR 2

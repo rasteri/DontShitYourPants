@@ -34,11 +34,9 @@ void reboot(void){
     outp(0x64, 0xFE);
 }
 
-void lz4_decompress();
-
 unsigned char lz4test[1000];
 
-void far *inb, *outb;
+extern void far *inb, *outb;
 
 int main(void)
 {
@@ -56,20 +54,10 @@ int main(void)
     unsigned char cnt;
     unsigned char bmm = 0;
 
-    unsigned char deleteprogress = 0;
+
     FILE *bum;
+    unsigned char deleteprogress = 0;
 
-    bum = fopen("standing.lz4", "rb");
-    if (bum == NULL) 
-        exit(1);
-    printf("%u\n", fread(lz4test, 785, 1, bum));
-    fclose(bum);
-
-    getch();
-    inb = lz4test;
-    outb = text_mem;
-    lz4_decompress();
-    while(1);
 
     memset(InputBuff, 0x00, 100);
 
@@ -78,9 +66,8 @@ int main(void)
     Gamelogic_Init();
 
     GFX_Init();
+
     EnterState();
-
-
 
     while (1)
     {

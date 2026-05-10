@@ -93,6 +93,14 @@ EXTRN _outb:DWORD
 
 lz4_decompress_ PROC
 
+        push ax
+        push bx
+        push cx
+        push dx
+        push si
+        push di
+        push bp
+
         push    ds              ;preserve compiler assumptions
         les     di,[_outb]       ;load target buffer
         push    di              ;save original starting offset (in case != 0)
@@ -236,6 +244,14 @@ buildmcount:                    ;build full match length count - AX is 0
         sub     di,ax           ;subtract prev offset from where we are now
         xchg    ax,di           ;AX = decompressed size
         pop     ds              ;restore compiler assumptions
+        
+        pop bp
+        pop di
+        pop si
+        pop dx
+        pop cx
+        pop bx
+        pop ax
         ret
 
 lz4_decompress_ ENDP
