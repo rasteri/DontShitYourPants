@@ -7,7 +7,6 @@
 
 #include "gamelogic.h"
 
-
 /* CGA text memory */
 unsigned char far *text_mem = MK_FP(0xB000, 0x8000);
 
@@ -37,31 +36,7 @@ unsigned char cga160crtc[] = {
     0    /* R13 Start address low */
 };
 
-
-/* for co40
-[R0] HorizontalTotal 56
-[R1] HorizontalDisplayed 40
-[R2] HorizontalSyncPosition 45
-[R3] SyncWidth 10
-[R4] VerticalTotal 31
-[R5] VerticalTotalAdjust 6
-[R6] VerticalDisplayed 25
-[R7] VerticalSync 28
-[R8] InterlaceMode 2
-[R9] MaximumScanLineAddress 7
-[R10] CursorStartLine 6
-[R11] CursorEndLine 7
-[R12] StartAddressH 0
-[R13] StartAddressL 0
-Start Address 0000
-[R14] CursorAddressH 0
-[R15] CursorAddressL 160
-[R16] LightPenPositionH 0
-[R17] LightPenPositionL 0
-*/
-
 Graphic Graphics[GFXCOUNT];
-
 
 void DisableBlink(void) {
     union REGS r;
@@ -485,6 +460,7 @@ void GFX_Init() {
     LoadGFX(GFX_ONTOILET, "6.lz4");
     LoadGFX(GFX_ONTOILETPANTSOFF, "7.lz4");
     LoadGFX(GFX_AWARDS, "8.lz4");
+    LoadGFX(GFX_CREDITS, "9.lz4");
     LoadGFX(GFX_SHITONFLOOR, "10.lz4");
     LoadGFX(GFX_SHITINTOILET, "11.lz4");
     LoadGFX(GFX_SHITPANTSSTANDING, "12.lz4");

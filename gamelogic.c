@@ -421,20 +421,18 @@ int RunAction(GameAction *curraction)
                 }
 
                 if (endingcount == NUMENDINGS - 1)
-                    DrawAward(0, 29, AWARD_UNK, STRING_AWARD16NAME, STRING_AWARD16DESC);
-
-                /* #define ENDINGMASK ((2^NUMENDINGS) - 1)
-
-                if (EndingLog & ENDINGMASK == ENDINGMASK) // all endings found
-                    sprintf(buffage, "Endings Found : %d/%d", endingcount, NUMENDINGS);
-                else
-                    sprintf(buffage, "Endings Found : %d/?", endingcount);*/
+                    DrawAward(22, 29, AWARD_UNK, STRING_AWARD16NAME, STRING_AWARD16DESC);
 
                 sprintf(buffage, "Endings Found : %d/%d", endingcount, NUMENDINGS);
 
                 DrawTextColor(50, 33, 0x0f, buffage);
 
                 OldAwards = Awards;
+                break;
+
+            case 3:
+                DrawTextColor(30, 92, 0x0f, "DOS Port by Andy Tait");
+                DrawTextColor(35, 93, 0x0f, "rasteri.com");
                 break;
         }
 

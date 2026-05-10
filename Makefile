@@ -20,6 +20,7 @@ GFXS = \
 6.lz4 \
 7.lz4 \
 8.lz4 \
+9.lz4 \
 10.lz4 \
 11.lz4 \
 12.lz4 \
@@ -79,5 +80,6 @@ all: $(OBJDIR)/dontshit.exe
 clean:
 	-$(RM) -f $(OBJDIR)/*
 	-$(RM) -f dontshit.exe
+	-$(RM) -f *.lz4
 
 FORCE: ;
