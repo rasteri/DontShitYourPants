@@ -69,8 +69,11 @@ int main(void)
 
     EnterState();
 
-    while (1)
-    {
+
+
+    while (1) {
+
+
 
         // do something altogether different
         if (CurrState->ID == STATE_UNK2) {

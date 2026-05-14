@@ -4,10 +4,10 @@ projectIdent
 VpeMain
 1
 WRect
-1941
-1365
+4096
+3109
 5888
-5451
+5442
 2
 MProject
 3
@@ -31,7 +31,7 @@ WRect
 0
 0
 5712
-4323
+4314
 0
 0
 9
@@ -39,5 +39,5 @@ WFileName
 11
 gfxtest.tgt
 0
-0
+1
 7

@@ -22,12 +22,12 @@ void far *inb, *outb;
 unsigned char cga160crtc[] = {
     113, /* R0  Horizontal total */
     80,  /* R1  Horizontal displayed */
-    89,  /* R2  Horizontal sync position */
-    15,  /* R3  Sync width */
-    127, /* R4  Vertical total */
+    90,  /* R2  Horizontal sync position */
+    10,  /* R3  Sync width */
+    46, /* R4  Vertical total */
     6,   /* R5  Vertical total adjust */
-    100, /* R6  Vertical displayed */
-    112,  /* R7  Vertical sync position */
+    40, /* R6  Vertical displayed */
+    43,  /* R7  Vertical sync position */
     2,   /* R8  Interlace mode */
     1,   /* R9  Max scan line */
     6,  /* R10 Cursor start */
@@ -48,6 +48,11 @@ void DisableBlink(void) {
 
 void raster_loop_frames(void);
 
+void Set_CGA_Register(unsigned char reg, unsigned char val) {
+    outp(CGA_CRTC_INDEX, reg);
+    outp(CGA_CRTC_DATA, val);
+}
+
 void set_160x100_mode_cga(void)
 {
     union REGS r;
@@ -64,8 +69,7 @@ void set_160x100_mode_cga(void)
 
     for (i = 0; i < sizeof(cga160crtc); i++)
     {
-        outp(CGA_CRTC_INDEX, i);
-        outp(CGA_CRTC_DATA, cga160crtc[i]);
+        Set_CGA_Register(i, cga160crtc[i]);
     }
     
    rasterEnable();
@@ -166,29 +170,66 @@ unsigned int TextLine;
 // Char line to draw GFX at, always 0 when text at bottom
 unsigned char GFXLine;
 
+// need to change when screen geometry changes : R4, R5, R6, R7. Also R9 but that's done in a loop
+// For Text-at-bottom mode, 
+// retracelen = 62 (i.e. 262-200)
+// retracechars = int(62/8) = 7
+// R5_vadj = retracelen - (retracechars * 8) = 6
+
+// R6_vdisp = GFXVerticalHeight + TextVerticalHeight;
+// R4_vtotal = vdisp + (retracechars - 1) = vdisp + 6
+// R7_vsync = vdisp + 3 (24 lines)
+
+// For Text-at-top mode, 
+// retracelen = 62 (i.e. 262-200)
+// retracechars = int(62/2) = 31
+// R5_vadj = retracelen - (retracechars * 2) = 0
+
+// R6_vdisp = GFXVerticalHeight + TextVerticalHeight;
+// R4_vtotal = vdisp + (retracechars - 1) = vdisp + 30
+// R7_vsync = vdisp + 12 (24 lines)
+
+
 void RecalcScreenGeometry() {
+    unsigned char vdisp;
 
     GFXVerticalLines = GFXVerticalHeight * GFXLinesPerChar;
     TextVerticalLines = TextVerticalHeight * TextLinesPerChar;
 
-    if (CurrState->ID == STATE_MENU || CurrState->ID == STATE_AWARDS || CurrState->ID == STATE_AWARDS2) {
+    if (CurrState->ID == STATE_MENU || CurrState->ID == STATE_AWARDS || CurrState->ID == STATE_AWARDS2 || CurrState->ID == STATE_CREDITS) {
         GFXLine = 0;
         AboveSplitMode = GFXRegisterMode;
         SplitAtLine = GFXVerticalHeight * GFXLinesPerChar;
         BelowSplitMode = TextLinesPerChar - 1;
         TextLine = 32;
+        vdisp = GFXVerticalHeight + TextVerticalHeight;
+        Set_CGA_Register(4, vdisp + 6);
+        Set_CGA_Register(5, 6);
+        Set_CGA_Register(6, vdisp);
+        Set_CGA_Register(7, vdisp + 3);
+
     } else if (TextAtTop) {
         GFXLine = TextVerticalHeight;
         AboveSplitMode = TextLinesPerChar - 1;
         SplitAtLine = TextVerticalLines;
         BelowSplitMode = GFXRegisterMode;
         TextLine = 0;
+        vdisp = GFXVerticalHeight + TextVerticalHeight;
+        Set_CGA_Register(4, vdisp + 30);
+        Set_CGA_Register(5, 0);
+        Set_CGA_Register(6, vdisp);
+        Set_CGA_Register(7, vdisp + 12);
     } else {
         GFXLine = 0;
         AboveSplitMode = GFXRegisterMode;
         SplitAtLine = GFXVerticalHeight * GFXLinesPerChar;
         BelowSplitMode = TextLinesPerChar - 1;
         TextLine = GFXVerticalHeight;
+        vdisp = GFXVerticalHeight + TextVerticalHeight;
+        Set_CGA_Register(4, vdisp + 6);
+        Set_CGA_Register(5, 6);
+        Set_CGA_Register(6, vdisp);
+        Set_CGA_Register(7, vdisp + 3);
     }
     
 }

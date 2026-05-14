@@ -3,7 +3,7 @@ C:\code\DontShitYourPants\gfxtest\raster.obj : C:\code\DontShitYourPants\gfx&
 test\raster.asm .AUTODEPEND
  @C:
  cd C:\code\DontShitYourPants\gfxtest
- *wasm raster.asm -fo=.obj -i="C:\WATCOM/h" -ml -d1 -w4 -e25 -zq
+ *wasm raster.asm -fo=.obj -ml -w4 -e25
 
 C:\code\DontShitYourPants\gfxtest\gfxtest.obj : C:\code\DontShitYourPants\gf&
 xtest\gfxtest.c .AUTODEPEND
