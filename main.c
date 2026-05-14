@@ -189,7 +189,7 @@ int main(void)
                     pt += 160;
                 }
             } else if (CurrState->ID == STATE_AWARDS2 && (endingcount == NUMENDINGS - 1)) {
-                pt = text_mem + (29 * 160) + 16;
+                pt = text_mem + (32 * 160) + 16;
                 cnt = 2;
                 while (cnt--){
                     *pt = bmm++;
@@ -198,14 +198,14 @@ int main(void)
                 }
                 if (!(Awards & AWARD_UNK)) {
 
-                    pt = text_mem + (29 * 160) + 24;
+                    pt = text_mem + (32 * 160) + 24;
                     cnt = 19;
                     while (cnt--){
                         *pt = bmm++;
                         //*(pt+1) = 0x0F;
                         pt += 2;
                     }
-                    pt = text_mem + (30 * 160) + 6;
+                    pt = text_mem + (33 * 160) + 6;
                     cnt = 25;
                     while (cnt--){
                         *pt = bmm++;

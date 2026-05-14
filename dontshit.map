@@ -1,8 +1,8 @@
 Open Watcom Linker Version 2.0 beta Jan 23 2026 02:58:42 (64-bit)
 Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 Portions Copyright (c) 1985-2002 Sybase, Inc. All Rights Reserved.
-Created on:       26/05/14 16:17:42
-Warning! W1027: file ./build/gamelogic.obj(c:\code\DontShitYourPants\gamelogic.c): redefinition of _Awards ignored
+Created on:       26/05/14 18:31:49
+Warning! W1027: file ./build/gamelogic.obj(C:\code\DontShitYourPants\gamelogic.c): redefinition of _Awards ignored
 Warning! W1027: file ./build/tunes.obj(c:\code\DontShitYourPants\tunes.c): redefinition of _Awards ignored
 Warning! W1027: file ./build/states.obj(C:\code\DontShitYourPants\states.c): redefinition of _Awards ignored
 Warning! W1027: file ./build/gfx.obj(C:\code\DontShitYourPants\gfx.c): redefinition of _Awards ignored
@@ -76,7 +76,7 @@ Module: ./build/main.obj(C:\code\DontShitYourPants\main.c)
 0cfb:285a      _Awards
 0cfb:285e+     _InputBuff
 0cfb:28c2+     _TimeBuf
-Module: ./build/gamelogic.obj(c:\code\DontShitYourPants\gamelogic.c)
+Module: ./build/gamelogic.obj(C:\code\DontShitYourPants\gamelogic.c)
 0000:0799+     FindString_
 0000:0825+     FindVerb_
 0000:091c+     LoadVerbs_
@@ -712,4 +712,4 @@ C:\WATCOM\lib286\math87l.lib
 Stack size:  0800 (2048.)
 Memory size:  00010600 (67072.)
 Entry point address: 0000:2ee2
-Link time: 00:00.31
+Link time: 00:00.14
