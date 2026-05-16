@@ -30,8 +30,29 @@ char InputBuff[100];
 char TimeBuf[30];
 char OutputBuff[100];
 
-void reboot(void){
+void reboot(void) {
+    unsigned short far *bootflag;
+
+    // try using the keyboard controller (AT onwards)
     outp(0x64, 0xFE);
+
+    // failing that...
+
+    // warm boot flag
+    bootflag = MK_FP(0x40, 0x72);
+    *bootflag = 0x1234;
+
+    // jump to reset vector
+    _asm {
+        mov ax, 0FFFFh
+        push ax
+
+        xor ax, ax
+        push ax
+
+        retf
+    }
+
 }
 
 unsigned char lz4test[1000];
@@ -135,6 +156,13 @@ int main(void)
                 {
                     DrawChar(x, y, inkey);
                     x++;
+
+                    //speed up in future
+                    if (y >= 4){
+                        DrawChar(x, y, inkey);
+                        x++;
+                    }
+
                     if (x >= 80) {
                         x = 0; 
                         y++;
@@ -168,6 +196,7 @@ int main(void)
                             subsubstate++;
                         } else if (y == 22 && subsubstate == 7) {
                             Awards |= AWARD_UNK;
+                            EndingLog |= ENDING_UNK;
                             SaveAwards();
                             reboot();
                         }
@@ -188,17 +217,17 @@ int main(void)
                     *(pt+1) = 0x07;
                     pt += 160;
                 }
-            } else if (CurrState->ID == STATE_AWARDS2 && (endingcount == NUMENDINGS - 1)) {
-                pt = text_mem + (32 * 160) + 16;
+            } else if (CurrState->ID == STATE_AWARDS2 && (endingcount >= NUMENDINGS - 1)) {
+                pt = text_mem + (32 * 160) + (30 * 2);
                 cnt = 2;
                 while (cnt--){
-                    *pt = bmm++;
-                    //*(pt+1) = 0x0F;
+                    *pt = bmm += 29;
+                    *(pt+1) = 0x0F;
                     pt += 2;
                 }
                 if (!(Awards & AWARD_UNK)) {
 
-                    pt = text_mem + (32 * 160) + 24;
+                    /*pt = text_mem + (32 * 160) + 24;
                     cnt = 19;
                     while (cnt--){
                         *pt = bmm++;
@@ -212,6 +241,7 @@ int main(void)
                         //*(pt+1) = 0x0e;
                         pt += 2;
                     }
+                    */
                 }
             }
 

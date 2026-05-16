@@ -308,7 +308,7 @@ int RunAction(GameAction *curraction)
     case ACTION_IDFA:
         Awards = AWARD_ELVIS - 1;
         OldAwards = Awards;
-        EndingLog = pow(2.0, NUMENDINGS - 1) - 1;
+        EndingLog = pow(2.0, NUMENDINGS - 2) - 1;
         endingcount = NUMENDINGS - 2;
         SaveAwards();
         break;
@@ -420,19 +420,18 @@ int RunAction(GameAction *curraction)
                         endingcount++;
                 }
 
-                if (endingcount == NUMENDINGS - 1)
+                if (endingcount >= NUMENDINGS - 1)
                     DrawAward(22, 32, AWARD_UNK, STRING_AWARD16NAME, STRING_AWARD16DESC);
 
-                sprintf(buffage, "Endings Found : %d/%d", endingcount, NUMENDINGS);
-
-                DrawTextColor(50, 35, 0x0f, buffage);
+                if (Awards & AWARD_SHITKING) {
+                    sprintf(buffage, "Endings Found : %d/%d", endingcount, NUMENDINGS);
+                    DrawTextColor(50, 35, 0x0f, buffage);
+                }
 
                 OldAwards = Awards;
                 break;
 
             case 3:
-                DrawTextColor(30, 92, 0x0f, "DOS Port by Andy Tait");
-                DrawTextColor(35, 93, 0x0f, "rasteri.com");
                 break;
         }
 

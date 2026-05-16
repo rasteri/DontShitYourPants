@@ -7,6 +7,11 @@
 
 #define CGA_MODE_CTRL   0x3D8
 
+#define GFX_MODE_CGA 0x31
+#define GFX_MODE_EGA200 0x32
+#define GFX_MODE_EGA350 0x33
+#define GFX_MODE_VGA 0x34
+
 // linked list of synonyms
 typedef struct _Synonym {
 
@@ -123,7 +128,6 @@ extern GameAction ACTIONS_GLOBAL[];
 extern unsigned int TextLine;
 extern int CrownX, CrownY;
 extern unsigned char GFXLine;
-extern int endingcount;
 
 
 extern unsigned int MSPerFrame;
@@ -136,6 +140,8 @@ extern volatile unsigned int  keybuf_head;
 extern volatile unsigned char last_keybyte;
 
 unsigned long Awards;
+extern int endingcount;
+extern unsigned long EndingLog;
 
 #define rasterDisable() outp(CGA_MODE_CTRL, 0x01)
 #define rasterEnable()  outp(CGA_MODE_CTRL, 0x09)

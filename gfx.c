@@ -49,8 +49,10 @@ void DisableBlink(void) {
 void raster_loop_frames(void);
 
 void Set_CGA_Register(unsigned char reg, unsigned char val) {
-    outp(CGA_CRTC_INDEX, reg);
-    outp(CGA_CRTC_DATA, val);
+    if (graphicsmode == GFX_MODE_CGA) {
+        outp(CGA_CRTC_INDEX, reg);
+        outp(CGA_CRTC_DATA, val);
+    }
 }
 
 void set_160x100_mode_cga(void)
@@ -196,7 +198,7 @@ void RecalcScreenGeometry() {
     GFXVerticalLines = GFXVerticalHeight * GFXLinesPerChar;
     TextVerticalLines = TextVerticalHeight * TextLinesPerChar;
 
-    if (CurrState->ID == STATE_MENU || CurrState->ID == STATE_AWARDS || CurrState->ID == STATE_AWARDS2 || CurrState->ID == STATE_CREDITS) {
+    if (CurrState->ID == STATE_MENU || CurrState->ID == STATE_AWARDS || CurrState->ID == STATE_AWARDS2) {
         GFXLine = 0;
         AboveSplitMode = GFXRegisterMode;
         SplitAtLine = GFXVerticalHeight * GFXLinesPerChar;
@@ -252,6 +254,15 @@ void SetTextWindowLine(int line) {
     TextLine = line;
 }
 
+void ClearTextWindow() {
+    if (!TextAtTop || (CurrState->ID == STATE_MENU || CurrState->ID == STATE_AWARDS || CurrState->ID == STATE_AWARDS2)) {
+
+    }
+    else {
+
+    }
+}
+
 volatile unsigned char keybuf[KEYBUF_SIZE];
 volatile unsigned int  keybuf_head = 0;
 volatile unsigned char last_keybyte = 0;
@@ -293,7 +304,7 @@ void ClearScreen() {
     memset(text_mem, 0x00, 16384);
 }
 
-void DisplayText(char *text) {
+void DisplayText(char *text) { 
     ClearLine(TextLine);
     ClearLine(TextLine+1);
     DrawTextColor(2, TextLine, 0x07, text);
@@ -460,25 +471,25 @@ void GFX_Init() {
     graphicsmode = getch();
 
     switch (graphicsmode){
-        case 0x31:
+        case GFX_MODE_CGA:
             GFXLinesPerChar = 2;
             TextLinesPerChar = 8;
             set_160x100_mode_cga();
             break;
 
-        case 0x32:
+        case GFX_MODE_EGA200:
             GFXLinesPerChar = 2;
             TextLinesPerChar = 8;
             set_160x100_mode_ega200();
             break;
 
-        case 0x33:
+        case GFX_MODE_EGA350:
             GFXLinesPerChar = 3;
             TextLinesPerChar = 14;
             set_160x100_mode_ega350();
             break;
 
-        case 0x34:
+        case GFX_MODE_VGA:
             GFXLinesPerChar = 4;
             TextLinesPerChar = 16;
             set_160x100_mode_vga();
