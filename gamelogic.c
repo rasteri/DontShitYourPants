@@ -271,7 +271,7 @@ int RunAction(GameAction *curraction)
     case ACTION_CROWNY:
         CrownY = curraction->Action;
         if (Awards & AWARD_SHITKING)
-            GFX_DrawSprite(GFX_CROWN, CrownX, CrownY);
+            GFX_DrawSprite(GFX_CROWN, (int)CrownX, (int)CrownY);
         break;
     case ACTION_GFXLINES:
         SetGFXLines(curraction->Action);

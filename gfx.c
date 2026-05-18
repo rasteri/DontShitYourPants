@@ -316,6 +316,7 @@ void Decode(char far *gfx) {
     outb = text_mem + (GFXLine * 160);
     lz4_decompress();
 }
+
 // Sprites can be transparent and aren't RLE'd
 // first byte is just colour
 //second byte is
@@ -343,15 +344,15 @@ void DecodeSprite(char *gfx, int length, int x, int y) {
             writebyte |= gfx[0] & 0xF0;
         }
 
-        if (y >= 0){
+        if (y >= 0) {
             writepnt[0] = 0xDD;
             writepnt[1] = writebyte;
         }
 
-        //newline   
+        //newline
         if ((gfx[1] & 0x04)){
             y++;
-            writepnt = text_mem + (y * 160) + (2 * x);
+            writepnt = text_mem + (GFXLine * 160) + (y * 160) + (2 * x);
         }
         else writepnt += 2;
         gfx += 2;
