@@ -197,6 +197,7 @@ void RecalcScreenGeometry() {
 
     GFXVerticalLines = GFXVerticalHeight * GFXLinesPerChar;
     TextVerticalLines = TextVerticalHeight * TextLinesPerChar;
+    vdisp = GFXVerticalHeight + TextVerticalHeight;
 
     if (CurrState->ID == STATE_MENU || CurrState->ID == STATE_AWARDS || CurrState->ID == STATE_AWARDS2) {
         GFXLine = 0;
@@ -204,7 +205,7 @@ void RecalcScreenGeometry() {
         SplitAtLine = GFXVerticalHeight * GFXLinesPerChar;
         BelowSplitMode = TextLinesPerChar - 1;
         TextLine = 32;
-        vdisp = GFXVerticalHeight + TextVerticalHeight;
+
         Set_CGA_Register(4, vdisp + 6);
         Set_CGA_Register(5, 6);
         Set_CGA_Register(6, vdisp);
@@ -216,7 +217,7 @@ void RecalcScreenGeometry() {
         SplitAtLine = TextVerticalLines;
         BelowSplitMode = GFXRegisterMode;
         TextLine = 0;
-        vdisp = GFXVerticalHeight + TextVerticalHeight;
+
         Set_CGA_Register(4, vdisp + 30);
         Set_CGA_Register(5, 0);
         Set_CGA_Register(6, vdisp);
@@ -227,7 +228,7 @@ void RecalcScreenGeometry() {
         SplitAtLine = GFXVerticalHeight * GFXLinesPerChar;
         BelowSplitMode = TextLinesPerChar - 1;
         TextLine = GFXVerticalHeight;
-        vdisp = GFXVerticalHeight + TextVerticalHeight;
+
         Set_CGA_Register(4, vdisp + 6);
         Set_CGA_Register(5, 6);
         Set_CGA_Register(6, vdisp);
@@ -279,7 +280,6 @@ void DrawChar(unsigned int x, unsigned int y, unsigned char data) {
 
 void DrawTextColor(unsigned int x, unsigned int y, unsigned char color, unsigned char *data) {
     unsigned char far *screenpt;
-
     screenpt = text_mem + (y * 160) + (2 * x);
 
     while (*data){
@@ -333,12 +333,12 @@ void DecodeSprite(char *gfx, int length, int x, int y) {
     while (length -= 2) {
         writebyte = 0;
 
-        if ((gfx[1] & 0x01)){
+        if ((gfx[1] & 0x01)) {
             writebyte |= writepnt[1] & 0x0F;
         } else {
             writebyte |= gfx[0] & 0x0F;
         }
-        if ((gfx[1] & 0x02)){
+        if ((gfx[1] & 0x02)) {
             writebyte |= writepnt[1] & 0xF0;
         } else {
             writebyte |= gfx[0] & 0xF0;

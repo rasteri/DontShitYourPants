@@ -74,11 +74,8 @@ int main(void)
     char *pt;
     unsigned char cnt;
     unsigned char bmm = 0;
-
-
     FILE *bum;
     unsigned char deleteprogress = 0;
-
 
     memset(InputBuff, 0x00, 100);
 
@@ -90,11 +87,7 @@ int main(void)
 
     EnterState();
 
-
-
     while (1) {
-
-
 
         // do something altogether different
         if (CurrState->ID == STATE_UNK2) {
@@ -168,8 +161,6 @@ int main(void)
                         y++;
                     }
                     update_cursor(x, y);
-                    sprintf(OutputBuff, "%d,%d", x, y);
-                    DrawTextColor(0, 24, 0x07, OutputBuff);
 
                     //always column 40, starting at line 4
                     if (x == 40) {
@@ -179,22 +170,10 @@ int main(void)
                         } else if (y == 6 && subsubstate == 1) {
                             DrawTextColor(43, 19, 0x07, "What are you doing?");
                             subsubstate++;
-                        } else if (y == 9 && subsubstate == 2) {
-                            DrawTextColor(43, 19, 0x04, "WHAT ARE YOU DOING?!");
+                        } else if (y == 15 && subsubstate == 2) {
+                            DrawTextColor(43, 19, 0x04, "YOU CANT DESTROY ME!!!!!");
                             subsubstate++;
-                        } else if (y == 12 && subsubstate == 3) {
-                            DrawTextColor(43, 19, 0x04, "STOP!!!!!!!!!!!!!!!!!!!!");
-                            subsubstate++;
-                        } else if (y == 15 && subsubstate == 4) {
-                            DrawTextColor(43, 19, 0x04, "YOU CANNOT DESTROY ME!!!!!");
-                            subsubstate++;
-                        } else if (y == 18 && subsubstate == 5) {
-                            DrawTextColor(43, 19, 0x04, "IF I DIE, IT ALL ENDS     ");
-                            subsubstate++;
-                        } else if (y == 21 && subsubstate == 6) {
-                            DrawTextColor(43, 22, 0x07, "..........................");
-                            subsubstate++;
-                        } else if (y == 22 && subsubstate == 7) {
+                        } else if (y == 22 && subsubstate == 3) {
                             Awards |= AWARD_UNK;
                             EndingLog |= ENDING_UNK;
                             SaveAwards();
@@ -265,8 +244,9 @@ int main(void)
                     GameLogic_TextInput(InputBuff);
                     bufpos = 0;
                     InputBuff[bufpos] = 0;
-                    InputBuff[bufpos + 1] = 0;        
-                    DrawTextColor(3, TextLine + 2, 0x0F, "                                                                           ");
+                    InputBuff[bufpos + 1] = 0;
+                    if (CurrState->ID <= STATE_ONTOILETPANTSOFF)
+                        DrawTextColor(3, TextLine + 2, 0x0F, "                                                                           ");
 
                 }
                 else if (CurrState->ID <= STATE_ONTOILETPANTSOFF) // only display text line on some states

@@ -130,6 +130,7 @@ extern int CrownX, CrownY;
 extern unsigned char GFXLine;
 
 
+
 extern unsigned int MSPerFrame;
 
 extern GameState *CurrState;
