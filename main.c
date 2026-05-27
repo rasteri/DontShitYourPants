@@ -229,9 +229,9 @@ int main(void)
             if (SecondCount == 60)
             {
                 SecondCount = 0;
-                Gamelogic_SecondTick();
                 sprintf(TimeBuf, "%02d:%02d", Countdown / 60, Countdown % 60);
                 DrawTextColor(70, TextLine + 2, 0x07, TimeBuf);
+                Gamelogic_SecondTick();
             }
 
             while (kbhit())

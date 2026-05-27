@@ -287,7 +287,7 @@ int RunAction(GameAction *curraction)
         Awards |= curraction->Action;
 
         // All awards, give tenth award too
-        if ((Awards & 0x3FFF) == 0x3FFF)
+        if ((Awards & 0x7FFF) == 0x7FFF)
         Awards |= AWARD_SHITKING;
         SaveAwards();
         break;
