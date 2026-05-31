@@ -308,7 +308,7 @@ int RunAction(GameAction *curraction)
     case ACTION_IDFA:
         Awards = AWARD_ELVIS - 1;
         OldAwards = Awards;
-        EndingLog = pow(2.0, NUMENDINGS - 2) - 1;
+        EndingLog = 268435455;
         endingcount = NUMENDINGS - 2;
         SaveAwards();
         break;
