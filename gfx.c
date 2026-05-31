@@ -18,24 +18,6 @@ char TextAtTop = 0;
 
 void far *inb, *outb;
 
-/* 160x100 CGA CRTC setup */
-unsigned char cga160crtc[] = {
-    113, /* R0  Horizontal total */
-    80,  /* R1  Horizontal displayed */
-    90,  /* R2  Horizontal sync position */
-    10,  /* R3  Sync width */
-    46, /* R4  Vertical total */
-    6,   /* R5  Vertical total adjust */
-    40, /* R6  Vertical displayed */
-    43,  /* R7  Vertical sync position */
-    2,   /* R8  Interlace mode */
-    1,   /* R9  Max scan line */
-    6,  /* R10 Cursor start */
-    7,   /* R11 Cursor end */
-    0,   /* R12 Start address high */
-    0    /* R13 Start address low */
-};
-
 Graphic Graphics[GFXCOUNT];
 
 void DisableBlink(void) {
@@ -46,7 +28,7 @@ void DisableBlink(void) {
     int86(0x10, &r, &r);
 }
 
-void raster_loop_frames(void);
+
 
 void Set_CGA_Register(unsigned char reg, unsigned char val) {
     if (graphicsmode == GFX_MODE_CGA) {
@@ -69,13 +51,28 @@ void set_160x100_mode_cga(void)
 
     DisableBlink();
 
-    for (i = 0; i < sizeof(cga160crtc); i++)
-    {
-        Set_CGA_Register(i, cga160crtc[i]);
-    }
-    
    rasterEnable();
    MSPerFrame = 17;
+}
+
+
+void CGA_Unsplit(void) {
+    if (graphicsmode == GFX_MODE_CGA) {
+        raster_waitvsync();
+        rasterDisable();
+        Set_CGA_Register(4, 31);
+        Set_CGA_Register(5,  6);
+        Set_CGA_Register(6, 25);
+        Set_CGA_Register(7, 28);
+        Set_CGA_Register(9,  7);
+    }
+}
+
+void CGA_Resplit(void) {
+    if (graphicsmode == GFX_MODE_CGA) {
+        raster_waitvsync();
+        rasterEnable();
+    }
 }
 
 unsigned char OldEGASwitches;
@@ -127,9 +124,6 @@ void set_160x100_mode_vga(void)
     MSPerFrame = 14;
 }
 
-void raster_loop_250_frames(void);
-
-void raster_split_nopoll(void);
 
 // How many lines one char (i.e. one vertical "pixel" in 160x100 mode) take up
 // 2 on CGA/EGA200, 3 on EGA350, 4 on VGA
@@ -222,6 +216,7 @@ void RecalcScreenGeometry() {
         Set_CGA_Register(5, 0);
         Set_CGA_Register(6, vdisp);
         Set_CGA_Register(7, vdisp + 12);
+
     } else {
         GFXLine = 0;
         AboveSplitMode = GFXRegisterMode;
@@ -449,7 +444,8 @@ void GFX_Exit() {
 void GFX_Init() {
     char tat = 0;
 
-    printf("1 Text Above (slow machines), 2 Text Below (fast machines)\n");
+    system("cls");
+    printf("1. Text Above (slow machines)\n2. Text Below (fast machines)\n");
 
     tat = getch();
 
@@ -467,7 +463,8 @@ void GFX_Init() {
             exit(0);
     }
 
-    printf("1 CGA, 2 EGA200, 3 EGA350, 4 VGA\n");
+    system("cls");
+    printf("1. CGA\n2. EGA200\n3. EGA350\n4. VGA\n");
 
     graphicsmode = getch();
 

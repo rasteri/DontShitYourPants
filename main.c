@@ -77,6 +77,7 @@ int main(void)
     FILE *bum;
     unsigned char deleteprogress = 0;
 
+
     memset(InputBuff, 0x00, 100);
 
     PlaySound(JukeBox[SOUND_INTRO]);
@@ -91,10 +92,10 @@ int main(void)
 
         // do something altogether different
         if (CurrState->ID == STATE_UNK2) {
-            //ClearScreen();
-            //GFX_DrawSprite(GFX_UNK2, 25, 3);
             GFX_Exit();
+            rasterDisable();
             DisableBlink();
+            rasterEnable();
             GFXLine = 0;
             DisplayGFX(GFX_UNK1);
             DrawTextColor(0, 0, 0x07, "ERROR : Causality Violation");
@@ -151,7 +152,7 @@ int main(void)
                     x++;
 
                     //speed up in future
-                    if (y >= 4){
+                    if (subsubstate && (y >= 4)){
                         DrawChar(x, y, inkey);
                         x++;
                     }
@@ -229,9 +230,9 @@ int main(void)
             if (SecondCount == 60)
             {
                 SecondCount = 0;
+                Gamelogic_SecondTick();
                 sprintf(TimeBuf, "%02d:%02d", Countdown / 60, Countdown % 60);
                 DrawTextColor(70, TextLine + 2, 0x07, TimeBuf);
-                Gamelogic_SecondTick();
             }
 
             while (kbhit())
@@ -241,12 +242,14 @@ int main(void)
                 // enter
                 if (inkey == '\r' || inkey == '\n')
                 {
+                    CGA_Unsplit();
                     GameLogic_TextInput(InputBuff);
                     bufpos = 0;
                     InputBuff[bufpos] = 0;
                     InputBuff[bufpos + 1] = 0;
                     if (CurrState->ID <= STATE_ONTOILETPANTSOFF)
                         DrawTextColor(3, TextLine + 2, 0x0F, "                                                                           ");
+                    CGA_Resplit();
 
                 }
                 else if (CurrState->ID <= STATE_ONTOILETPANTSOFF) // only display text line on some states

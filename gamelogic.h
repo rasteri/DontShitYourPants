@@ -105,6 +105,13 @@ void GFX_DrawSprite(int id, int x, int y);
 void GFX_Exit();
 void SetTextWindowLine(int line);
 void get_cursor_pos(int *row, int *col);
+void CGA_Unsplit(void);
+void CGA_Resplit(void);
+void raster_split_nopoll(void);
+void raster_waitvsync(void);
+
+void raster_loop_frames(void);
+void raster_loop_frames(void);
 
 void Gamelogic_Init();
 void Gamelogic_SecondTick();

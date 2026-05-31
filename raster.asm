@@ -3,14 +3,45 @@
 .code
 
 PUBLIC raster_split_nopoll_
+PUBLIC raster_waitvsync_
 
 EXTRN _SplitAtLine:WORD
 EXTRN _BelowSplitMode:BYTE
 EXTRN _AboveSplitMode:BYTE
 EXTRN _GFXRegisterMode:BYTE
 
+raster_waitvsync_ PROC
+
+    mov dx,03DAh          ; CGA status port
+
+; wait for VBLANK start
+v1:
+    in  al,dx
+    test al,08h
+    jnz  v1
+
+
+v2:
+    in  al,dx
+    test al,08h
+    jz   v2
+
+; wait till start of screen
+
+h5:
+    in  al,dx
+    test al,01h
+    jnz h5
+
+h6:
+    in  al,dx
+    test al,01h
+    jz  h6
+
+raster_waitvsync_ ENDP
+
+
 raster_split_nopoll_ PROC
-frame_loop:
 
     mov dx,03DAh          ; CGA status port
 

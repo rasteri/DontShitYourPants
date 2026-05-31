@@ -193,7 +193,7 @@ GameState *CurrState = &GameStates[STATE_MENU];
 void EnterState()
 {
     GameAction *StateEntryAction = CurrState->Actions;
-
+    
     while (StateEntryAction->Verb != 0)
     {
         if (StateEntryAction->Verb == VERB_ONENTRY)
@@ -248,10 +248,11 @@ void WriteDebug(char *bum){
     fclose(heh);
 }*/
 
+char buffage[40];
+
 // returns 1 if action should stop future actions from running all others
 int RunAction(GameAction *curraction)
 {
-    char buffage[40];
 
     int x = 0;
 
