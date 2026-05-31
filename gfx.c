@@ -55,26 +55,6 @@ void set_160x100_mode_cga(void)
    MSPerFrame = 17;
 }
 
-
-void CGA_Unsplit(void) {
-    if (graphicsmode == GFX_MODE_CGA) {
-        raster_waitvsync();
-        rasterDisable();
-        Set_CGA_Register(4, 31);
-        Set_CGA_Register(5,  6);
-        Set_CGA_Register(6, 25);
-        Set_CGA_Register(7, 28);
-        Set_CGA_Register(9,  7);
-    }
-}
-
-void CGA_Resplit(void) {
-    if (graphicsmode == GFX_MODE_CGA) {
-        raster_waitvsync();
-        rasterEnable();
-    }
-}
-
 unsigned char OldEGASwitches;
 unsigned char far *ega_switches;
 void set_160x100_mode_ega200(void)
@@ -248,6 +228,26 @@ void SetTextLines(int lines, char HideTextInput) {
 
 void SetTextWindowLine(int line) {
     TextLine = line;
+}
+
+void CGA_Unsplit(void) {
+    if (graphicsmode == GFX_MODE_CGA) {
+        raster_waitvsync();
+        rasterDisable();
+        Set_CGA_Register(4, 31);
+        Set_CGA_Register(5,  6);
+        Set_CGA_Register(6, 25);
+        Set_CGA_Register(7, 28);
+        Set_CGA_Register(9,  7);
+    }
+}
+
+void CGA_Resplit(void) {
+    if (graphicsmode == GFX_MODE_CGA) {
+        raster_waitvsync();
+        RecalcScreenGeometry();
+        rasterEnable();
+    }
 }
 
 void ClearTextWindow() {
