@@ -1,7 +1,7 @@
 CC = wcc
 WASM = wasm
 LINK = wlink
-OBJDIR = ./build
+OBJDIR = build
 DOSBOX = "C:\DOSBox-X\dosbox-x.exe"
 RM = "c:\Program Files (x86)\GnuWin32\bin\rm.exe"
 
@@ -69,15 +69,15 @@ $(OBJDIR)/%.lz4 : gfx/%.raw
 	-$(RM) $@.tmp
 
 $(OBJDIR)/dontshit.exe: makebuilddir $(OBJS) $(GFXS)
-	$(LINK) name dontshit d all sys dos op m=$(OBJDIR)/dontshit.map op maxe=25 op quiet op symf=$(OBJDIR)/dontshit.sym file { $(OBJS) raster.obj LZ4_8088.obj }
+	$(LINK) name $(OBJDIR)/dontshit.exe d all sys dos op m=$(OBJDIR)/dontshit.map op maxe=25 op quiet op symf=$(OBJDIR)/dontshit.sym file { $(OBJS) }
 	-$(RM) -f floppy/*
-	copy dontshit.exe floppy
+	copy $(OBJDIR)\dontshit.exe floppy
 	copy strings.txt floppy
 	copy verbs.txt floppy
-	copy build\*.lz4 floppy
+	copy $(OBJDIR)\*.lz4 floppy
 	copy gfx\crown.bin floppy
 	bfi -t=4 -f=$(OBJDIR)\autofloppy.img .\floppy
-	copy build\autofloppy.img C:\martypc\media\floppies
+	copy $(OBJDIR)\autofloppy.img C:\martypc\media\floppies
 	$(DOSBOX) -conf dosbox.conf
 
 .DEFAULT_GOAL := all
