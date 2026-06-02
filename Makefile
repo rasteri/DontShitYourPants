@@ -39,9 +39,6 @@ GFXS = \
 43.lz4 \
 45.lz4 \
 46.lz4 \
-48.lz4 \
-unk.lz4 \
-50.lz4 \
 crown.lz4 \
 
 CFLAGS := -i="C:\WATCOM/h" -w4 -e25 -zq -od -d2 -bt=dos -ml
