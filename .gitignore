@@ -9,3 +9,5 @@ floppy/
 *.err
 
 SAVE.BUM
+
+build/
