@@ -240,14 +240,6 @@ void LoadAwards() {
     OldAwards = Awards;
 }
 
-/*char DebugBuff[100];
-void WriteDebug(char *bum){
-    FILE *heh;
-    heh = fopen("heh.txt", "a");
-    fwrite(bum, strlen(bum), 1, heh);
-    fclose(heh);
-}*/
-
 char buffage[40];
 
 // returns 1 if action should stop future actions from running all others
@@ -366,9 +358,6 @@ int RunAction(GameAction *curraction)
             break;
         }
         CurrState = &GameStates[curraction->Action];
-
-        if (curraction->Action == STATE_STANDING && (Awards & AWARD_UNK))
-            CurrState = &GameStates[STATE_END];
             
         break;
 
@@ -420,9 +409,6 @@ int RunAction(GameAction *curraction)
                     if (EndingLog & ((unsigned long)0x00000001 << (unsigned long)x))
                         endingcount++;
                 }
-
-                if (endingcount >= NUMENDINGS - 1)
-                    DrawAward(22, 32, AWARD_UNK, STRING_AWARD16NAME, STRING_AWARD16DESC);
 
                 if (Awards & AWARD_SHITKING) {
                     sprintf(buffage, "Endings Found : %d/%d", endingcount, NUMENDINGS);
@@ -540,9 +526,6 @@ void Gamelogic_SecondTick()
 
     else if (!Countdown)
     {
-        if (PillCountdown == 1 && CurrState->ID == STATE_STANDING)
-            RunVerb(VERB_UNK);
-        else
             RunVerb(VERB_TIMEOUT);
 
         return;
@@ -556,10 +539,7 @@ void Gamelogic_SecondTick()
 
         if (!PillCountdown)
         {
-            if (Countdown <= 2 && CurrState->ID == STATE_STANDING)
-                RunVerb(VERB_UNK);
-            else
-                RunVerb(VERB_PILLSACTIVE);
+            RunVerb(VERB_PILLSACTIVE);
         }
     }
 }

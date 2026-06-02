@@ -224,7 +224,6 @@ extern unsigned long EndingLog;
 #define VERB_TAKEPILLSTAKEN 39
 #define VERB_IDFA 40
 #define VERB_IDKFA 41
-#define VERB_UNK 60
 #define VERB_TIMEOUT 100
 #define VERB_PILLSACTIVE 101
 #define VERB_ONENTRY 102
@@ -356,9 +355,6 @@ extern unsigned long EndingLog;
 #define STRING_AWARD20DESC 121
 #define STRING_ENDING_SHITONBATHROOMFLOOR 122
 #define STRING_ELVIS 123
-#define STRING_UNK1 124
-#define STRING_UNK2 125
-#define STRING_END 126
 
 #define STATE_MENU 1
 #define STATE_STANDING 2
@@ -407,11 +403,7 @@ extern unsigned long EndingLog;
 #define STATE_SHITONBATHROOMFLOOR 45
 #define STATE_AWARDS2 46
 #define STATE_ELVIS 47
-#define STATE_UNK1 48
-#define STATE_UNK2 49
-#define STATE_UNK3 50
-#define STATE_END 51
-#define STATECOUNT 52
+#define STATECOUNT 48
 
 #define GFX_MENU 1
 #define GFX_STANDING 2
@@ -460,10 +452,7 @@ extern unsigned long EndingLog;
 #define GFX_SHITONBATHROOMFLOOR 45
 #define GFX_ELVIS 46
 #define GFX_CROWN 47
-#define GFX_UNK1 48
-#define GFX_UNK2 49
-#define GFX_END 50
-#define GFXCOUNT 51
+#define GFXCOUNT 48
 extern Graphic Graphics[GFXCOUNT];
 
 #define AWARD_SHITINTOILET 1
@@ -482,7 +471,6 @@ extern Graphic Graphics[GFXCOUNT];
 #define AWARD_SHITONBATHROOMFLOOR 8192
 #define AWARD_ELVIS 16384
 #define AWARD_SHITKING 32768
-#define AWARD_UNK 2147483648
 
 #define ENDING_SHITONFLOOR 1
 #define ENDING_SHITINTOILET 2
@@ -513,5 +501,4 @@ extern Graphic Graphics[GFXCOUNT];
 #define ENDING_DONTSHITPANTSOFFSITTING 67108864
 #define ENDING_SHITONBATHROOMFLOOR 134217728
 #define ENDING_ELVIS 268435456
-#define ENDING_UNK 536870912
-#define NUMENDINGS 30
+#define NUMENDINGS 29

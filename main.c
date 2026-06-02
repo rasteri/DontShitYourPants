@@ -30,53 +30,13 @@ char InputBuff[100];
 char TimeBuf[30];
 char OutputBuff[100];
 
-void reboot(void) {
-    unsigned short far *bootflag;
-
-    // try using the keyboard controller (AT onwards)
-    outp(0x64, 0xFE);
-
-    // failing that...
-
-    // warm boot flag
-    bootflag = MK_FP(0x40, 0x72);
-    *bootflag = 0x1234;
-
-    // jump to reset vector
-    _asm {
-        mov ax, 0FFFFh
-        push ax
-
-        xor ax, ax
-        push ax
-
-        retf
-    }
-
-}
-
-unsigned char lz4test[1000];
-
-extern void far *inb, *outb;
-
 int main(void)
 {
     char inkey;
 
     int bufpos = 0;
 
-    unsigned int i = 0;
-    unsigned int exitframe = 200;
-    unsigned int curpos = 0;
-    int x = 0, y = 0;
-    unsigned char substate = 0;
-    unsigned char subsubstate = 0;
-    char *pt;
-    unsigned char cnt;
-    unsigned char bmm = 0;
     FILE *bum;
-    unsigned char deleteprogress = 0;
-
 
     memset(InputBuff, 0x00, 100);
 
@@ -88,142 +48,9 @@ int main(void)
 
     EnterState();
 
-    while (1) {
-
-        // do something altogether different
-        if (CurrState->ID == STATE_UNK2) {
-            GFX_Exit();
-            rasterDisable();
-            DisableBlink();
-            rasterEnable();
-            GFXLine = 0;
-            DisplayGFX(GFX_UNK1);
-            DrawTextColor(0, 0, 0x07, "ERROR : Causality Violation");
-            DrawTextColor(0, 1, 0x07, "                                                     ");
-            y = 2;
-            CurrState->ID = STATE_UNK3;
-        }
-        else if (CurrState->ID == STATE_UNK3) {
-
-            getcwd(InputBuff, 100);
-            sprintf(OutputBuff, "%s>", InputBuff);
-            DrawTextColor(0, y, 0x07, OutputBuff);
-
-            x = strlen(OutputBuff);
-            update_cursor(x, y);
-
-
-            while(1) {
-                inkey = getch();
-                // enter
-                if (inkey == '\r' || inkey == '\n')
-                {
-                    y++;
-                    switch (substate) {
-                        case 0:
-                        case 2:
-                            DrawTextColor(0, y, 0x07, "Bad command or file name");
-                            break;
-
-                        case 1:
-                            DrawTextColor(0, y, 0x07, "Bad command or filename");
-                            break;
-
-                        case 3:
-                            DrawTextColor(32, 12, 0x40, "  ");
-                            DrawTextColor(32, 13, 0x40, "  ");
-                            DrawTextColor(32, 14, 0x40, "  ");
-                            DrawTextColor(32, 15, 0x40, "  ");
-                            DrawTextColor(36, 16, 0x40, "  ");
-                            DrawTextColor(0, y, 0x04, "YOU CANNOT ENTER");
-                            break;
-
-                        case 4:
-                            reboot();
-                            break;
-                    }
-                    y += 2;
-                    substate++;
-                    break;
-                }
-                else if (inkey != 0)
-                {
-                    DrawChar(x, y, inkey);
-                    x++;
-
-                    //speed up in future
-                    if (subsubstate && (y >= 4)){
-                        DrawChar(x, y, inkey);
-                        x++;
-                    }
-
-                    if (x >= 80) {
-                        x = 0; 
-                        y++;
-                    }
-                    update_cursor(x, y);
-
-                    //always column 40, starting at line 4
-                    if (x == 40) {
-                        if (y == 4 && subsubstate == 0) {
-                            DrawTextColor(43, 19, 0x07, "?????????");
-                            subsubstate++;
-                        } else if (y == 6 && subsubstate == 1) {
-                            DrawTextColor(43, 19, 0x07, "What are you doing?");
-                            subsubstate++;
-                        } else if (y == 15 && subsubstate == 2) {
-                            DrawTextColor(43, 19, 0x04, "YOU CANT DESTROY ME!!!!!");
-                            subsubstate++;
-                        } else if (y == 22 && subsubstate == 3) {
-                            Awards |= AWARD_UNK;
-                            EndingLog |= ENDING_UNK;
-                            SaveAwards();
-                            reboot();
-                        }
-                    }
-
-                }
-            }
-        }
-        else {
-
+    while (1)
+       {
             GFX_DrawScreenSplit();
-            if (CurrState->ID == STATE_UNK1){
-
-                pt = text_mem + 68;
-                cnt = 100;
-                while (cnt--){
-                    *pt = bmm++;
-                    *(pt+1) = 0x07;
-                    pt += 160;
-                }
-            } else if (CurrState->ID == STATE_AWARDS2 && (endingcount >= NUMENDINGS - 1)) {
-                pt = text_mem + (32 * 160) + (30 * 2);
-                cnt = 2;
-                while (cnt--){
-                    *pt = bmm += 29;
-                    *(pt+1) = 0x0F;
-                    pt += 2;
-                }
-                if (!(Awards & AWARD_UNK)) {
-
-                    /*pt = text_mem + (32 * 160) + 24;
-                    cnt = 19;
-                    while (cnt--){
-                        *pt = bmm++;
-                        //*(pt+1) = 0x0F;
-                        pt += 2;
-                    }
-                    pt = text_mem + (33 * 160) + 6;
-                    cnt = 25;
-                    while (cnt--){
-                        *pt = bmm++;
-                        //*(pt+1) = 0x0e;
-                        pt += 2;
-                    }
-                    */
-                }
-            }
 
             if (CurrState->ID <= STATE_ONTOILETPANTSOFF && CurrState->ID >= STATE_STANDING)
             SecondCount++;
@@ -276,12 +103,9 @@ int main(void)
                 update_cursor(strlen(InputBuff) + 4, TextLine + 2);
             }
 
-
-
             keybuf_head = 0;
             Music_Task();
         }
-    }
 
     GFX_Exit();
 

@@ -529,8 +529,5 @@ void GFX_Init() {
     LoadGFX(GFX_DIEPANTSOFFSITTING, "43.lz4");
     LoadGFX(GFX_SHITONBATHROOMFLOOR, "45.lz4");
     LoadGFX(GFX_ELVIS, "46.lz4");
-    LoadGFX(GFX_UNK1, "48.lz4");
-    LoadGFX(GFX_UNK2, "unk.lz4");
-    LoadGFX(GFX_END, "50.lz4");
     LoadGFX(GFX_CROWN, "crown.bin");
 }
