@@ -1,1 +1,0 @@
-wd /down /tr=ser;6.38400 gfxtest.exe
