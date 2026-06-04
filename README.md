@@ -1,4 +1,4 @@
-# Don't Shit Your Pants
+# Don't Shit Your Pants XT
 The classic Flash survival horror game, now available for DOS!
 
 <img src=screenshot.png>
@@ -30,8 +30,18 @@ Then select your graphics card - CGA, EGA200, EGA350, or VGA.
 If you have an EGA-compatible card, EGA200 is preferable, but may not work if you have a 350-line monitor. If you have issues, select EGA350.
 
 
+## Technical Info
+Don't Shit Your Pants XT is written in Watcom C, mainly because of its maturity and convenience (cross-compilation, debugger, etc)
+
+I may try porting it to GCC IA-16 in the future, just to see what happens.
+
+Graphics are in the pseudo-160x100 mode used by (for example) paku paku.
+
+Split screen gfx/text is acheived using good ol' fashioned CPC-style CRTC tricks, which appear to also work on EGA and VGA.
+
+
 ## Acknowledgements
-*Cellar Door Games for creating the original, and for allowing me to release this tribute.
+* Cellar Door Games for creating the original, and for allowing me to release this tribute.
 * Jim Leonard/Trixter for the LZ4 decompression code.
 * CRTC+Hornet for the demo Area 5150, which helped me understand CGA screen timings
 * Daniel Balsom for the MartyPC emulator, which was invaluable during development and debugging
