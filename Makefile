@@ -68,7 +68,7 @@ $(OBJDIR)/%.lz4 : gfx/%.raw
 $(OBJDIR)/dontshit.exe: makebuilddir $(OBJS) $(GFXS)
 	$(LINK) name $(OBJDIR)/dontshit d all sys dos op m=$(OBJDIR)/dontshit.map op maxe=25 op quiet op symf=$(OBJDIR)/dontshit.sym file { $(OBJS)}
 	-$(RM) -f floppy/*
-	copy $(OBJDIR)/dontshit.exe floppy
+	copy $(OBJDIR)\dontshit.exe floppy
 	copy strings.txt floppy
 	copy verbs.txt floppy
 	copy build\*.lz4 floppy
