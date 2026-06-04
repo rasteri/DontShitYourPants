@@ -41,6 +41,8 @@ Graphics are in the pseudo-160x100 mode used by (for example) paku paku.
 
 Split screen gfx/text is acheived using good ol' fashioned CPC-style CRTC tricks, which appear to also work on EGA and VGA.
 
+Made without LLMs, unless you count Google's stupid AI summary feature that I can't figure out how to disable
+
 
 ## Acknowledgements
 * Cellar Door Games for creating the original, and for allowing me to release this tribute.
