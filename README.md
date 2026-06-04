@@ -1,6 +1,8 @@
 # Don't Shit Your Pants XT
 The classic Flash survival horror game, now available for DOS!
 
+With extra content even!
+
 <img src=screenshot.png>
 
 ## Gameplay Instructions
