@@ -380,25 +380,25 @@ int RunAction(GameAction *curraction)
         switch (curraction->Action)
         {
             case 0:
-                DrawTextColor(55, 21, 0x09, "A survival horror game");
-                DrawTextColor(2, 23, 0x0f, "Instructions :");
-                DrawTextColor(2, 24, 0x0f, "- To start type \"play\"");
-                DrawTextColor(2, 25, 0x0f, "- To view achievements type \"awards\"");
-                DrawTextColor(2, 27, 0x0f, "Goal :");
-                DrawTextColor(2, 28, 0x0f, "- Don't shit your pants");
-                DrawTextColor(2, 30, 0x0f, "- Type \"delete\" to delete your file");
+                DrawTextColor(55, 1, 0x09, "A survival horror game");
+                DrawTextColor(2, 3, 0x0f, "Instructions :");
+                DrawTextColor(2, 4, 0x0f, "- To start type \"play\"");
+                DrawTextColor(2, 5, 0x0f, "- To view achievements type \"awards\"");
+                DrawTextColor(2, 7, 0x0f, "Goal :");
+                DrawTextColor(2, 8, 0x0f, "- Don't shit your pants");
+                DrawTextColor(2, 10, 0x0f, "- Type \"delete\" to delete your file");
                 break;
 
             case 1:
-                DrawAward(10, 16, AWARD_SHITINTOILET, STRING_AWARD1NAME, STRING_AWARD1DESC);
-                DrawAward(0, 20, AWARD_SHITONFLOOR, STRING_AWARD2NAME, STRING_AWARD2DESC);
-                DrawAward(0, 24, AWARD_SHITINPANTSSTANDING, STRING_AWARD3NAME, STRING_AWARD3DESC);
-                DrawAward(0, 28, AWARD_SHITINPANTSSITTING, STRING_AWARD4NAME, STRING_AWARD4DESC);
-                DrawAward(0, 32, AWARD_DIE, STRING_AWARD5NAME, STRING_AWARD5DESC);
-                DrawAward(40, 20, AWARD_PILLSKICKIN, STRING_AWARD6NAME, STRING_AWARD6DESC);
-                DrawAward(40, 24, AWARD_PILLSFAIL, STRING_AWARD7NAME, STRING_AWARD7DESC);
-                DrawAward(40, 28, AWARD_STARTINGGUN, STRING_AWARD8NAME, STRING_AWARD8DESC);
-                DrawAward(40, 32, AWARD_TIMEOVER, STRING_AWARD9NAME, STRING_AWARD9DESC);
+                DrawAward(10, 0, AWARD_SHITINTOILET, STRING_AWARD1NAME, STRING_AWARD1DESC);
+                DrawAward(0, 4, AWARD_SHITONFLOOR, STRING_AWARD2NAME, STRING_AWARD2DESC);
+                DrawAward(0, 8, AWARD_SHITINPANTSSTANDING, STRING_AWARD3NAME, STRING_AWARD3DESC);
+                DrawAward(0, 12, AWARD_SHITINPANTSSITTING, STRING_AWARD4NAME, STRING_AWARD4DESC);
+                DrawAward(0, 16, AWARD_DIE, STRING_AWARD5NAME, STRING_AWARD5DESC);
+                DrawAward(40, 4, AWARD_PILLSKICKIN, STRING_AWARD6NAME, STRING_AWARD6DESC);
+                DrawAward(40, 8, AWARD_PILLSFAIL, STRING_AWARD7NAME, STRING_AWARD7DESC);
+                DrawAward(40, 12, AWARD_STARTINGGUN, STRING_AWARD8NAME, STRING_AWARD8DESC);
+                DrawAward(40, 16, AWARD_TIMEOVER, STRING_AWARD9NAME, STRING_AWARD9DESC);
                 break;
 
             case 2:

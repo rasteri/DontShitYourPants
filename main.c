@@ -8,7 +8,7 @@
 #include "gamelogic.h"
 
 /* CGA text memory */
-unsigned char far *text_mem = MK_FP(0xB000, 0x8000);
+unsigned char far *text_mem = (unsigned char far *)0xA0000000L; // remember to put this back to OG
 
 int SecondCount = 0;
 
@@ -24,6 +24,16 @@ void Frontend_Exit()
     int86(0x10, &r, &r);
 
     exit(0);
+}
+
+void EGA_640_200()
+{
+    union REGS r;
+
+    r.h.ah = 0x00;
+    r.h.al = 0x0E;
+    int86(0x10, &r, &r);
+
 }
 
 char InputBuff[100];
@@ -54,13 +64,16 @@ void reboot(void) {
     }
 
 }
-
-unsigned char lz4test[1000];
+unsigned char tmp[1107];
 
 extern void far *inb, *outb;
 
+unsigned char far *vram = (unsigned char far *)0xA0000000L;
+unsigned char *lz4pnt;
+
 int main(void)
 {
+    FILE *f;
     char inkey;
 
     int bufpos = 0;
@@ -68,7 +81,7 @@ int main(void)
     unsigned int i = 0;
     unsigned int exitframe = 200;
     unsigned int curpos = 0;
-    int x = 0, y = 0;
+    unsigned int x = 0, y = 0;
     unsigned char substate = 0;
     unsigned char subsubstate = 0;
     char *pt;
@@ -76,7 +89,7 @@ int main(void)
     unsigned char bmm = 0;
     FILE *bum;
     unsigned char deleteprogress = 0;
-
+    union REGS r;
 
     memset(InputBuff, 0x00, 100);
 
@@ -248,7 +261,7 @@ int main(void)
                     InputBuff[bufpos] = 0;
                     InputBuff[bufpos + 1] = 0;
                     if (CurrState->ID <= STATE_ONTOILETPANTSOFF)
-                        DrawTextColor(3, TextLine + 2, 0x0F, "                                                                           ");
+                        DrawTextColor(3, 2, 0x0F, "                                                                           ");
                     CGA_Resplit();
 
                 }
@@ -260,20 +273,20 @@ int main(void)
                         if (bufpos)
                         {
                             bufpos--;
-                            DrawChar(4 + bufpos, TextLine + 2, ' ');
+                            DrawChar(4 + bufpos, 2, ' ');
                             InputBuff[bufpos] = 0;
                         }
                     }
 
                     else if (inkey != 0)
                     {
-                        DrawChar(4 + bufpos, TextLine + 2, inkey);
+                        DrawChar(4 + bufpos, 2, inkey);
                         InputBuff[bufpos] = inkey;
                         InputBuff[bufpos + 1] = 0;
                         bufpos++;
                     }
                 }
-                update_cursor(strlen(InputBuff) + 4, TextLine + 2);
+                update_cursor(strlen(InputBuff) + 4, 2);
             }
 
 

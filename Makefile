@@ -66,7 +66,7 @@ $(OBJDIR)/%.obj : %.asm
 $(OBJDIR)/%.lz4 : gfx/%.raw
 	gfx\encoder.exe $< $@.tmp r
 	gfx\lz4.exe -c2 stdin $@ < $@.tmp
-	-$(RM) $@.tmp
+#	-$(RM) $@.tmp
 
 $(OBJDIR)/dontshit.exe: makebuilddir $(OBJS) $(GFXS)
 	$(LINK) name $(OBJDIR)/dontshit.exe d all sys dos op m=$(OBJDIR)/dontshit.map op maxe=25 op quiet op symf=$(OBJDIR)/dontshit.sym file { $(OBJS) }
