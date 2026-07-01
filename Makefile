@@ -78,7 +78,7 @@ $(OBJDIR)/dontshit.exe: makebuilddir $(OBJS) $(GFXS)
 	copy gfx\crown.bin floppy
 	bfi -t=4 -f=$(OBJDIR)\autofloppy.img .\floppy
 	copy $(OBJDIR)\autofloppy.img C:\martypc\media\floppies
-	$(DOSBOX) -conf dosbox.conf
+#	$(DOSBOX) -conf dosbox.conf
 
 .DEFAULT_GOAL := all
 

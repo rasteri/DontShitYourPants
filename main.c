@@ -7,9 +7,6 @@
 
 #include "gamelogic.h"
 
-/* CGA text memory */
-unsigned char far *text_mem = (unsigned char far *)0xA0000000L; // remember to put this back to OG
-
 int SecondCount = 0;
 
 extern GameState *CurrState;
@@ -202,13 +199,21 @@ int main(void)
 
             GFX_DrawScreenSplit();
             if (CurrState->ID == STATE_UNK1){
-
-                pt = text_mem + 68;
-                cnt = 100;
-                while (cnt--){
-                    *pt = bmm++;
-                    *(pt+1) = 0x07;
-                    pt += 160;
+                if (graphicsmode == GFX_MODE_CGA) {
+                    pt = text_mem + 68;
+                    cnt = 100;
+                    while (cnt--){
+                        *pt = bmm++;
+                        *(pt+1) = 0x07;
+                        pt += 160;
+                    }
+                } else {
+                    pt = graphics_mem + 34;
+                    cnt = 100;
+                    while (cnt--){
+                        *pt = bmm++;
+                        pt += 160;
+                    }
                 }
             } else if (CurrState->ID == STATE_AWARDS2 && (endingcount >= NUMENDINGS - 1)) {
                 pt = text_mem + (32 * 160) + (30 * 2);
@@ -245,7 +250,7 @@ int main(void)
                 SecondCount = 0;
                 Gamelogic_SecondTick();
                 sprintf(TimeBuf, "%02d:%02d", Countdown / 60, Countdown % 60);
-                DrawTextColor(70, TextLine + 2, 0x07, TimeBuf);
+                DrawTextColor(70, 2, 0x07, TimeBuf);
             }
 
             while (kbhit())

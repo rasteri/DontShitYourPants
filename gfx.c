@@ -7,8 +7,11 @@
 
 #include "gamelogic.h"
 
-/* CGA text memory */
+// CGA text memory
 unsigned char far *text_mem = MK_FP(0xB000, 0x8000); 
+
+// EGA graphics memory
+unsigned char far *graphics_mem = (unsigned char far *)0xA0000000L; 
 
 int CrownX = 0, CrownY = 0;
 
@@ -86,7 +89,7 @@ void set_mode_ega(void)
 
     //Bit Mask = FFh
     outp(0x3CE, 0x08);
-    outp(0x3CF, 0xF0);
+    outp(0x3CF, 0xFF);
 
     outp(0x3C4, 0x02);  // enable planes
     outp(0x3C5, 0x0F);  // colors
@@ -206,8 +209,8 @@ void SetTextLines(int lines, char HideTextInput) {
     TextVerticalHeight = lines;
     RecalcScreenGeometry();
     if (!HideTextInput){
-        ClearLine(TextLine + 2);
-        DrawTextColor(2, TextLine + 2, 0x07, ">");
+        ClearLine(2);
+        DrawTextColor(2, 2, 0x07, ">");
     }
 }
 
@@ -255,7 +258,7 @@ void DrawChar(unsigned int x, unsigned int y, unsigned char data) {
     unsigned char far *screenpt;
     union REGS r;
     if (graphicsmode == GFX_MODE_CGA) {
-        screenpt = text_mem + (y * 160) + (2 * x);
+        screenpt = text_mem + ((TextLine + y) * 160) + (2 * x);
         *screenpt++ = data;
         *screenpt = 0x07;
     }
@@ -326,8 +329,27 @@ void ClearLine(int line) {
     DrawTextColor(0, line, 0x0F, "                                                                                ");
 }
 
+
+void ClearGFX() {
+    unsigned char far *vram = graphics_mem;
+    unsigned int i;
+
+    if (graphicsmode == GFX_MODE_CGA)
+        memset(text_mem + (GFXLine * 160), 0x00, GFXVerticalHeight * 160);
+    else {
+        // Enable writing to all planes
+        outp(0x3C4, 0x02);
+        outp(0x3C5, 0xFF);
+
+        outpw(0x3CE, 0xFF08); // bit mask
+
+        for (i = 0; i < GFXVerticalHeight * 160; i++)
+            *(vram++) = 0;
+    }
+}
+
 void ClearScreen() {
-    unsigned char far *vram = (unsigned char far *)0xA0000000L;
+    unsigned char far *vram = graphics_mem;
     unsigned int i;
 
     if (graphicsmode == GFX_MODE_CGA)
@@ -335,7 +357,9 @@ void ClearScreen() {
     else {
         // Enable writing to all planes
         outp(0x3C4, 0x02);
-        outp(0x3C5, 0x0F);
+        outp(0x3C5, 0xFF);
+
+        outpw(0x3CE, 0xFF08); // bit mask
 
         for (i = 0; i < 16000; i++)
             *(vram++) = 0;
@@ -344,8 +368,8 @@ void ClearScreen() {
 }
 
 void DisplayText(char *text) { 
-    ClearLine(TextLine);
-    ClearLine(TextLine+1);
+    ClearLine(0);
+    ClearLine(1);
     DrawTextColor(2, 0, 0x07, text);
 }
 
@@ -394,17 +418,11 @@ void DecodeSprite(char *gfx, int length, int x, int y) {
     }
 }
 
-void ClearGFX() {
-    ClearScreen();
-}
-
-unsigned char lz4test[16000];
-
-void DrawEGA(unsigned char far *from) {
+void DrawEGA(unsigned char far *from, unsigned int lines) {
 
     unsigned char cnt;
 
-    unsigned char far *vram = (unsigned char far *)0xA0000000L;
+    unsigned char far *vram = graphics_mem;
     unsigned char *lz4pnt;
     unsigned int x = 0, y = 0;
 
@@ -412,7 +430,7 @@ void DrawEGA(unsigned char far *from) {
 
     lz4pnt = from + 1;
 
-    for (y = 0; y < 100; y++){
+    for (y = 0; y < lines; y++){
         for (x = 0; x < 80; x++) {
 
             cnt = 0;
@@ -440,19 +458,35 @@ void DrawEGA(unsigned char far *from) {
         }
         vram += 80;
     }
+
+    //reset registers
+    //Bit Mask = FFh
+    outp(0x3CE, 0x08);
+    outp(0x3CF, 0xFF);
+
+    // All planes writable
+    outp(0x3CE, 0x02);
+    outp(0x3CF, 0x0F);
 }
 
+unsigned char *LZ4Buffer;
+
+unsigned int DecodeSize;
+
 void Decode(char far *gfx) {
-    if (graphicsmode == GFX_MODE_EGA) {
-        memset(lz4test, 0x00, 16000);
+    if (graphicsmode == GFX_MODE_CGA) {
         inb = gfx;
-        outb = lz4test;
+        outb = text_mem + (GFXLine * 160);
         lz4_decompress();
-        DrawEGA(lz4test);
+    } else {
+        inb = gfx;
+        outb = LZ4Buffer;
+        lz4_decompress();
+        DrawEGA(LZ4Buffer, DecodeSize/160);
     }
 }
 
-void DisplayGFX(int id) { 
+void DisplayGFX(int id) {
     ClearGFX();
     if (Graphics[id].Length != 0) {
         Decode(Graphics[id].Data);
@@ -544,7 +578,7 @@ void GFX_Init() {
 
     graphicsmode = getch();
 
-    switch (graphicsmode){
+    switch (graphicsmode) {
         case GFX_MODE_CGA:
             GFXLinesPerChar = 2;
             TextLinesPerChar = 8;
@@ -553,6 +587,7 @@ void GFX_Init() {
             break;
 
         case GFX_MODE_EGA:
+            LZ4Buffer = malloc(16000);
             TextAtTop = 0;
             set_mode_ega();
             break;

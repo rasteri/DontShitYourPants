@@ -90,6 +90,7 @@ SHR4table:
 
 EXTRN _inb:DWORD
 EXTRN _outb:DWORD
+EXTRN _DecodeSize:WORD
 
 lz4_decompress_ PROC
 
@@ -243,6 +244,7 @@ buildmcount:                    ;build full match length count - AX is 0
         pop     ax              ;retrieve previous starting offset
         sub     di,ax           ;subtract prev offset from where we are now
         xchg    ax,di           ;AX = decompressed size
+        mov _DecodeSize,ax      ; because I can't be bothered figuring out watcom calling conventions
         pop     ds              ;restore compiler assumptions
         
         pop bp

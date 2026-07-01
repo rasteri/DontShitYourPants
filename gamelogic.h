@@ -134,7 +134,13 @@ extern unsigned int TextLine;
 extern int CrownX, CrownY;
 extern unsigned char GFXLine;
 
+// CGA text memory
+extern unsigned char far *text_mem; 
 
+// EGA graphics memory
+extern unsigned char far *graphics_mem; 
+
+extern int graphicsmode;
 
 extern unsigned int MSPerFrame;
 
