@@ -23,16 +23,6 @@ void Frontend_Exit()
     exit(0);
 }
 
-void EGA_640_200()
-{
-    union REGS r;
-
-    r.h.ah = 0x00;
-    r.h.al = 0x0E;
-    int86(0x10, &r, &r);
-
-}
-
 char InputBuff[100];
 char TimeBuf[30];
 char OutputBuff[100];
@@ -108,8 +98,8 @@ int main(void)
             rasterEnable();
             GFXLine = 0;
             DisplayGFX(GFX_UNK1);
-            DrawTextColor(0, 0, 0x07, "ERROR : Causality Violation");
-            DrawTextColor(0, 1, 0x07, "                                                     ");
+            DrawTextInWindow(0, 0, 0x07, "ERROR : Causality Violation");
+            DrawTextInWindow(0, 1, 0x07, "                                                     ");
             y = 2;
             CurrState->ID = STATE_UNK3;
         }
@@ -117,7 +107,7 @@ int main(void)
 
             getcwd(InputBuff, 100);
             sprintf(OutputBuff, "%s>", InputBuff);
-            DrawTextColor(0, y, 0x07, OutputBuff);
+            DrawTextInWindow(0, y, 0x07, OutputBuff);
 
             x = strlen(OutputBuff);
             update_cursor(x, y);
@@ -132,20 +122,20 @@ int main(void)
                     switch (substate) {
                         case 0:
                         case 2:
-                            DrawTextColor(0, y, 0x07, "Bad command or file name");
+                            DrawTextInWindow(0, y, 0x07, "Bad command or file name");
                             break;
 
                         case 1:
-                            DrawTextColor(0, y, 0x07, "Bad command or filename");
+                            DrawTextInWindow(0, y, 0x07, "Bad command or filename");
                             break;
 
                         case 3:
-                            DrawTextColor(32, 12, 0x40, "  ");
-                            DrawTextColor(32, 13, 0x40, "  ");
-                            DrawTextColor(32, 14, 0x40, "  ");
-                            DrawTextColor(32, 15, 0x40, "  ");
-                            DrawTextColor(36, 16, 0x40, "  ");
-                            DrawTextColor(0, y, 0x04, "YOU CANNOT ENTER");
+                            DrawTextInWindow(32, 12, 0x40, "  ");
+                            DrawTextInWindow(32, 13, 0x40, "  ");
+                            DrawTextInWindow(32, 14, 0x40, "  ");
+                            DrawTextInWindow(32, 15, 0x40, "  ");
+                            DrawTextInWindow(36, 16, 0x40, "  ");
+                            DrawTextInWindow(0, y, 0x04, "YOU CANNOT ENTER");
                             break;
 
                         case 4:
@@ -176,13 +166,13 @@ int main(void)
                     //always column 40, starting at line 4
                     if (x == 40) {
                         if (y == 4 && subsubstate == 0) {
-                            DrawTextColor(43, 19, 0x07, "?????????");
+                            DrawTextInWindow(43, 19, 0x07, "?????????");
                             subsubstate++;
                         } else if (y == 6 && subsubstate == 1) {
-                            DrawTextColor(43, 19, 0x07, "What are you doing?");
+                            DrawTextInWindow(43, 19, 0x07, "What are you doing?");
                             subsubstate++;
                         } else if (y == 15 && subsubstate == 2) {
-                            DrawTextColor(43, 19, 0x04, "YOU CANT DESTROY ME!!!!!");
+                            DrawTextInWindow(43, 19, 0x04, "YOU CANT DESTROY ME!!!!!");
                             subsubstate++;
                         } else if (y == 22 && subsubstate == 3) {
                             Awards |= AWARD_UNK;
@@ -250,7 +240,7 @@ int main(void)
                 SecondCount = 0;
                 Gamelogic_SecondTick();
                 sprintf(TimeBuf, "%02d:%02d", Countdown / 60, Countdown % 60);
-                DrawTextColor(70, 2, 0x07, TimeBuf);
+                DrawText(70, InputLine + 2, 0x07, TimeBuf);
             }
 
             while (kbhit())
@@ -265,8 +255,10 @@ int main(void)
                     bufpos = 0;
                     InputBuff[bufpos] = 0;
                     InputBuff[bufpos + 1] = 0;
-                    if (CurrState->ID <= STATE_ONTOILETPANTSOFF)
-                        DrawTextColor(3, 2, 0x0F, "                                                                           ");
+                    if (CurrState->ID <= STATE_ONTOILETPANTSOFF){
+                        ClearLine(2);
+                        DrawTextInInput(2, 2, 0x07, ">");
+                    }
                     CGA_Resplit();
 
                 }
@@ -278,20 +270,20 @@ int main(void)
                         if (bufpos)
                         {
                             bufpos--;
-                            DrawChar(4 + bufpos, 2, ' ');
+                            DrawChar(4 + bufpos, InputLine + 2, ' ');
                             InputBuff[bufpos] = 0;
                         }
                     }
 
                     else if (inkey != 0)
                     {
-                        DrawChar(4 + bufpos, 2, inkey);
+                        DrawChar(4 + bufpos, InputLine + 2, inkey);
                         InputBuff[bufpos] = inkey;
                         InputBuff[bufpos + 1] = 0;
                         bufpos++;
                     }
                 }
-                update_cursor(strlen(InputBuff) + 4, 2);
+                update_cursor(strlen(InputBuff) + 4, InputLine + 2);
             }
 
 

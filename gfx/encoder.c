@@ -13,10 +13,46 @@ encoder.exe in out mode [width]
 #include<stdlib.h>
 #include<string.h>
 
+void ConvertEGAPLANE(FILE *file, char *FileOutName, unsigned char plane)
+{
+    unsigned char inbuf[4];
+    unsigned char outbuf[80];
+    int colcount = 0;
+    char foname[20];
+
+    sprintf(foname, "%spl%u", FileOutName, plane);
+
+    FILE *fileout = fopen(foname, "wb");
+
+    if (!fileout){
+        printf ("can't open %s\n", foname);
+    }
+
+    while (fread(inbuf, 4, 1, file)) // 2 pixels at a time
+    {
+        outbuf[colcount] = 0x00;
+
+        if (inbuf[0] & plane)
+            outbuf[colcount] |= 0xF0;
+        if (inbuf[2] & plane)
+            outbuf[colcount] |= 0x0F;
+
+        colcount++;
+        if (colcount == 80)
+        {
+            // write it twice, we're line doubling
+            fwrite(outbuf, 80, 1, fileout);
+            fwrite(outbuf, 80, 1, fileout);
+            colcount = 0;
+        }
+    }
+    fclose(fileout);
+}
+
 int main(int argc, char *argv[]) {
 
     unsigned char inbuf[4];
-    unsigned char outbuf[2];
+    unsigned char outbuf[80];
     unsigned char thischar, lastchar;
     char mode = 0;
     int width = 0;
@@ -28,14 +64,14 @@ int main(int argc, char *argv[]) {
 
     unsigned char firsttime = 1;
 
-    printf ("usage - encoder [in] [out] [mode]\n");
+    printf ("usage - encoder [in] [out] [mode] [width]\n");
 
     if (argc < 4) {
         printf("No file specified\n");
         exit(1);
     }
 
-    printf("reading %s, writing %s, mode %s, width %s\nModes - s for sprite, b for background, r for raw memory", argv[1], argv[2], argv[3], argv[4]);
+    printf("reading %s, writing %s, mode %s, width %s\nModes - s for sprite, b for background, r for raw memory, e for ega", argv[1], argv[2], argv[3], argv[4]);
 
     if (strcmp(argv[3], "s") == 0){
         if (argc < 5){
@@ -50,6 +86,9 @@ int main(int argc, char *argv[]) {
     }
     else if (strcmp(argv[3], "r") == 0){
         mode = 2;
+    }
+    else if (strcmp(argv[3], "e") == 0){
+        mode = 3;
     }
     else {
         printf("Invalid mode\n");
@@ -67,7 +106,7 @@ int main(int argc, char *argv[]) {
         printf ("can't open %s\n", argv[2]);
     }
 
-    // background mode, RLE
+    // background mode, RLE, no longer used
     if (mode == 0){
         while (fread(inbuf, 4, 1, file)) // 2 pixels at a time  
         {
@@ -130,7 +169,6 @@ int main(int argc, char *argv[]) {
     // first byte is always 0xDD
     // second byte is colour
     else if (mode == 2) {
-        int widthcounter = 0;
         while (fread(inbuf, 4, 1, file)) // 2 pixels at a time
         {
             outbuf[0] = 0xDD;
@@ -138,6 +176,19 @@ int main(int argc, char *argv[]) {
 
             fwrite(outbuf, 2, 1, fileout);
         }
+    }
+
+    // EGA planes
+    // 4 separate bitmaps, encoded seperately
+    // 1 pixel becomes 4 in this arrangement
+    else if (mode == 3) {
+        ConvertEGAPLANE(file, argv[2], 0x01);
+        fseek(file, 0, 0);
+        ConvertEGAPLANE(file, argv[2], 0x02);
+        fseek(file, 0, 0);
+        ConvertEGAPLANE(file, argv[2], 0x04);
+        fseek(file, 0, 0);
+        ConvertEGAPLANE(file, argv[2], 0x08);
     }
 
     fclose(file);

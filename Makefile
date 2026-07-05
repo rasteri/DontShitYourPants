@@ -4,6 +4,7 @@ LINK = wlink
 OBJDIR = build
 DOSBOX = "C:\DOSBox-X\dosbox-x.exe"
 RM = "c:\Program Files (x86)\GnuWin32\bin\rm.exe"
+CAT = "c:\Program Files (x86)\GnuWin32\bin\cat.exe"
 
 OBJS = \
 $(OBJDIR)/main.obj \
@@ -15,39 +16,72 @@ $(OBJDIR)/raster.obj \
 $(OBJDIR)/LZ4_8088.obj
 
 GFXS = \
-$(OBJDIR)/1.lz4 \
-$(OBJDIR)/2.lz4 \
-$(OBJDIR)/3.lz4 \
-$(OBJDIR)/4.lz4 \
-$(OBJDIR)/5.lz4 \
-$(OBJDIR)/6.lz4 \
-$(OBJDIR)/7.lz4 \
-$(OBJDIR)/8.lz4 \
-$(OBJDIR)/9.lz4 \
-$(OBJDIR)/10.lz4 \
-$(OBJDIR)/11.lz4 \
-$(OBJDIR)/12.lz4 \
-$(OBJDIR)/13.lz4 \
-$(OBJDIR)/18.lz4 \
-$(OBJDIR)/19.lz4 \
-$(OBJDIR)/22.lz4 \
-$(OBJDIR)/23.lz4 \
-$(OBJDIR)/26.lz4 \
-$(OBJDIR)/27.lz4 \
-$(OBJDIR)/29.lz4 \
-$(OBJDIR)/30.lz4 \
-$(OBJDIR)/33.lz4 \
-$(OBJDIR)/39.lz4 \
-$(OBJDIR)/42.lz4 \
-$(OBJDIR)/43.lz4 \
-$(OBJDIR)/45.lz4 \
-$(OBJDIR)/46.lz4 \
-$(OBJDIR)/48.lz4 \
-$(OBJDIR)/unk.lz4 \
-$(OBJDIR)/50.lz4 \
-$(OBJDIR)/crown.lz4 \
+$(OBJDIR)/1.cga \
+$(OBJDIR)/2.cga \
+$(OBJDIR)/3.cga \
+$(OBJDIR)/4.cga \
+$(OBJDIR)/5.cga \
+$(OBJDIR)/6.cga \
+$(OBJDIR)/7.cga \
+$(OBJDIR)/8.cga \
+$(OBJDIR)/9.cga \
+$(OBJDIR)/10.cga \
+$(OBJDIR)/11.cga \
+$(OBJDIR)/12.cga \
+$(OBJDIR)/13.cga \
+$(OBJDIR)/18.cga \
+$(OBJDIR)/19.cga \
+$(OBJDIR)/22.cga \
+$(OBJDIR)/23.cga \
+$(OBJDIR)/26.cga \
+$(OBJDIR)/27.cga \
+$(OBJDIR)/29.cga \
+$(OBJDIR)/30.cga \
+$(OBJDIR)/33.cga \
+$(OBJDIR)/39.cga \
+$(OBJDIR)/42.cga \
+$(OBJDIR)/43.cga \
+$(OBJDIR)/45.cga \
+$(OBJDIR)/46.cga \
+$(OBJDIR)/48.cga \
+$(OBJDIR)/unk.cga \
+$(OBJDIR)/50.cga \
+$(OBJDIR)/crown.cga \
+$(OBJDIR)/1.ega \
+$(OBJDIR)/2.ega \
+$(OBJDIR)/3.ega \
+$(OBJDIR)/4.ega \
+$(OBJDIR)/5.ega \
+$(OBJDIR)/6.ega \
+$(OBJDIR)/7.ega \
+$(OBJDIR)/8.ega \
+$(OBJDIR)/9.ega \
+$(OBJDIR)/10.ega \
+$(OBJDIR)/11.ega \
+$(OBJDIR)/12.ega \
+$(OBJDIR)/13.ega \
+$(OBJDIR)/18.ega \
+$(OBJDIR)/19.ega \
+$(OBJDIR)/22.ega \
+$(OBJDIR)/23.ega \
+$(OBJDIR)/26.ega \
+$(OBJDIR)/27.ega \
+$(OBJDIR)/29.ega \
+$(OBJDIR)/30.ega \
+$(OBJDIR)/33.ega \
+$(OBJDIR)/39.ega \
+$(OBJDIR)/42.ega \
+$(OBJDIR)/43.ega \
+$(OBJDIR)/45.ega \
+$(OBJDIR)/46.ega \
+$(OBJDIR)/48.ega \
+$(OBJDIR)/unk.ega \
+$(OBJDIR)/50.ega \
+$(OBJDIR)/crown.ega \
 
-CFLAGS := -i="C:\WATCOM/h" -w4 -e25 -zq -od -d2 -bt=dos -ml
+
+
+CFLAGS := -i="C:\WATCOM/h" -w4 -e25 -zq -ot -d2 -bt=dos -ml
 
 AFLAGS := 
 
@@ -63,10 +97,19 @@ $(OBJDIR)/%.obj : %.c
 $(OBJDIR)/%.obj : %.asm
 	$(WASM) $(AFLAGS) -fr=$@.err -fo=$@ $<
 
-$(OBJDIR)/%.lz4 : gfx/%.raw
+$(OBJDIR)/%.cga : gfx/%.raw
 	gfx\encoder.exe $< $@.tmp r
 	gfx\lz4.exe -c2 stdin $@ < $@.tmp
-#	-$(RM) $@.tmp
+	-$(RM) $@.tmp
+
+$(OBJDIR)/%.ega : gfx/%.raw
+	gfx\encoder.exe $< $@ e
+	gfx\lz4.exe -c2 stdin $@pl1z < $@pl1
+	gfx\lz4.exe -c2 stdin $@pl2z < $@pl2
+	gfx\lz4.exe -c2 stdin $@pl4z < $@pl4
+	gfx\lz4.exe -c2 stdin $@pl8z < $@pl8
+	$(CAT) $@pl1z $@pl2z $@pl4z $@pl8z > $@
+	-$(RM) $@pl*
 
 $(OBJDIR)/dontshit.exe: makebuilddir $(OBJS) $(GFXS)
 	$(LINK) name $(OBJDIR)/dontshit.exe d all sys dos op m=$(OBJDIR)/dontshit.map op maxe=25 op quiet op symf=$(OBJDIR)/dontshit.sym file { $(OBJS) }
@@ -74,11 +117,12 @@ $(OBJDIR)/dontshit.exe: makebuilddir $(OBJS) $(GFXS)
 	copy $(OBJDIR)\dontshit.exe floppy
 	copy strings.txt floppy
 	copy verbs.txt floppy
-	copy $(OBJDIR)\*.lz4 floppy
+	copy $(OBJDIR)\*.cga floppy
+	copy $(OBJDIR)\*.ega floppy
 	copy gfx\crown.bin floppy
 	bfi -t=4 -f=$(OBJDIR)\autofloppy.img .\floppy
 	copy $(OBJDIR)\autofloppy.img C:\martypc\media\floppies
-#	$(DOSBOX) -conf dosbox.conf
+	$(DOSBOX) -conf dosbox.conf
 
 .DEFAULT_GOAL := all
 

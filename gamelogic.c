@@ -207,15 +207,15 @@ void EnterState()
 
 void DrawAward(int x, int y, unsigned long Award, int NameString, int DescString) {
 
-    DrawTextColor(x + 2, y, 0x0f, FindString(NameString));
+    DrawTextInWindow(x + 2, y, 0x0f, FindString(NameString));
 
     if (Awards & Award) {
         if (!(OldAwards & Award))
-            DrawTextColor(x, y, 0x0c, "\xfb");
-        DrawTextColor(x + 3, y + 1, 0x0e, FindString(DescString));
+            DrawTextInWindow(x, y, 0x0c, "\xfb");
+        DrawTextInWindow(x + 3, y + 1, 0x0e, FindString(DescString));
     }
     else {
-        DrawTextColor(x + 3, y + 1, 0x0e, "??????");
+        DrawTextInWindow(x + 3, y + 1, 0x0e, "??????");
     }
 }
 
@@ -378,13 +378,13 @@ int RunAction(GameAction *curraction)
         switch (curraction->Action)
         {
             case 0:
-                DrawTextColor(55, 1, 0x09, "A survival horror game");
-                DrawTextColor(2, 3, 0x0f, "Instructions :");
-                DrawTextColor(2, 4, 0x0f, "- To start type \"play\"");
-                DrawTextColor(2, 5, 0x0f, "- To view achievements type \"awards\"");
-                DrawTextColor(2, 7, 0x0f, "Goal :");
-                DrawTextColor(2, 8, 0x0f, "- Don't shit your pants");
-                DrawTextColor(2, 10, 0x0f, "- Type \"delete\" to delete your file");
+                DrawTextInWindow(55, 1, 0x09, "A survival horror game");
+                DrawTextInWindow(2, 3, 0x0f, "Instructions :");
+                DrawTextInWindow(2, 4, 0x0f, "- To start type \"play\"");
+                DrawTextInWindow(2, 5, 0x0f, "- To view achievements type \"awards\"");
+                DrawTextInWindow(2, 7, 0x0f, "Goal :");
+                DrawTextInWindow(2, 8, 0x0f, "- Don't shit your pants");
+                DrawTextInWindow(2, 10, 0x0f, "- Type \"delete\" to delete your file");
                 break;
 
             case 1:
@@ -424,7 +424,7 @@ int RunAction(GameAction *curraction)
 
                 if (Awards & AWARD_SHITKING) {
                     sprintf(buffage, "Endings Found : %d/%d", endingcount, NUMENDINGS);
-                    DrawTextColor(50, 35, 0x0f, buffage);
+                    DrawTextInWindow(50, 35, 0x0f, buffage);
                 }
 
                 OldAwards = Awards;

@@ -89,8 +89,8 @@ typedef struct _Note {
 
 
 void DisplayGFX(int id);
-void Decode(char far *gfx);
-void DrawTextColor(unsigned int x, unsigned int y, unsigned char color, unsigned char *data);
+void Decode(char far *gfx, unsigned int length);
+void DrawTextInWindow(unsigned int x, unsigned int y, unsigned char color, unsigned char *data);
 void SetGFXLines(int rows);
 void ClearScreen();
 void DisplayText(char *text);
@@ -117,7 +117,7 @@ void GameLogic_TextInput(char *Text);
 int RunAction(GameAction *curraction);
 void EnterState();
 void lz4_decompress();
-
+void ClearText();
 void PlaySound(Note *Song);
 void Music_Task();
 
@@ -154,6 +154,9 @@ extern volatile unsigned char last_keybyte;
 unsigned long Awards;
 extern int endingcount;
 extern unsigned long EndingLog;
+
+// What character line the text input window is
+extern unsigned int InputLine;
 
 #define rasterDisable() outp(CGA_MODE_CTRL, 0x01)
 #define rasterEnable()  outp(CGA_MODE_CTRL, 0x09)
