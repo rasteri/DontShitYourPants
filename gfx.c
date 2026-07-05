@@ -353,7 +353,7 @@ void ClearGFX() {
 
         outpw(0x3CE, 0xFF08); // bit mask
 
-        memset(graphics_mem, 0x00, GFXVerticalHeight * 80);
+        memset(graphics_mem, 0x00, GFXVerticalHeight * 2 * 80);
 
     }
 }
