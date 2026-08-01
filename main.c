@@ -72,7 +72,7 @@ int main(void)
     unsigned char substate = 0;
     unsigned char subsubstate = 0;
     char *pt;
-    unsigned char cnt;
+    unsigned char cnt,cnt2;
     unsigned char bmm = 0;
     FILE *bum;
     unsigned char deleteprogress = 0;
@@ -193,43 +193,46 @@ int main(void)
                     pt = text_mem + 68;
                     cnt = 100;
                     while (cnt--){
-                        *pt = bmm++;
+                        *pt = RandomTable[bmm++];
                         *(pt+1) = 0x07;
                         pt += 160;
                     }
                 } else {
                     pt = graphics_mem + 34;
-                    cnt = 100;
+                    cnt = 200;
                     while (cnt--){
-                        *pt = bmm++;
-                        pt += 160;
+                        *pt = RandomTable[bmm++];
+                        pt += 80;
                     }
                 }
             } else if (CurrState->ID == STATE_AWARDS2 && (endingcount >= NUMENDINGS - 1)) {
                 pt = text_mem + (32 * 160) + (30 * 2);
                 cnt = 2;
-                while (cnt--){
-                    *pt = bmm += 29;
-                    *(pt+1) = 0x0F;
-                    pt += 2;
-                }
-                if (!(Awards & AWARD_UNK)) {
+                if (graphicsmode == GFX_MODE_CGA) {
+                    while (cnt--){
+                        *pt = RandomTable[bmm++];
+                        *(pt+1) = 0x0F;
+                        pt += 2;
+                    }
+                } else {
+                    // Enable writing to all planes
+                    outp(0x3C4, 0x02);
+                    outp(0x3C5, 0xFF);
 
-                    /*pt = text_mem + (32 * 160) + 24;
-                    cnt = 19;
-                    while (cnt--){
-                        *pt = bmm++;
-                        //*(pt+1) = 0x0F;
-                        pt += 2;
+                    //Bit Mask = FFh
+                    outp(0x3CE, 0x08);
+                    outp(0x3CF, 0xFF);
+
+                    pt = graphics_mem + (20 * 8 * 80) + 30;
+                    cnt2 = 8;
+                    while (cnt2--) {
+                        cnt = 2;
+                        while (cnt--) {
+                            *pt = RandomTable[bmm++];
+                            pt += 1;
+                        }
+                        pt += 78;
                     }
-                    pt = text_mem + (33 * 160) + 6;
-                    cnt = 25;
-                    while (cnt--){
-                        *pt = bmm++;
-                        //*(pt+1) = 0x0e;
-                        pt += 2;
-                    }
-                    */
                 }
             }
 

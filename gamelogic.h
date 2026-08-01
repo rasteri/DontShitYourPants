@@ -155,6 +155,8 @@ unsigned long Awards;
 extern int endingcount;
 extern unsigned long EndingLog;
 
+extern unsigned char RandomTable[256];
+
 // What character line the text input window is
 extern unsigned int InputLine;
 

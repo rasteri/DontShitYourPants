@@ -5,6 +5,7 @@ OBJDIR = build
 DOSBOX = "C:\DOSBox-X\dosbox-x.exe"
 RM = "c:\Program Files (x86)\GnuWin32\bin\rm.exe"
 CAT = "c:\Program Files (x86)\GnuWin32\bin\cat.exe"
+ZIP = "C:\msys64\usr\bin\zip.exe"
 
 OBJS = \
 $(OBJDIR)/main.obj \
@@ -13,6 +14,7 @@ $(OBJDIR)/tunes.obj \
 $(OBJDIR)/states.obj \
 $(OBJDIR)/gfx.obj \
 $(OBJDIR)/raster.obj \
+$(OBJDIR)/random.obj \
 $(OBJDIR)/LZ4_8088.obj
 
 GFXS = \
@@ -96,6 +98,9 @@ $(OBJDIR)/%.obj : %.c
 
 $(OBJDIR)/%.obj : %.asm
 	$(WASM) $(AFLAGS) -fr=$@.err -fo=$@ $<
+
+$(OBJDIR)/crown.cga : gfx/crown.raw
+	gfx\encoder.exe $< $@ s 20
 
 $(OBJDIR)/%.cga : gfx/%.raw
 	gfx\encoder.exe $< $@.tmp r

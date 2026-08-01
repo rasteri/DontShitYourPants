@@ -313,6 +313,14 @@ int RunAction(GameAction *curraction)
         endingcount = NUMENDINGS - 2;
         SaveAwards();
         break;
+
+    case ACTION_IDKFA:
+        Awards = 0xFFFFFFFF;
+        OldAwards = Awards;
+        EndingLog = 0xFFFFFFFF;
+        endingcount = NUMENDINGS;
+        SaveAwards();
+        break;
     
     case ACTION_PLAYSOUND:
         PlaySound(JukeBox[curraction->Action]);
@@ -420,11 +428,11 @@ int RunAction(GameAction *curraction)
                 }
 
                 if (endingcount >= NUMENDINGS - 1)
-                    DrawAward(22, 32, AWARD_UNK, STRING_AWARD16NAME, STRING_AWARD16DESC);
+                    DrawAward(22, 16, AWARD_UNK, STRING_AWARD16NAME, STRING_AWARD16DESC);
 
                 if (Awards & AWARD_SHITKING) {
                     sprintf(buffage, "Endings Found : %d/%d", endingcount, NUMENDINGS);
-                    DrawTextInWindow(50, 35, 0x0f, buffage);
+                    DrawTextInWindow(50, 19, 0x0f, buffage);
                 }
 
                 OldAwards = Awards;
@@ -538,7 +546,7 @@ void Gamelogic_SecondTick()
 
     else if (!Countdown)
     {
-        if (PillCountdown == 1 && CurrState->ID == STATE_STANDING)
+        if (PillCountdown == 1 && CurrState->ID == STATE_STANDING && endingcount >= NUMENDINGS - 1)
             RunVerb(VERB_UNK);
         else
             RunVerb(VERB_TIMEOUT);
@@ -554,7 +562,7 @@ void Gamelogic_SecondTick()
 
         if (!PillCountdown)
         {
-            if (Countdown <= 2 && CurrState->ID == STATE_STANDING)
+            if (Countdown <= 2 && CurrState->ID == STATE_STANDING && endingcount >= NUMENDINGS - 1)
                 RunVerb(VERB_UNK);
             else
                 RunVerb(VERB_PILLSACTIVE);

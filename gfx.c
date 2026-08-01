@@ -161,7 +161,7 @@ void RecalcScreenGeometry() {
     unsigned char vdisp;
 
     GFXVerticalLines = GFXVerticalHeight * 2;
-
+    vdisp = GFXVerticalHeight + TextVerticalHeight;
 
     if (CurrState->ID == STATE_MENU || CurrState->ID == STATE_AWARDS || CurrState->ID == STATE_AWARDS2) {
         if (graphicsmode == GFX_MODE_CGA){
@@ -177,8 +177,8 @@ void RecalcScreenGeometry() {
             Set_CGA_Register(6, vdisp);
             Set_CGA_Register(7, vdisp + 3);
         } else { 
-            TextLine = 5;
-            InputLine = 16;
+            TextLine = GFXVerticalHeight >> 2;
+            InputLine = 17;
         }
 
     } else if (graphicsmode == GFX_MODE_CGA) {
@@ -198,7 +198,7 @@ void RecalcScreenGeometry() {
         Set_CGA_Register(7, vdisp + 12);
 
     } else {
-        InputLine = TextLine = GFXVerticalHeight / 4;
+        InputLine = TextLine = GFXVerticalHeight >> 2;
     }
     
 }
@@ -277,10 +277,10 @@ void DrawText(unsigned int x, unsigned int y, unsigned char color, unsigned char
     unsigned int xn = x;
 
     // Just write screen buffer directly for CGA
-    if (graphicsmode == GFX_MODE_CGA){
+    if (graphicsmode == GFX_MODE_CGA) {
         screenpt = text_mem + (y * 160) + (2 * x);
 
-        while (*data){
+        while (*data) {
             // newline
             if (*data == '\\' && *(data+1) == 'n') {
                 data += 2;
@@ -394,34 +394,39 @@ void DecodeSprite(char *gfx, int length, int x, int y) {
     unsigned int Numbytes;
     unsigned char writebyte = 0;
 
-    length += 2;
+    if (graphicsmode == GFX_MODE_CGA) {
 
-    while (length -= 2) {
-        writebyte = 0;
+        length += 2;
 
-        if ((gfx[1] & 0x01)) {
-            writebyte |= writepnt[1] & 0x0F;
-        } else {
-            writebyte |= gfx[0] & 0x0F;
-        }
-        if ((gfx[1] & 0x02)) {
-            writebyte |= writepnt[1] & 0xF0;
-        } else {
-            writebyte |= gfx[0] & 0xF0;
-        }
+        while (length -= 2) {
+            writebyte = 0;
 
-        if (y >= 0) {
-            writepnt[0] = 0xDD;
-            writepnt[1] = writebyte;
-        }
+            if ((gfx[1] & 0x01)) {
+                writebyte |= writepnt[1] & 0x0F;
+            } else {
+                writebyte |= gfx[0] & 0x0F;
+            }
+            if ((gfx[1] & 0x02)) {
+                writebyte |= writepnt[1] & 0xF0;
+            } else {
+                writebyte |= gfx[0] & 0xF0;
+            }
 
-        //newline
-        if ((gfx[1] & 0x04)){
-            y++;
-            writepnt = text_mem + (GFXLine * 160) + (y * 160) + (2 * x);
+            if (y >= 0) {
+                writepnt[0] = 0xDD;
+                writepnt[1] = writebyte;
+            }
+
+            //newline
+            if ((gfx[1] & 0x04)){
+                y++;
+                writepnt = text_mem + (GFXLine * 160) + (y * 160) + (2 * x);
+            }
+            else writepnt += 2;
+            gfx += 2;
         }
-        else writepnt += 2;
-        gfx += 2;
+    } else {
+        
     }
 }
 
