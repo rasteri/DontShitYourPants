@@ -93,11 +93,13 @@ int main(void)
         // do something altogether different
         if (CurrState->ID == STATE_UNK2) {
             GFX_Exit();
+            graphicsmode = GFX_MODE_CGA;
             rasterDisable();
             DisableBlink();
             rasterEnable();
             GFXLine = 0;
-            DisplayGFX(GFX_UNK1);
+            DisplayGFX(GFX_UNK2);
+            SetGFXLines(0);
             DrawTextInWindow(0, 0, 0x07, "ERROR : Causality Violation");
             DrawTextInWindow(0, 1, 0x07, "                                                     ");
             y = 2;

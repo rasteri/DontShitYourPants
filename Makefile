@@ -110,6 +110,16 @@ $(OBJDIR)/%.cga : gfx/%.raw
 	gfx\lz4.exe -c2 stdin $@ < $@.tmp
 	-$(RM) $@.tmp
 
+$(OBJDIR)/unk.cga : gfx/48.raw
+	gfx\encoder.exe $< $@.tmp r
+	gfx\lz4.exe -c2 stdin $@ < $@.tmp
+	-$(RM) $@.tmp
+
+$(OBJDIR)/unk.ega : gfx/48.raw
+	gfx\encoder.exe $< $@.tmp r
+	gfx\lz4.exe -c2 stdin $@ < $@.tmp
+	-$(RM) $@.tmp
+
 $(OBJDIR)/%.ega : gfx/%.raw
 	gfx\encoder.exe $< $@ e
 	gfx\lz4.exe -c2 stdin $@pl1z < $@pl1
