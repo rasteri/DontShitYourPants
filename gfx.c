@@ -7,8 +7,11 @@
 
 #include "gamelogic.h"
 
-/* CGA text memory */
-unsigned char far *text_mem = MK_FP(0xB000, 0x8000);
+// CGA text memory
+unsigned char far *text_mem = MK_FP(0xB000, 0x8000); 
+
+// EGA graphics memory
+unsigned char far *graphics_mem = (unsigned char far *)0xA0000000L; 
 
 int CrownX = 0, CrownY = 0;
 
@@ -37,7 +40,7 @@ void Set_CGA_Register(unsigned char reg, unsigned char val) {
     }
 }
 
-void set_160x100_mode_cga(void)
+void set_mode_cga(void)
 {
     union REGS r;
     int i;
@@ -51,57 +54,42 @@ void set_160x100_mode_cga(void)
 
     DisableBlink();
 
-   rasterEnable();
-   MSPerFrame = 17;
-}
-
-unsigned char OldEGASwitches;
-unsigned char far *ega_switches;
-void set_160x100_mode_ega200(void)
-{
-    union REGS r;
-
-    ega_switches = (unsigned char far *)MK_FP(0x40, 0x88);
-
-    OldEGASwitches = *ega_switches;
-
-    /* Clear EGA 350-line flag (bit 3) -> force 200-line mode */
-    *ega_switches &= ~(1 << 3);
-
-    /* BIOS mode 3 (80x25 text) */
-    r.h.ah = 0x00;
-    r.h.al = 0x03;
-    int86(0x10, &r, &r);
-
-    DisableBlink();
+    rasterEnable();
     MSPerFrame = 17;
 }
 
-void set_160x100_mode_ega350(void)
-{
-    union REGS r;
-    int i;
-
-    /* BIOS mode 3 (80x25 text) */
-    r.h.ah = 0x00;
-    r.h.al = 0x03;
-    int86(0x10, &r, &r);
-
-    DisableBlink();
-    MSPerFrame = 17;
-}
-
-void set_160x100_mode_vga(void)
+void set_mode_ega(void)
 {
     union REGS r;
 
-    /* BIOS mode 3 (80x25 text) */
+    // set mode 0E (640x200x16)
     r.h.ah = 0x00;
-    r.h.al = 0x03;
+    r.h.al = 0x0E;
     int86(0x10, &r, &r);
 
-    DisableBlink();
-    MSPerFrame = 14;
+    // Disable Set/Reset on all planes
+    outp(0x3CE, 0x00);
+    outp(0x3CF, 0x00);
+
+    // Disable Set/Reset on all planes
+    outp(0x3CE, 0x01);
+    outp(0x3CF, 0x00);
+
+    // All planes writable
+    outp(0x3CE, 0x02);
+    outp(0x3CF, 0x0F);
+
+    // Data Rotate = replace
+    outp(0x3CE, 0x03);
+    outp(0x3CF, 0x00);
+
+    // Graphics Controller: write mode 0
+    outp(0x3CE, 0x05);
+    outp(0x3CF, 0x00);
+
+    //Bit Mask = FFh
+    outp(0x3CE, 0x08);
+    outp(0x3CF, 0xFF);
 }
 
 
@@ -143,8 +131,11 @@ unsigned int TextVerticalLines;
 // What character line the text "window" begins at
 unsigned int TextLine;
 
+// What character line the text input window is
+unsigned int InputLine;
+
 // Char line to draw GFX at, always 0 when text at bottom
-unsigned char GFXLine;
+unsigned char GFXLine = 0;
 
 // need to change when screen geometry changes : R4, R5, R6, R7. Also R9 but that's done in a loop
 // For Text-at-bottom mode, 
@@ -169,28 +160,37 @@ unsigned char GFXLine;
 void RecalcScreenGeometry() {
     unsigned char vdisp;
 
-    GFXVerticalLines = GFXVerticalHeight * GFXLinesPerChar;
-    TextVerticalLines = TextVerticalHeight * TextLinesPerChar;
+    GFXVerticalLines = GFXVerticalHeight * 2;
     vdisp = GFXVerticalHeight + TextVerticalHeight;
 
     if (CurrState->ID == STATE_MENU || CurrState->ID == STATE_AWARDS || CurrState->ID == STATE_AWARDS2) {
-        GFXLine = 0;
-        AboveSplitMode = GFXRegisterMode;
-        SplitAtLine = GFXVerticalHeight * GFXLinesPerChar;
-        BelowSplitMode = TextLinesPerChar - 1;
-        TextLine = 32;
+        if (graphicsmode == GFX_MODE_CGA){
+            GFXLine = 0;
+            AboveSplitMode = 1;
+            SplitAtLine = GFXVerticalHeight * 2;
+            BelowSplitMode = 7;
+            TextLine = GFXVerticalHeight;
+            InputLine = 32;
+            
+            Set_CGA_Register(4, vdisp + 6);
+            Set_CGA_Register(5, 6);
+            Set_CGA_Register(6, vdisp);
+            Set_CGA_Register(7, vdisp + 3);
+        } else { 
+            TextLine = GFXVerticalHeight >> 2;
+            InputLine = 17;
+        }
 
-        Set_CGA_Register(4, vdisp + 6);
-        Set_CGA_Register(5, 6);
-        Set_CGA_Register(6, vdisp);
-        Set_CGA_Register(7, vdisp + 3);
-
-    } else if (TextAtTop) {
+    } else if (graphicsmode == GFX_MODE_CGA) {
+        TextVerticalLines = TextVerticalHeight * 8;
+        vdisp = GFXVerticalHeight + TextVerticalHeight;
         GFXLine = TextVerticalHeight;
-        AboveSplitMode = TextLinesPerChar - 1;
+
+        AboveSplitMode = 7;
         SplitAtLine = TextVerticalLines;
-        BelowSplitMode = GFXRegisterMode;
+        BelowSplitMode = 1;
         TextLine = 0;
+        InputLine = 0;
 
         Set_CGA_Register(4, vdisp + 30);
         Set_CGA_Register(5, 0);
@@ -198,16 +198,7 @@ void RecalcScreenGeometry() {
         Set_CGA_Register(7, vdisp + 12);
 
     } else {
-        GFXLine = 0;
-        AboveSplitMode = GFXRegisterMode;
-        SplitAtLine = GFXVerticalHeight * GFXLinesPerChar;
-        BelowSplitMode = TextLinesPerChar - 1;
-        TextLine = GFXVerticalHeight;
-
-        Set_CGA_Register(4, vdisp + 6);
-        Set_CGA_Register(5, 6);
-        Set_CGA_Register(6, vdisp);
-        Set_CGA_Register(7, vdisp + 3);
+        InputLine = TextLine = GFXVerticalHeight >> 2;
     }
     
 }
@@ -221,13 +212,9 @@ void SetTextLines(int lines, char HideTextInput) {
     TextVerticalHeight = lines;
     RecalcScreenGeometry();
     if (!HideTextInput){
-        ClearLine(TextLine + 2);
-        DrawTextColor(2, TextLine + 2, 0x07, ">");
+        ClearLine(2);
+        DrawTextInInput(2, 2, 0x07, ">");
     }
-}
-
-void SetTextWindowLine(int line) {
-    TextLine = line;
 }
 
 void CGA_Unsplit(void) {
@@ -267,50 +254,134 @@ void raster_loop_frames(void);
 
 void DrawChar(unsigned int x, unsigned int y, unsigned char data) {
     unsigned char far *screenpt;
-    screenpt = text_mem + (y * 160) + (2 * x);
-    *screenpt++ = data;
-    *screenpt = 0x07;
-}
-
-
-void DrawTextColor(unsigned int x, unsigned int y, unsigned char color, unsigned char *data) {
-    unsigned char far *screenpt;
-    screenpt = text_mem + (y * 160) + (2 * x);
-
-    while (*data){
-        // newline
-        if (*data == '\\' && *(data+1) == 'n') {
-            data += 2;
-            y++;
-            screenpt = text_mem + (y * 160) + (2 * x);
-        }
-        *screenpt++ = *data++;
-        *screenpt++ = color;
+    union REGS r;
+    if (graphicsmode == GFX_MODE_CGA) {
+        screenpt = text_mem + (y * 160) + (2 * x);
+        *screenpt++ = data;
+        *screenpt = 0x07;
+    }
+    else {
+        r.h.ah = 0x02;
+        r.h.bh = 0;
+        r.h.dh = y;
+        r.h.dl = x;
+        int86(0x10, &r, &r);
+        putch(data);
     }
 }
 
-void * DrawPoint;
+void DrawText(unsigned int x, unsigned int y, unsigned char color, unsigned char *data) {
+
+    unsigned char far *screenpt;
+    union REGS r;
+    unsigned int xn = x;
+
+    // Just write screen buffer directly for CGA
+    if (graphicsmode == GFX_MODE_CGA) {
+        screenpt = text_mem + (y * 160) + (2 * x);
+
+        while (*data) {
+            // newline
+            if (*data == '\\' && *(data+1) == 'n') {
+                data += 2;
+                y++;
+                screenpt = text_mem + (y * 160) + (2 * x);
+            }
+            *screenpt++ = *data++;
+            *screenpt++ = color;
+        }
+    }
+
+    // Use BIOS for EGA because I CBA writing a text renderer
+    else {
+
+        while (*data){
+            // newline
+            if (*data == '\\' && *(data+1) == 'n') {
+                data += 2;
+                y++;
+                xn = x;
+            }
+
+            // set cursor pos
+            r.h.ah = 0x02;
+            r.h.bh = 0;
+            r.h.dh = y;
+            r.h.dl = xn++;
+            int86(0x10, &r, &r);
+            
+            // write char
+            r.h.ah = 0x09;
+            r.h.al = *data++;
+            r.h.bh = 0;
+            r.h.bl = color;
+            r.h.cl = 1;
+            r.h.ch = 0;
+            int86(0x10, &r, &r);
+        }
+    }
+}
+
+void DrawTextInWindow(unsigned int x, unsigned int y, unsigned char color, unsigned char *data) {
+    DrawText(x, y + TextLine, color, data);
+}
+
+void DrawTextInInput(unsigned int x, unsigned int y, unsigned char color, unsigned char *data) {
+    DrawText(x, y + InputLine, color, data);
+}
 
 void ClearLine(int line) {
-    DrawTextColor(0, line, 0x0F, "                                                                                ");
+    if (graphicsmode == GFX_MODE_CGA) {
+        memset(text_mem + ((line + InputLine) * 160), 0x00, 160);
+    } else {
+        // Enable writing to all planes
+        outp(0x3C4, 0x02);
+        outp(0x3C5, 0xFF);
+
+        outpw(0x3CE, 0xFF08); // bit mask
+        memset(graphics_mem + ((line + InputLine) * 8 * 80), 0x00, 8 * 80);
+    }
+}
+
+void ClearGFX() {
+    if (graphicsmode == GFX_MODE_CGA)
+        memset(text_mem + (GFXLine * 160), 0x00, GFXVerticalHeight * 160);
+    else {
+        // Enable writing to all planes
+        outp(0x3C4, 0x02);
+        outp(0x3C5, 0xFF);
+
+        outpw(0x3CE, 0xFF08); // bit mask
+
+        memset(graphics_mem, 0x00, GFXVerticalHeight * 2 * 80);
+
+    }
 }
 
 void ClearScreen() {
-    memset(text_mem, 0x00, 16384);
+
+    if (graphicsmode == GFX_MODE_CGA)
+        memset(text_mem, 0x00, 16384);
+    else {
+        // Enable writing to all planes
+        outp(0x3C4, 0x02);
+        outp(0x3C5, 0xFF);
+
+        outpw(0x3CE, 0xFF08); // bit mask
+
+        memset(graphics_mem, 0x00, 16000);
+    }
+
 }
 
 void DisplayText(char *text) { 
-    ClearLine(TextLine);
-    ClearLine(TextLine+1);
-    DrawTextColor(2, TextLine, 0x07, text);
+    ClearLine(0);
+    ClearLine(1);
+    DrawTextInInput(2, 0, 0x07, text);
 }
 
 
-void Decode(char far *gfx) {
-    inb = gfx;
-    outb = text_mem + (GFXLine * 160);
-    lz4_decompress();
-}
+
 
 // Sprites can be transparent and aren't RLE'd
 // first byte is just colour
@@ -319,49 +390,272 @@ void Decode(char far *gfx) {
 // bit1 - transparent second pixel
 // bit2 - newline
 void DecodeSprite(char *gfx, int length, int x, int y) {
-    char *writepnt = text_mem + (GFXLine * 160) + (y * 160) + (2 * x);
+    char *writepnt;
     unsigned int Numbytes;
     unsigned char writebyte = 0;
+    char *tmp;
 
-    length += 2;
+    if (graphicsmode == GFX_MODE_CGA) {
 
-    while (length -= 2) {
-        writebyte = 0;
+        writepnt = text_mem + (GFXLine * 160) + (y * 160) + (2 * x);
 
-        if ((gfx[1] & 0x01)) {
-            writebyte |= writepnt[1] & 0x0F;
-        } else {
-            writebyte |= gfx[0] & 0x0F;
+        length += 2;
+
+        while (length -= 2) {
+            writebyte = 0;
+
+            if ((gfx[1] & 0x01)) {
+                writebyte |= writepnt[1] & 0x0F;
+            } else {
+                writebyte |= gfx[0] & 0x0F;
+            }
+            if ((gfx[1] & 0x02)) {
+                writebyte |= writepnt[1] & 0xF0;
+            } else {
+                writebyte |= gfx[0] & 0xF0;
+            }
+
+            if (y >= 0) {
+                writepnt[0] = 0xDD;
+                writepnt[1] = writebyte;
+            }
+
+            //newline
+            if ((gfx[1] & 0x04)){
+                y++;
+                writepnt = text_mem + (GFXLine * 160) + (y * 160) + (2 * x);
+            }
+            else writepnt += 2;
+            gfx += 2;
         }
-        if ((gfx[1] & 0x02)) {
-            writebyte |= writepnt[1] & 0xF0;
-        } else {
-            writebyte |= gfx[0] & 0xF0;
-        }
+    } else {
 
-        if (y >= 0) {
-            writepnt[0] = 0xDD;
-            writepnt[1] = writebyte;
-        }
+        writepnt = graphics_mem + (GFXLine * 160) + (y * 160) + x;
 
-        //newline
-        if ((gfx[1] & 0x04)){
-            y++;
-            writepnt = text_mem + (GFXLine * 160) + (y * 160) + (2 * x);
+        length += 2;
+
+        while (length -= 2) {
+            writebyte = 0;
+
+            // transparent 1st pixel
+            if ((gfx[1] & 0x01)) {
+                // do nothing
+            } else {
+                // blank it out first
+                outpw(0x3CE, 0xF008); // bit mask
+
+                outp(0x3C4, 0x02);  // enable planes
+                outp(0x3C5, 0xFF);  // all planes
+
+                *writepnt = 0x00;
+                *(writepnt + 80) = 0x00;
+
+                // set colours
+                outp(0x3C4, 0x02);  // enable planes
+                outp(0x3C5, gfx[0] & 0x0F);  // colors
+
+                outpw(0x3CE, 0xF008); // bit mask
+                *writepnt = 0xFF;
+                *(writepnt + 80) = 0xFF;
+            }
+
+            // dummy read to fill latches
+            tmp = *writepnt;
+
+            // transparent 2nd pixel
+            if ((gfx[1] & 0x02)) {
+                // do nothing
+            } else {
+                // blank it out first
+                outpw(0x3CE, 0x0F08); // bit mask
+
+                outp(0x3C4, 0x02);  // enable planes
+                outp(0x3C5, 0xFF);  // all planes
+
+                *writepnt = 0x00;
+                *(writepnt + 80) = 0x00;
+
+                outp(0x3C4, 0x02);  // enable planes
+                outp(0x3C5, (gfx[0] & 0xF0) >> 4);  // colors
+
+                outpw(0x3CE, 0x0F08); // bit mask
+                *writepnt = 0xFF;
+                *(writepnt + 80) = 0xFF;
+            }
+
+            //newline
+            if ((gfx[1] & 0x04)){
+                y++;
+                writepnt = graphics_mem + (GFXLine * 160) + (y * 160) + x;
+            }
+            else writepnt ++;
+            gfx += 2;
         }
-        else writepnt += 2;
-        gfx += 2;
     }
 }
 
-void ClearGFX() {
-    memset(text_mem + (GFXLine * 160), 0x00, GFXVerticalHeight * 160);
+/*void DrawEGA(unsigned char far *from, unsigned int lines) {
+
+    unsigned char cnt;
+
+    unsigned char far *vram = graphics_mem;
+    unsigned char *lz4pnt;
+    unsigned int x = 0, y = 0;
+
+    unsigned char bmm;
+
+    lz4pnt = from + 1;
+
+    for (y = 0; y < lines; y++){
+        for (x = 0; x < 80; x++) {
+
+            cnt = 0;
+            bmm = *lz4pnt;
+
+            outp(0x3C4, 0x02);  // enable planes
+            outp(0x3C5, bmm & 0x0F);  // colors
+
+            outpw(0x3CE, 0xF008); // bit mask
+            *vram = 0xFF;
+            *(vram + 80) = 0xFF;
+
+            // dummy read to fill latches
+            cnt = *vram;
+
+            outp(0x3C4, 0x02);  // enable planes
+            outp(0x3C5, (bmm & 0xF0) >> 4);  // colors
+
+            outpw(0x3CE, 0x0F08); // bit mask
+            *vram = 0xFF;
+            *(vram + 80) = 0xFF;
+
+            vram += 1;
+            lz4pnt += 2;
+        }
+        vram += 80;
+    }
+
+    //reset registers
+    //Bit Mask = FFh
+    outp(0x3CE, 0x08);
+    outp(0x3CF, 0xFF);
+
+    // All planes writable
+    outp(0x3CE, 0x02);
+    outp(0x3CF, 0x0F);
+}*/
+
+unsigned char *LZ4Buffer;
+
+unsigned int DecodeSize;
+
+unsigned char LZ4Magic[] = {0x02, 0x21, 0x4C, 0x18, 0x00};
+
+char far *FindMagic(char far *s1, unsigned int length) {
+
+    while (length--){
+        if (
+            s1[0] == LZ4Magic[0] && 
+            s1[1] == LZ4Magic[1] && 
+            s1[2] == LZ4Magic[2] && 
+            s1[3] == LZ4Magic[3]
+        ) return s1;
+        
+        else s1++;
+    }
+
+    return NULL;
+    
 }
 
-void DisplayGFX(int id){ 
+unsigned char bum[30];
+
+unsigned char lz4bum[16000];
+
+void Decode(char far *gfx, unsigned int length) {
+
+    int x;
+
+    if (graphicsmode == GFX_MODE_CGA) {
+        inb = gfx;
+        outb = text_mem + (GFXLine * 160);
+        lz4_decompress();
+    } else {
+        //Bit Mask = FFh
+        outp(0x3CE, 0x08);
+        outp(0x3CF, 0xFF);
+
+
+        inb = gfx;
+        outb = graphics_mem;
+
+        // enable plane 0
+        outp(0x3C4, 0x02);
+        outp(0x3C5, 0x01);
+
+        // read from plane 0
+        outp(0x3CE, 0x04);
+        outp(0x3CF, 0x00);
+
+        lz4_decompress();
+
+        
+        gfx = FindMagic(gfx + 4, length);
+        if (gfx == NULL) exit(1);
+
+        inb = gfx;
+        outb = graphics_mem;
+
+        // enable plane 1
+        outp(0x3C4, 0x02);
+        outp(0x3C5, 0x02);
+
+        // read from plane 1
+        outp(0x3CE, 0x04);
+        outp(0x3CF, 0x01);
+
+        lz4_decompress();
+
+                
+        gfx = FindMagic(gfx + 4, length);
+        if (gfx == NULL) exit(1);
+
+        inb = gfx;
+        outb = graphics_mem;
+
+        // enable plane 2
+        outp(0x3C4, 0x02);
+        outp(0x3C5, 0x04);
+
+        // read from plane 2
+        outp(0x3CE, 0x04);
+        outp(0x3CF, 0x02);
+
+        lz4_decompress();
+
+
+        gfx = FindMagic(gfx + 4, length);
+        if (gfx == NULL) exit(1);
+
+        inb = gfx;
+        outb = graphics_mem;
+
+        // enable plane 3
+        outp(0x3C4, 0x02);
+        outp(0x3C5, 0x08);
+
+        // read from plane 3
+        outp(0x3CE, 0x04);
+        outp(0x3CF, 0x03);
+
+        lz4_decompress();
+    }
+}
+
+void DisplayGFX(int id) {
     ClearGFX();
     if (Graphics[id].Length != 0) {
-        Decode(Graphics[id].Data);
+        Decode(Graphics[id].Data, Graphics[id].Length);
     }
 }
 
@@ -381,7 +675,7 @@ void enable_cursor(unsigned char cursor_start, unsigned char cursor_end)
 
 void update_cursor(int x, int y)
 {
-        unsigned int pos = y * 80 + x;
+        unsigned int pos = (y) * 80 + x;
 
         outp(0x3D4, 0x0F);
         outp(0x3D5, (unsigned char) (pos & 0xFF));
@@ -403,8 +697,15 @@ void get_cursor_pos(int *row, int *col)
     *col = regs.h.dl;   // Column (0-based)
 }
 
-void LoadGFX(int num, char * filename) {
+void LoadGFX(int num, char *file) {
     FILE *infile;
+    char filename[20];
+
+    if (graphicsmode == GFX_MODE_CGA)
+        sprintf(filename, "%s.cga", file);
+    else    
+        sprintf(filename, "%s.ega", file);
+    
     infile = fopen(filename, "rb");
     if (!infile){
         printf("Can't open %s\n", filename);
@@ -423,16 +724,17 @@ void LoadGFX(int num, char * filename) {
 
 
 void GFX_DrawScreenSplit() {
-    if (GFXVerticalHeight) {
+    if (graphicsmode == GFX_MODE_CGA){
         raster_split_nopoll();
+    }
+    else
+    {
+        raster_waitvsync();
     }
 }
 
 void GFX_Exit() {
     union REGS r;
-    if (graphicsmode == 0x32){
-        *ega_switches = OldEGASwitches;
-    }
 
     /* Restore normal text mode */
     r.h.ah = 0x00;
@@ -445,52 +747,22 @@ void GFX_Init() {
     char tat = 0;
 
     system("cls");
-    printf("1. Text Above (slow machines)\n2. Text Below (fast machines)\n");
-
-    tat = getch();
-
-    switch (tat){
-        case 0x31:
-            TextAtTop = 1;
-            break;
-
-        case 0x32:
-            TextAtTop = 0;
-            break;
-
-        default:
-            printf("invalid selection %x\n", tat);
-            exit(0);
-    }
-
-    system("cls");
-    printf("1. CGA\n2. EGA200\n3. EGA350\n4. VGA\n");
+    printf("1. CGA\n2. EGA/VGA\n");
 
     graphicsmode = getch();
 
-    switch (graphicsmode){
+    switch (graphicsmode) {
         case GFX_MODE_CGA:
             GFXLinesPerChar = 2;
             TextLinesPerChar = 8;
-            set_160x100_mode_cga();
+            TextAtTop = 1;
+            set_mode_cga();
             break;
 
-        case GFX_MODE_EGA200:
-            GFXLinesPerChar = 2;
-            TextLinesPerChar = 8;
-            set_160x100_mode_ega200();
-            break;
-
-        case GFX_MODE_EGA350:
-            GFXLinesPerChar = 3;
-            TextLinesPerChar = 14;
-            set_160x100_mode_ega350();
-            break;
-
-        case GFX_MODE_VGA:
-            GFXLinesPerChar = 4;
-            TextLinesPerChar = 16;
-            set_160x100_mode_vga();
+        case GFX_MODE_EGA:
+            LZ4Buffer = malloc(16000);
+            TextAtTop = 0;
+            set_mode_ega();
             break;
 
         default:
@@ -502,32 +774,33 @@ void GFX_Init() {
 
     memset(Graphics, 0x00, sizeof(Graphics));
 
-    LoadGFX(GFX_MENU, "1.lz4");
-    LoadGFX(GFX_STANDING, "2.lz4");
-    LoadGFX(GFX_STANDINGPANTSOFF, "3.lz4");
-    LoadGFX(GFX_DOOROPEN, "4.lz4");
-    LoadGFX(GFX_DOOROPENPANTSOFF, "5.lz4");
-    LoadGFX(GFX_ONTOILET, "6.lz4");
-    LoadGFX(GFX_ONTOILETPANTSOFF, "7.lz4");
-    LoadGFX(GFX_AWARDS, "8.lz4");
-    LoadGFX(GFX_CREDITS, "9.lz4");
-    LoadGFX(GFX_SHITONFLOOR, "10.lz4");
-    LoadGFX(GFX_SHITINTOILET, "11.lz4");
-    LoadGFX(GFX_SHITPANTSSTANDING, "12.lz4");
-    LoadGFX(GFX_SHITINPANTSSITTING, "13.lz4");
-    LoadGFX(GFX_DIEPANTSON, "18.lz4");
-    LoadGFX(GFX_DIEPANTSOFF, "19.lz4");
-    LoadGFX(GFX_PILLSSTANDINGPANTSON1, "22.lz4");
-    LoadGFX(GFX_PILLSSTANDINGPANTSON2, "23.lz4");
-    LoadGFX(GFX_PILLSSTANDINGPANTSOFF1, "26.lz4");
-    LoadGFX(GFX_PILLSSTANDINGPANTSOFF2, "27.lz4");
-    LoadGFX(GFX_PILLSSITTINGPANTSON1, "29.lz4");
-    LoadGFX(GFX_PILLSSITTINGPANTSON2, "30.lz4");
-    LoadGFX(GFX_PILLSSITTINGPANTSOFF2, "33.lz4");
-    LoadGFX(GFX_SHITINPANTSWHILEOFF, "39.lz4");
-    LoadGFX(GFX_DIEPANTSONSITTING, "42.lz4");
-    LoadGFX(GFX_DIEPANTSOFFSITTING, "43.lz4");
-    LoadGFX(GFX_SHITONBATHROOMFLOOR, "45.lz4");
-    LoadGFX(GFX_ELVIS, "46.lz4");
-    LoadGFX(GFX_CROWN, "crown.bin");
+    LoadGFX(GFX_MENU, "1");
+    LoadGFX(GFX_STANDING, "2");
+    LoadGFX(GFX_STANDINGPANTSOFF, "3");
+    LoadGFX(GFX_DOOROPEN, "4");
+    LoadGFX(GFX_DOOROPENPANTSOFF, "5");
+    LoadGFX(GFX_ONTOILET, "6");
+    LoadGFX(GFX_ONTOILETPANTSOFF, "7");
+    LoadGFX(GFX_AWARDS, "8");
+    LoadGFX(GFX_CREDITS, "9");
+    LoadGFX(GFX_SHITONFLOOR, "10");
+    LoadGFX(GFX_SHITINTOILET, "11");
+    LoadGFX(GFX_SHITPANTSSTANDING, "12");
+    LoadGFX(GFX_SHITINPANTSSITTING, "13");
+    LoadGFX(GFX_DIEPANTSON, "18");
+    LoadGFX(GFX_DIEPANTSOFF, "19");
+    LoadGFX(GFX_PILLSSTANDINGPANTSON1, "22");
+    LoadGFX(GFX_PILLSSTANDINGPANTSON2, "23");
+    LoadGFX(GFX_PILLSSTANDINGPANTSOFF1, "26");
+    LoadGFX(GFX_PILLSSTANDINGPANTSOFF2, "27");
+    LoadGFX(GFX_PILLSSITTINGPANTSON1, "29");
+    LoadGFX(GFX_PILLSSITTINGPANTSON2, "30");
+    LoadGFX(GFX_PILLSSITTINGPANTSOFF2, "33");
+    LoadGFX(GFX_SHITINPANTSWHILEOFF, "39");
+    LoadGFX(GFX_DIEPANTSONSITTING, "42");
+    LoadGFX(GFX_DIEPANTSOFFSITTING, "43");
+    LoadGFX(GFX_SHITONBATHROOMFLOOR, "45");
+    LoadGFX(GFX_ELVIS, "46");
+    LoadGFX(GFX_CROWN, "crown");
+
 }

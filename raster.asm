@@ -8,7 +8,6 @@ PUBLIC raster_waitvsync_
 EXTRN _SplitAtLine:WORD
 EXTRN _BelowSplitMode:BYTE
 EXTRN _AboveSplitMode:BYTE
-EXTRN _GFXRegisterMode:BYTE
 
 raster_waitvsync_ PROC
 
@@ -37,6 +36,8 @@ h6:
     in  al,dx
     test al,01h
     jz  h6
+
+    ret
 
 raster_waitvsync_ ENDP
 

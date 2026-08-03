@@ -7,9 +7,6 @@
 
 #include "gamelogic.h"
 
-/* CGA text memory */
-unsigned char far *text_mem = MK_FP(0xB000, 0x8000);
-
 int SecondCount = 0;
 
 extern GameState *CurrState;
@@ -32,6 +29,7 @@ char OutputBuff[100];
 
 int main(void)
 {
+    FILE *f;
     char inkey;
 
     int bufpos = 0;
@@ -59,7 +57,7 @@ int main(void)
                 SecondCount = 0;
                 Gamelogic_SecondTick();
                 sprintf(TimeBuf, "%02d:%02d", Countdown / 60, Countdown % 60);
-                DrawTextColor(70, TextLine + 2, 0x07, TimeBuf);
+                DrawText(70, InputLine + 2, 0x07, TimeBuf);
             }
 
             while (kbhit())
@@ -74,8 +72,10 @@ int main(void)
                     bufpos = 0;
                     InputBuff[bufpos] = 0;
                     InputBuff[bufpos + 1] = 0;
-                    if (CurrState->ID <= STATE_ONTOILETPANTSOFF)
-                        DrawTextColor(3, TextLine + 2, 0x0F, "                                                                           ");
+                    if (CurrState->ID <= STATE_ONTOILETPANTSOFF){
+                        ClearLine(2);
+                        DrawTextInInput(2, 2, 0x07, ">");
+                    }
                     CGA_Resplit();
 
                 }
@@ -87,20 +87,20 @@ int main(void)
                         if (bufpos)
                         {
                             bufpos--;
-                            DrawChar(4 + bufpos, TextLine + 2, ' ');
+                            DrawChar(4 + bufpos, InputLine + 2, ' ');
                             InputBuff[bufpos] = 0;
                         }
                     }
 
                     else if (inkey != 0)
                     {
-                        DrawChar(4 + bufpos, TextLine + 2, inkey);
+                        DrawChar(4 + bufpos, InputLine + 2, inkey);
                         InputBuff[bufpos] = inkey;
                         InputBuff[bufpos + 1] = 0;
                         bufpos++;
                     }
                 }
-                update_cursor(strlen(InputBuff) + 4, TextLine + 2);
+                update_cursor(strlen(InputBuff) + 4, InputLine + 2);
             }
 
             keybuf_head = 0;

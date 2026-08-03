@@ -207,15 +207,15 @@ void EnterState()
 
 void DrawAward(int x, int y, unsigned long Award, int NameString, int DescString) {
 
-    DrawTextColor(x + 2, y, 0x0f, FindString(NameString));
+    DrawTextInWindow(x + 2, y, 0x0f, FindString(NameString));
 
     if (Awards & Award) {
         if (!(OldAwards & Award))
-            DrawTextColor(x, y, 0x0c, "\xfb");
-        DrawTextColor(x + 3, y + 1, 0x0e, FindString(DescString));
+            DrawTextInWindow(x, y, 0x0c, "\xfb");
+        DrawTextInWindow(x + 3, y + 1, 0x0e, FindString(DescString));
     }
     else {
-        DrawTextColor(x + 3, y + 1, 0x0e, "??????");
+        DrawTextInWindow(x + 3, y + 1, 0x0e, "??????");
     }
 }
 
@@ -306,8 +306,14 @@ int RunAction(GameAction *curraction)
         SaveAwards();
         break;
 
+    case ACTION_IDKFA:
+        Awards = 0xFFFFFFFF;
+        OldAwards = Awards;
+        EndingLog = 0xFFFFFFFF;
+        endingcount = NUMENDINGS;
+        SaveAwards();
+        break;
     
-
     case ACTION_PLAYSOUND:
         PlaySound(JukeBox[curraction->Action]);
         break;
@@ -369,35 +375,35 @@ int RunAction(GameAction *curraction)
         switch (curraction->Action)
         {
             case 0:
-                DrawTextColor(55, 21, 0x09, "A survival horror game");
-                DrawTextColor(2, 23, 0x0f, "Instructions :");
-                DrawTextColor(2, 24, 0x0f, "- To start type \"play\"");
-                DrawTextColor(2, 25, 0x0f, "- To view achievements type \"awards\"");
-                DrawTextColor(2, 27, 0x0f, "Goal :");
-                DrawTextColor(2, 28, 0x0f, "- Don't shit your pants");
-                DrawTextColor(2, 30, 0x0f, "- Type \"delete\" to delete your file");
+                DrawTextInWindow(55, 1, 0x09, "A survival horror game");
+                DrawTextInWindow(2, 3, 0x0f, "Instructions :");
+                DrawTextInWindow(2, 4, 0x0f, "- To start type \"play\"");
+                DrawTextInWindow(2, 5, 0x0f, "- To view achievements type \"awards\"");
+                DrawTextInWindow(2, 7, 0x0f, "Goal :");
+                DrawTextInWindow(2, 8, 0x0f, "- Don't shit your pants");
+                DrawTextInWindow(2, 10, 0x0f, "- Type \"delete\" to delete your file");
                 break;
 
             case 1:
-                DrawAward(10, 16, AWARD_SHITINTOILET, STRING_AWARD1NAME, STRING_AWARD1DESC);
-                DrawAward(0, 20, AWARD_SHITONFLOOR, STRING_AWARD2NAME, STRING_AWARD2DESC);
-                DrawAward(0, 24, AWARD_SHITINPANTSSTANDING, STRING_AWARD3NAME, STRING_AWARD3DESC);
-                DrawAward(0, 28, AWARD_SHITINPANTSSITTING, STRING_AWARD4NAME, STRING_AWARD4DESC);
-                DrawAward(0, 32, AWARD_DIE, STRING_AWARD5NAME, STRING_AWARD5DESC);
-                DrawAward(40, 20, AWARD_PILLSKICKIN, STRING_AWARD6NAME, STRING_AWARD6DESC);
-                DrawAward(40, 24, AWARD_PILLSFAIL, STRING_AWARD7NAME, STRING_AWARD7DESC);
-                DrawAward(40, 28, AWARD_STARTINGGUN, STRING_AWARD8NAME, STRING_AWARD8DESC);
-                DrawAward(40, 32, AWARD_TIMEOVER, STRING_AWARD9NAME, STRING_AWARD9DESC);
+                DrawAward(10, 0, AWARD_SHITINTOILET, STRING_AWARD1NAME, STRING_AWARD1DESC);
+                DrawAward(0, 4, AWARD_SHITONFLOOR, STRING_AWARD2NAME, STRING_AWARD2DESC);
+                DrawAward(0, 8, AWARD_SHITINPANTSSTANDING, STRING_AWARD3NAME, STRING_AWARD3DESC);
+                DrawAward(0, 12, AWARD_SHITINPANTSSITTING, STRING_AWARD4NAME, STRING_AWARD4DESC);
+                DrawAward(0, 16, AWARD_DIE, STRING_AWARD5NAME, STRING_AWARD5DESC);
+                DrawAward(40, 4, AWARD_PILLSKICKIN, STRING_AWARD6NAME, STRING_AWARD6DESC);
+                DrawAward(40, 8, AWARD_PILLSFAIL, STRING_AWARD7NAME, STRING_AWARD7DESC);
+                DrawAward(40, 12, AWARD_STARTINGGUN, STRING_AWARD8NAME, STRING_AWARD8DESC);
+                DrawAward(40, 16, AWARD_TIMEOVER, STRING_AWARD9NAME, STRING_AWARD9DESC);
                 break;
 
             case 2:
-                DrawAward(0, 16, AWARD_SHITPANTSWHILEOFF, STRING_AWARD10NAME, STRING_AWARD10DESC);
-                DrawAward(0, 20, AWARD_DONTSHIT, STRING_AWARD11NAME, STRING_AWARD11DESC);
-                DrawAward(0, 24, AWARD_BELTSUSPENDERS, STRING_AWARD12NAME, STRING_AWARD12DESC);
-                DrawAward(40, 16, AWARD_FART, STRING_AWARD13NAME, STRING_AWARD13DESC);
-                DrawAward(40, 20, AWARD_SHITONBATHROOMFLOOR, STRING_AWARD14NAME, STRING_AWARD14DESC);
-                DrawAward(40, 24, AWARD_ELVIS, STRING_AWARD15NAME, STRING_AWARD15DESC);
-                DrawAward(22, 28, AWARD_SHITKING, STRING_AWARD20NAME, STRING_AWARD20DESC);
+                DrawAward(0, 0, AWARD_SHITPANTSWHILEOFF, STRING_AWARD10NAME, STRING_AWARD10DESC);
+                DrawAward(0, 4, AWARD_DONTSHIT, STRING_AWARD11NAME, STRING_AWARD11DESC);
+                DrawAward(0, 8, AWARD_BELTSUSPENDERS, STRING_AWARD12NAME, STRING_AWARD12DESC);
+                DrawAward(40, 0, AWARD_FART, STRING_AWARD13NAME, STRING_AWARD13DESC);
+                DrawAward(40, 4, AWARD_SHITONBATHROOMFLOOR, STRING_AWARD14NAME, STRING_AWARD14DESC);
+                DrawAward(40, 8, AWARD_ELVIS, STRING_AWARD15NAME, STRING_AWARD15DESC);
+                DrawAward(22, 12, AWARD_SHITKING, STRING_AWARD20NAME, STRING_AWARD20DESC);
 
                 /*DrawAward(40, 21, AWARD_PILLSFAIL, STRING_AWARD17NAME, STRING_AWARD17DESC);
                 DrawAward(40, 25, AWARD_STARTINGGUN, STRING_AWARD18NAME, STRING_AWARD18DESC);
@@ -412,7 +418,7 @@ int RunAction(GameAction *curraction)
 
                 if (Awards & AWARD_SHITKING) {
                     sprintf(buffage, "Endings Found : %d/%d", endingcount, NUMENDINGS);
-                    DrawTextColor(50, 35, 0x0f, buffage);
+                    DrawTextInWindow(50, 19, 0x0f, buffage);
                 }
 
                 OldAwards = Awards;

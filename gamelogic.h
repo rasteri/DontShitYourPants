@@ -8,9 +8,7 @@
 #define CGA_MODE_CTRL   0x3D8
 
 #define GFX_MODE_CGA 0x31
-#define GFX_MODE_EGA200 0x32
-#define GFX_MODE_EGA350 0x33
-#define GFX_MODE_VGA 0x34
+#define GFX_MODE_EGA 0x32
 
 // linked list of synonyms
 typedef struct _Synonym {
@@ -91,8 +89,8 @@ typedef struct _Note {
 
 
 void DisplayGFX(int id);
-void Decode(char far *gfx);
-void DrawTextColor(unsigned int x, unsigned int y, unsigned char color, unsigned char *data);
+void Decode(char far *gfx, unsigned int length);
+void DrawTextInWindow(unsigned int x, unsigned int y, unsigned char color, unsigned char *data);
 void SetGFXLines(int rows);
 void ClearScreen();
 void DisplayText(char *text);
@@ -119,7 +117,7 @@ void GameLogic_TextInput(char *Text);
 int RunAction(GameAction *curraction);
 void EnterState();
 void lz4_decompress();
-
+void ClearText();
 void PlaySound(Note *Song);
 void Music_Task();
 
@@ -136,7 +134,13 @@ extern unsigned int TextLine;
 extern int CrownX, CrownY;
 extern unsigned char GFXLine;
 
+// CGA text memory
+extern unsigned char far *text_mem; 
 
+// EGA graphics memory
+extern unsigned char far *graphics_mem; 
+
+extern int graphicsmode;
 
 extern unsigned int MSPerFrame;
 
@@ -150,6 +154,11 @@ extern volatile unsigned char last_keybyte;
 unsigned long Awards;
 extern int endingcount;
 extern unsigned long EndingLog;
+
+extern unsigned char RandomTable[256];
+
+// What character line the text input window is
+extern unsigned int InputLine;
 
 #define rasterDisable() outp(CGA_MODE_CTRL, 0x01)
 #define rasterEnable()  outp(CGA_MODE_CTRL, 0x09)
