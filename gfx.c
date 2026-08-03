@@ -390,11 +390,14 @@ void DisplayText(char *text) {
 // bit1 - transparent second pixel
 // bit2 - newline
 void DecodeSprite(char *gfx, int length, int x, int y) {
-    char *writepnt = text_mem + (GFXLine * 160) + (y * 160) + (2 * x);
+    char *writepnt;
     unsigned int Numbytes;
     unsigned char writebyte = 0;
+    char *tmp;
 
     if (graphicsmode == GFX_MODE_CGA) {
+
+        writepnt = text_mem + (GFXLine * 160) + (y * 160) + (2 * x);
 
         length += 2;
 
@@ -426,7 +429,68 @@ void DecodeSprite(char *gfx, int length, int x, int y) {
             gfx += 2;
         }
     } else {
-        
+
+        writepnt = graphics_mem + (GFXLine * 160) + (y * 160) + x;
+
+        length += 2;
+
+        while (length -= 2) {
+            writebyte = 0;
+
+            // transparent 1st pixel
+            if ((gfx[1] & 0x01)) {
+                // do nothing
+            } else {
+                // blank it out first
+                outpw(0x3CE, 0xF008); // bit mask
+
+                outp(0x3C4, 0x02);  // enable planes
+                outp(0x3C5, 0xFF);  // all planes
+
+                *writepnt = 0x00;
+                *(writepnt + 80) = 0x00;
+
+                // set colours
+                outp(0x3C4, 0x02);  // enable planes
+                outp(0x3C5, gfx[0] & 0x0F);  // colors
+
+                outpw(0x3CE, 0xF008); // bit mask
+                *writepnt = 0xFF;
+                *(writepnt + 80) = 0xFF;
+            }
+
+            // dummy read to fill latches
+            tmp = *writepnt;
+
+            // transparent 2nd pixel
+            if ((gfx[1] & 0x02)) {
+                // do nothing
+            } else {
+                // blank it out first
+                outpw(0x3CE, 0x0F08); // bit mask
+
+                outp(0x3C4, 0x02);  // enable planes
+                outp(0x3C5, 0xFF);  // all planes
+
+                *writepnt = 0x00;
+                *(writepnt + 80) = 0x00;
+
+                outp(0x3C4, 0x02);  // enable planes
+                outp(0x3C5, (gfx[0] & 0xF0) >> 4);  // colors
+
+                outpw(0x3CE, 0x0F08); // bit mask
+                *writepnt = 0xFF;
+                *(writepnt + 80) = 0xFF;
+            }
+
+            //newline
+            if ((gfx[1] & 0x04)){
+                y++;
+                writepnt = graphics_mem + (GFXLine * 160) + (y * 160) + x;
+            }
+            else writepnt ++;
+            gfx += 2;
+        }
     }
 }
 

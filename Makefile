@@ -102,6 +102,9 @@ $(OBJDIR)/%.obj : %.asm
 $(OBJDIR)/crown.cga : gfx/crown.raw
 	gfx\encoder.exe $< $@ s 20
 
+$(OBJDIR)/crown.ega : gfx/crown.raw
+	gfx\encoder.exe $< $@ s 20
+
 $(OBJDIR)/%.cga : gfx/%.raw
 	gfx\encoder.exe $< $@.tmp r
 	gfx\lz4.exe -c2 stdin $@ < $@.tmp
@@ -124,7 +127,6 @@ $(OBJDIR)/dontshit.exe: makebuilddir $(OBJS) $(GFXS)
 	copy verbs.txt floppy
 	copy $(OBJDIR)\*.cga floppy
 	copy $(OBJDIR)\*.ega floppy
-	copy gfx\crown.bin floppy
 	bfi -t=4 -f=$(OBJDIR)\autofloppy.img .\floppy
 	copy $(OBJDIR)\autofloppy.img C:\martypc\media\floppies
 	$(DOSBOX) -conf dosbox.conf
