@@ -27,6 +27,13 @@ char InputBuff[100];
 char TimeBuf[30];
 char OutputBuff[100];
 
+
+static void (__interrupt __far *old_int23)(void);
+
+void __interrupt __far my_int23(void) {
+
+}
+
 void reboot(void) {
     unsigned short far *bootflag;
 
@@ -93,6 +100,8 @@ int main(void)
         // do something altogether different
         if (CurrState->ID == STATE_UNK2) {
             GFX_Exit();
+            old_int23 = _dos_getvect(0x23);
+            _dos_setvect(0x23, my_int23);
             graphicsmode = GFX_MODE_CGA;
             rasterDisable();
             DisableBlink();
