@@ -99,16 +99,28 @@ int main(void)
 
         // do something altogether different
         if (CurrState->ID == STATE_UNK2) {
+
             GFX_Exit();
+
             old_int23 = _dos_getvect(0x23);
             _dos_setvect(0x23, my_int23);
-            graphicsmode = GFX_MODE_CGA;
+
+
+
             rasterDisable();
             DisableBlink();
             rasterEnable();
             GFXLine = 0;
-            DisplayGFX(GFX_UNK2);
-            SetGFXLines(0);
+
+            if (graphicsmode = GFX_MODE_EGA) {
+                graphicsmode = GFX_MODE_CGA;
+                DisplayGFX(GFX_UNK2);
+
+            } else {
+                DisplayGFX(GFX_UNK2);
+                SetGFXLines(0);
+            }
+            
             DrawTextInWindow(0, 0, 0x07, "ERROR : Causality Violation");
             DrawTextInWindow(0, 1, 0x07, "                                                     ");
             y = 2;

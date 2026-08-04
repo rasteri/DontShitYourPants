@@ -81,8 +81,6 @@ $(OBJDIR)/unk.ega \
 $(OBJDIR)/50.ega \
 $(OBJDIR)/crown.ega \
 
-
-
 CFLAGS := -i="C:\WATCOM/h" -w4 -e25 -zq -ot -d2 -bt=dos -ml
 
 AFLAGS := 
@@ -137,8 +135,8 @@ $(OBJDIR)/dontshit.exe: makebuilddir $(OBJS) $(GFXS)
 	copy verbs.txt floppy
 	copy $(OBJDIR)\*.cga floppy
 	copy $(OBJDIR)\*.ega floppy
-	bfi -t=4 -f=$(OBJDIR)\autofloppy.img .\floppy
-	copy $(OBJDIR)\autofloppy.img C:\martypc\media\floppies
+	bfi -t=3 -f=$(OBJDIR)\dontshit.img .\floppy
+	copy $(OBJDIR)\dontshit.img C:\martypc\media\floppies
 	$(DOSBOX) -conf dosbox.conf
 
 .DEFAULT_GOAL := all
