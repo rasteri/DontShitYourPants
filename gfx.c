@@ -90,10 +90,8 @@ void set_mode_ega(void)
     //Bit Mask = FFh
     outp(0x3CE, 0x08);
     outp(0x3CF, 0xFF);
-    
-    MSPerFrame = 17;
 
-    LZ4Buffer = malloc(16000);
+    MSPerFrame = 17;
     TextAtTop = 0;
 }
 
