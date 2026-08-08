@@ -161,6 +161,8 @@ extern unsigned char RandomTable[256];
 // What character line the text input window is
 extern unsigned int InputLine;
 
+extern unsigned int FramesPerSecond;
+
 #define rasterDisable() outp(CGA_MODE_CTRL, 0x01)
 #define rasterEnable()  outp(CGA_MODE_CTRL, 0x09)
 

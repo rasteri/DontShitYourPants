@@ -261,7 +261,7 @@ int main(void)
 
             if (CurrState->ID <= STATE_ONTOILETPANTSOFF && CurrState->ID >= STATE_STANDING)
             SecondCount++;
-            if (SecondCount == 60)
+            if (SecondCount == FramesPerSecond)
             {
                 SecondCount = 0;
                 Gamelogic_SecondTick();

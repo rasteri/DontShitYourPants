@@ -18,6 +18,7 @@ unsigned long Awards = 0;
 unsigned long OldAwards = 0;
 unsigned long EndingLog = 0;
 
+unsigned int FramesPerSecond;
 
 char *FindString(int id)
 {
@@ -250,6 +251,15 @@ void WriteDebug(char *bum){
 
 char buffage[40];
 
+void CountEndings() {
+    unsigned char x;
+    endingcount = 0; 
+    for (x = 0; x < NUMENDINGS; x++) {
+        if (EndingLog & ((unsigned long)0x00000001 << (unsigned long)x))
+            endingcount++;
+    }
+}
+
 // returns 1 if action should stop future actions from running all others
 int RunAction(GameAction *curraction)
 {
@@ -421,11 +431,7 @@ int RunAction(GameAction *curraction)
                 DrawAward(40, 29, AWARD_TIMEOVER, STRING_AWARD19NAME, STRING_AWARD19DESC);
                 DrawAward(0, 32, AWARD_SHITKING, STRING_AWARD20NAME, STRING_AWARD20DESC);*/
 
-                endingcount = 0; 
-                for (x = 0; x < NUMENDINGS; x++) {
-                    if (EndingLog & ((unsigned long)0x00000001 << (unsigned long)x))
-                        endingcount++;
-                }
+                CountEndings();
 
                 if (endingcount >= NUMENDINGS - 1)
                     DrawAward(22, 16, AWARD_UNK, STRING_AWARD16NAME, STRING_AWARD16DESC);
@@ -546,6 +552,8 @@ void Gamelogic_SecondTick()
 
     else if (!Countdown)
     {
+        CountEndings();
+
         if (PillCountdown == 1 && CurrState->ID == STATE_STANDING && endingcount >= NUMENDINGS - 1)
             RunVerb(VERB_UNK);
         else
@@ -562,6 +570,8 @@ void Gamelogic_SecondTick()
 
         if (!PillCountdown)
         {
+            CountEndings();
+            
             if (Countdown <= 2 && CurrState->ID == STATE_STANDING && endingcount >= NUMENDINGS - 1)
                 RunVerb(VERB_UNK);
             else

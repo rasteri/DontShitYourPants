@@ -56,6 +56,7 @@ void set_mode_cga(void)
 
     rasterEnable();
     MSPerFrame = 17;
+    FramesPerSecond = 60;
 }
 
 void set_mode_ega(void)
@@ -93,12 +94,14 @@ void set_mode_ega(void)
 
     MSPerFrame = 17;
     TextAtTop = 0;
+    FramesPerSecond = 60;
 }
 
 void set_mode_vga(void)
 {
     set_mode_ega();
     MSPerFrame = 14;
+    FramesPerSecond = 70;
 }
 
 
