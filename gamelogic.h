@@ -9,6 +9,7 @@
 
 #define GFX_MODE_CGA 0x31
 #define GFX_MODE_EGA 0x32
+#define GFX_MODE_VGA 0x33
 
 // linked list of synonyms
 typedef struct _Synonym {

@@ -90,6 +90,17 @@ void set_mode_ega(void)
     //Bit Mask = FFh
     outp(0x3CE, 0x08);
     outp(0x3CF, 0xFF);
+    
+    MSPerFrame = 17;
+
+    LZ4Buffer = malloc(16000);
+    TextAtTop = 0;
+}
+
+void set_mode_vga(void)
+{
+    set_mode_ega();
+    MSPerFrame = 14;
 }
 
 
@@ -237,15 +248,6 @@ void CGA_Resplit(void) {
     }
 }
 
-void ClearTextWindow() {
-    if (!TextAtTop || (CurrState->ID == STATE_MENU || CurrState->ID == STATE_AWARDS || CurrState->ID == STATE_AWARDS2)) {
-
-    }
-    else {
-
-    }
-}
-
 volatile unsigned char keybuf[KEYBUF_SIZE];
 volatile unsigned int  keybuf_head = 0;
 volatile unsigned char last_keybyte = 0;
@@ -377,6 +379,7 @@ void ClearScreen() {
 void DisplayText(char *text) { 
     ClearLine(0);
     ClearLine(1);
+    ClearLine(2);
     DrawTextInInput(2, 0, 0x07, text);
 }
 
@@ -707,7 +710,7 @@ void LoadGFX(int num, char *file) {
         sprintf(filename, "%s.ega", file);
     
     infile = fopen(filename, "rb");
-    if (!infile){
+    if (!infile) {
         printf("Can't open %s\n", filename);
         exit (1);
     }
@@ -747,7 +750,7 @@ void GFX_Init() {
     char tat = 0;
 
     system("cls");
-    printf("1. CGA\n2. EGA/VGA\n");
+    printf("1. CGA\n2. EGA\n3. VGA\n");
 
     graphicsmode = getch();
 
@@ -760,9 +763,11 @@ void GFX_Init() {
             break;
 
         case GFX_MODE_EGA:
-            LZ4Buffer = malloc(16000);
-            TextAtTop = 0;
             set_mode_ega();
+            break;
+
+        case GFX_MODE_VGA:
+            set_mode_vga();
             break;
 
         default:
