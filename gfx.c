@@ -374,7 +374,6 @@ void ClearScreen() {
 
         memset(graphics_mem, 0x00, 16000);
     }
-
 }
 
 void DisplayText(char *text) { 
