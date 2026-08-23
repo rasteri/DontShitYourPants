@@ -712,9 +712,9 @@ void LoadGFX() {
     // load the big blob of graphics
 
     if (graphicsmode == GFX_MODE_CGA)
-        infile = fopen("cga.poo", "rb");
+        infile = fopen("massive.poo", "rb");
     else    
-        infile = fopen("ega.poo", "rb");
+        infile = fopen("monster.poo", "rb");
     
     if (!infile) {
         printf("Can't open .poo file\n");

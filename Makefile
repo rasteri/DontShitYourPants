@@ -129,20 +129,20 @@ $(OBJDIR)/%.ega : gfx/%.raw
 	$(CAT) $@pl1z $@pl2z $@pl4z $@pl8z > $@
 	-$(RM) $@pl*
 
-$(OBJDIR)/ega.poo: makebuilddir $(EGAGFX)
-	gfx\poopack.exe $(OBJDIR)\ega.poo $(EGAGFX)
+$(OBJDIR)/monster.poo: makebuilddir $(EGAGFX)
+	gfx\poopack.exe $(OBJDIR)\monster.poo $(EGAGFX)
 
-$(OBJDIR)/cga.poo: makebuilddir $(CGAGFX)
-	gfx\poopack.exe $(OBJDIR)\cga.poo $(CGAGFX)
+$(OBJDIR)/massive.poo: makebuilddir $(CGAGFX)
+	gfx\poopack.exe $(OBJDIR)\massive.poo $(CGAGFX)
 
-$(OBJDIR)/dontshit.exe: makebuilddir $(OBJS) $(OBJDIR)/cga.poo $(OBJDIR)/ega.poo
+$(OBJDIR)/dontshit.exe: makebuilddir $(OBJS) $(OBJDIR)/massive.poo $(OBJDIR)/monster.poo
 	$(LINK) name $(OBJDIR)/dontshit.exe d all sys dos op m=$(OBJDIR)/dontshit.map op maxe=25 op quiet op symf=$(OBJDIR)/dontshit.sym file { $(OBJS) }
 	-$(RM) -f floppy/*
 	copy $(OBJDIR)\dontshit.exe floppy
-	copy engs.poo floppy
-	copy engv.poo floppy
-	copy $(OBJDIR)\cga.poo floppy
-	copy $(OBJDIR)\ega.poo floppy
+	copy runny.poo floppy
+	copy smelly.poo floppy
+	copy $(OBJDIR)\massive.poo floppy
+	copy $(OBJDIR)\monster.poo floppy
 	bfi -t=3 -f=$(OBJDIR)\dontshit.img .\floppy
 	copy $(OBJDIR)\dontshit.img C:\martypc\media\floppies
 	$(DOSBOX) -conf dosbox.conf

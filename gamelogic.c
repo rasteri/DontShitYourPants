@@ -81,7 +81,7 @@ void LoadVerbs()
     GameVerb *prevverb = NULL, *currverb = NULL;
     char *token;
 
-    FILE *file = fopen("engs.poo", "r");
+    FILE *file = fopen("smelly.poo", "r");
 
     while (fgets(line, 1024, file))
     {
@@ -107,7 +107,7 @@ void LoadVerbs()
 
     fclose(file);
 
-    file = fopen("engv.poo", "r");
+    file = fopen("runny.poo", "r");
 
     linenum = 1;
     while (fgets(line, 1024, file))
