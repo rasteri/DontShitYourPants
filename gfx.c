@@ -707,6 +707,7 @@ void LoadGFX() {
     long filelen;
     unsigned char i;
     long offset;
+    long tableindex;
 
     // load the big blob of graphics
 
@@ -732,7 +733,8 @@ void LoadGFX() {
 
     for (i=0; i < GFXCOUNT; i++) {
         // get the index to the file from the index table at the start of the data block
-        offset = *((long *)(GFXData + (i * sizeof(long) * 2)));
+        tableindex = (i * sizeof(long) * 2);
+        offset = *((long *)(GFXData + tableindex));
 
         // skip the index table itself
         offset += sizeof(long) * GFXCOUNT;
@@ -741,12 +743,13 @@ void LoadGFX() {
         Graphics[i].Data = GFXData + offset;
 
         // check ok
-        if (FindMagic(Graphics[i].Data, 1) == NULL && i != GFX_CROWN)
+        if (i != GFX_CROWN && FindMagic(Graphics[i].Data, 1) == NULL)
             printf("Invalid GFX %d", i);
 
         // length is the second byte in the index table
-        offset += sizeof(long);
-        Graphics[i].Length = GFXData + offset;
+        tableindex += sizeof(long);
+        Graphics[i].Length = *((long *)(GFXData + tableindex));
+
     }
 }
 
