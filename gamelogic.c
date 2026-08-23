@@ -70,7 +70,6 @@ char filter[3] = {'\r', '\n', 0x00};
 
 void LoadVerbs()
 {
-
     char line[1024];
 
     int linenum = 1;

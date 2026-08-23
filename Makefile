@@ -17,69 +17,71 @@ $(OBJDIR)/raster.obj \
 $(OBJDIR)/random.obj \
 $(OBJDIR)/LZ4_8088.obj
 
-GFXS = \
-$(OBJDIR)/1.cga \
-$(OBJDIR)/2.cga \
-$(OBJDIR)/3.cga \
-$(OBJDIR)/4.cga \
-$(OBJDIR)/5.cga \
-$(OBJDIR)/6.cga \
-$(OBJDIR)/7.cga \
-$(OBJDIR)/8.cga \
-$(OBJDIR)/9.cga \
-$(OBJDIR)/10.cga \
-$(OBJDIR)/11.cga \
-$(OBJDIR)/12.cga \
-$(OBJDIR)/13.cga \
-$(OBJDIR)/18.cga \
-$(OBJDIR)/19.cga \
-$(OBJDIR)/22.cga \
-$(OBJDIR)/23.cga \
-$(OBJDIR)/26.cga \
-$(OBJDIR)/27.cga \
-$(OBJDIR)/29.cga \
-$(OBJDIR)/30.cga \
-$(OBJDIR)/33.cga \
-$(OBJDIR)/39.cga \
-$(OBJDIR)/42.cga \
-$(OBJDIR)/43.cga \
-$(OBJDIR)/45.cga \
-$(OBJDIR)/46.cga \
-$(OBJDIR)/48.cga \
-$(OBJDIR)/unk.cga \
-$(OBJDIR)/50.cga \
-$(OBJDIR)/crown.cga \
-$(OBJDIR)/1.ega \
-$(OBJDIR)/2.ega \
-$(OBJDIR)/3.ega \
-$(OBJDIR)/4.ega \
-$(OBJDIR)/5.ega \
-$(OBJDIR)/6.ega \
-$(OBJDIR)/7.ega \
-$(OBJDIR)/8.ega \
-$(OBJDIR)/9.ega \
-$(OBJDIR)/10.ega \
-$(OBJDIR)/11.ega \
-$(OBJDIR)/12.ega \
-$(OBJDIR)/13.ega \
-$(OBJDIR)/18.ega \
-$(OBJDIR)/19.ega \
-$(OBJDIR)/22.ega \
-$(OBJDIR)/23.ega \
-$(OBJDIR)/26.ega \
-$(OBJDIR)/27.ega \
-$(OBJDIR)/29.ega \
-$(OBJDIR)/30.ega \
-$(OBJDIR)/33.ega \
-$(OBJDIR)/39.ega \
-$(OBJDIR)/42.ega \
-$(OBJDIR)/43.ega \
-$(OBJDIR)/45.ega \
-$(OBJDIR)/46.ega \
-$(OBJDIR)/48.ega \
-$(OBJDIR)/unk.ega \
-$(OBJDIR)/50.ega \
+EGAGFX = \
+$(OBJDIR)/menu.ega \
+$(OBJDIR)/standing.ega \
+$(OBJDIR)/standingpantsoff.ega \
+$(OBJDIR)/dooropen.ega \
+$(OBJDIR)/dooropenpantsoff.ega \
+$(OBJDIR)/ontoilet.ega \
+$(OBJDIR)/ontoiletpantsoff.ega \
+$(OBJDIR)/awards.ega \
+$(OBJDIR)/credits.ega \
+$(OBJDIR)/shitonfloor.ega \
+$(OBJDIR)/shitintoilet.ega \
+$(OBJDIR)/shitpantsstanding.ega \
+$(OBJDIR)/shitinpantssitting.ega \
+$(OBJDIR)/diepantson.ega \
+$(OBJDIR)/diepantsoff.ega \
+$(OBJDIR)/pillsstandingpantson1.ega \
+$(OBJDIR)/pillsstandingpantson2.ega \
+$(OBJDIR)/pillsstandingpantsoff1.ega \
+$(OBJDIR)/pillsstandingpantsoff2.ega \
+$(OBJDIR)/pillssittingpantson1.ega \
+$(OBJDIR)/pillssittingpantson2.ega \
+$(OBJDIR)/pillssittingpantsoff2.ega \
+$(OBJDIR)/shitinpantswhileoff.ega \
+$(OBJDIR)/diepantsonsitting.ega \
+$(OBJDIR)/diepantsoffsitting.ega \
+$(OBJDIR)/shitonbathroomfloor.ega \
+$(OBJDIR)/elvis.ega \
 $(OBJDIR)/crown.ega \
+$(OBJDIR)/unk1.ega \
+$(OBJDIR)/unk2.ega \
+$(OBJDIR)/end.ega \
+
+CGAGFX = \
+$(OBJDIR)/menu.cga \
+$(OBJDIR)/standing.cga \
+$(OBJDIR)/standingpantsoff.cga \
+$(OBJDIR)/dooropen.cga \
+$(OBJDIR)/dooropenpantsoff.cga \
+$(OBJDIR)/ontoilet.cga \
+$(OBJDIR)/ontoiletpantsoff.cga \
+$(OBJDIR)/awards.cga \
+$(OBJDIR)/credits.cga \
+$(OBJDIR)/shitonfloor.cga \
+$(OBJDIR)/shitintoilet.cga \
+$(OBJDIR)/shitpantsstanding.cga \
+$(OBJDIR)/shitinpantssitting.cga \
+$(OBJDIR)/diepantson.cga \
+$(OBJDIR)/diepantsoff.cga \
+$(OBJDIR)/pillsstandingpantson1.cga \
+$(OBJDIR)/pillsstandingpantson2.cga \
+$(OBJDIR)/pillsstandingpantsoff1.cga \
+$(OBJDIR)/pillsstandingpantsoff2.cga \
+$(OBJDIR)/pillssittingpantson1.cga \
+$(OBJDIR)/pillssittingpantson2.cga \
+$(OBJDIR)/pillssittingpantsoff2.cga \
+$(OBJDIR)/shitinpantswhileoff.cga \
+$(OBJDIR)/diepantsonsitting.cga \
+$(OBJDIR)/diepantsoffsitting.cga \
+$(OBJDIR)/shitonbathroomfloor.cga \
+$(OBJDIR)/elvis.cga \
+$(OBJDIR)/crown.cga \
+$(OBJDIR)/unk1.cga \
+$(OBJDIR)/unk2.cga \
+$(OBJDIR)/end.cga
 
 CFLAGS := -i="C:\WATCOM/h" -w4 -e25 -zq -ot -d2 -bt=dos -ml
 
@@ -127,14 +129,20 @@ $(OBJDIR)/%.ega : gfx/%.raw
 	$(CAT) $@pl1z $@pl2z $@pl4z $@pl8z > $@
 	-$(RM) $@pl*
 
-$(OBJDIR)/dontshit.exe: makebuilddir $(OBJS) $(GFXS)
+$(OBJDIR)/ega.poo: makebuilddir $(EGAGFX)
+	gfx\poopack.exe $(OBJDIR)\ega.poo $(EGAGFX)
+
+$(OBJDIR)/cga.poo: makebuilddir $(CGAGFX)
+	gfx\poopack.exe $(OBJDIR)\cga.poo $(CGAGFX)
+
+$(OBJDIR)/dontshit.exe: makebuilddir $(OBJS) $(OBJDIR)/cga.poo $(OBJDIR)/ega.poo
 	$(LINK) name $(OBJDIR)/dontshit.exe d all sys dos op m=$(OBJDIR)/dontshit.map op maxe=25 op quiet op symf=$(OBJDIR)/dontshit.sym file { $(OBJS) }
 	-$(RM) -f floppy/*
 	copy $(OBJDIR)\dontshit.exe floppy
 	copy strings.txt floppy
 	copy verbs.txt floppy
-	copy $(OBJDIR)\*.cga floppy
-	copy $(OBJDIR)\*.ega floppy
+	copy $(OBJDIR)\cga.poo floppy
+	copy $(OBJDIR)\ega.poo floppy
 	bfi -t=3 -f=$(OBJDIR)\dontshit.img .\floppy
 	copy $(OBJDIR)\dontshit.img C:\martypc\media\floppies
 	$(DOSBOX) -conf dosbox.conf
