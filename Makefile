@@ -139,8 +139,8 @@ $(OBJDIR)/dontshit.exe: makebuilddir $(OBJS) $(OBJDIR)/cga.poo $(OBJDIR)/ega.poo
 	$(LINK) name $(OBJDIR)/dontshit.exe d all sys dos op m=$(OBJDIR)/dontshit.map op maxe=25 op quiet op symf=$(OBJDIR)/dontshit.sym file { $(OBJS) }
 	-$(RM) -f floppy/*
 	copy $(OBJDIR)\dontshit.exe floppy
-	copy strings.txt floppy
-	copy verbs.txt floppy
+	copy engs.poo floppy
+	copy engv.poo floppy
 	copy $(OBJDIR)\cga.poo floppy
 	copy $(OBJDIR)\ega.poo floppy
 	bfi -t=3 -f=$(OBJDIR)\dontshit.img .\floppy

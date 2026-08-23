@@ -81,7 +81,7 @@ void LoadVerbs()
     GameVerb *prevverb = NULL, *currverb = NULL;
     char *token;
 
-    FILE *file = fopen("strings.txt", "r");
+    FILE *file = fopen("engs.poo", "r");
 
     while (fgets(line, 1024, file))
     {
@@ -107,7 +107,7 @@ void LoadVerbs()
 
     fclose(file);
 
-    file = fopen("verbs.txt", "r");
+    file = fopen("engv.poo", "r");
 
     linenum = 1;
     while (fgets(line, 1024, file))
