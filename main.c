@@ -265,8 +265,10 @@ int main(void)
             {
                 SecondCount = 0;
                 Gamelogic_SecondTick();
-                sprintf(TimeBuf, "%02d:%02d", Countdown / 60, Countdown % 60);
-                DrawText(70, InputLine + 2, 0x07, TimeBuf);
+                if (Countdown > 0) {
+                    sprintf(TimeBuf, "%02d:%02d", Countdown / 60, Countdown % 60);
+                    DrawText(70, InputLine + 2, 0x07, TimeBuf);
+                }
             }
 
             while (kbhit())

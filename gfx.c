@@ -386,7 +386,6 @@ void ClearScreen() {
 void DisplayText(char *text) { 
     ClearLine(0);
     ClearLine(1);
-    ClearLine(2);
     DrawTextInInput(2, 0, 0x07, text);
 }
 
