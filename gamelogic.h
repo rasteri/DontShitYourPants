@@ -147,7 +147,6 @@ extern GameState *CurrState;
 
 #define KEYBUF_SIZE 32
 extern volatile unsigned char keybuf[KEYBUF_SIZE];
-extern volatile unsigned int  keybuf_head;
 extern volatile unsigned char last_keybyte;
 
 unsigned long Awards;

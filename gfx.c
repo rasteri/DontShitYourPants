@@ -250,7 +250,6 @@ void CGA_Resplit(void) {
 }
 
 volatile unsigned char keybuf[KEYBUF_SIZE];
-volatile unsigned int  keybuf_head = 0;
 volatile unsigned char last_keybyte = 0;
 
 void raster_loop_frames(void);
@@ -334,8 +333,16 @@ void DrawTextInInput(unsigned int x, unsigned int y, unsigned char color, unsign
 }
 
 void ClearLine(int line) {
+
+    int i;
+
+    unsigned char far *mempnt = text_mem + ((line + InputLine) * 160); 
+
     if (graphicsmode == GFX_MODE_CGA) {
-        memset(text_mem + ((line + InputLine) * 160), 0x00, 160);
+        for (i = 0; i < 80; i++) {
+            *mempnt++ = 0x00;
+            *mempnt++ = 0x07;
+        }
     } else {
         // Enable writing to all planes
         outp(0x3C4, 0x02);

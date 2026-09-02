@@ -312,9 +312,6 @@ int main(void)
                 update_cursor(strlen(InputBuff) + 4, InputLine + 2);
             }
 
-
-
-            keybuf_head = 0;
             Music_Task();
         }
     }
