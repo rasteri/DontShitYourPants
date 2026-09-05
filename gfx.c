@@ -226,6 +226,7 @@ void SetTextLines(int lines, char HideTextInput) {
     if (!HideTextInput){
         ClearLine(2);
         DrawTextInInput(2, 2, 0x07, ">");
+        update_cursor(4, InputLine + 2);
     }
 }
 

@@ -6,7 +6,8 @@
 #include <math.h>
 #include "gamelogic.h"
 
-GameVerb *firstverb = NULL;
+GamePhrase *GamePhrases = NULL;
+GameWord *GameWords = NULL;
 GameString *GameStrings = NULL;
 unsigned char pillstaken = 0;
 int Countdown = 40;
@@ -20,8 +21,7 @@ unsigned long EndingLog = 0;
 
 unsigned int FramesPerSecond;
 
-char *FindString(int id)
-{
+char *FindString(int id) {
 
     GameString *currstring = GameStrings;
 
@@ -39,21 +39,74 @@ char *FindString(int id)
     return NULL;
 }
 
-int FindVerb(char *TextEntry)
-{
+// Get the root word from its synonym
+char *FindWord(char *Synonym) {
 
-    GameVerb *currverb = NULL;
-    Synonym *currsyn = NULL;
+    GameWord *currverb = GameWords;
+    WordSynonym *currsyn = NULL;
 
-    currverb = firstverb;
     while (currverb != NULL)
     {
 
-        currsyn = currverb->Synonyms;
+        if (strcmp(currverb->Text, Synonym) == 0)
+            return currverb->Text;
+
+        currsyn = currverb->WordSynonyms;
         while (currsyn != NULL)
         {
 
-            if (strcmp(currsyn->Text, TextEntry) == 0)
+            if (strcmp(currsyn->Text, Synonym) == 0)
+                return currverb->Text;
+
+            currsyn = currsyn->next;
+        }
+
+        currverb = currverb->next;
+    }
+
+    return Synonym;
+
+}
+
+// batshit crazy parser
+int FindVerb(char *TextEntry)
+{
+
+    GamePhrase *currverb = NULL;
+    PhraseSynonym *currsyn = NULL;
+
+
+    char NewPhrase[100];
+
+    // Get the first token
+    char *token = strtok(TextEntry, " ");
+
+    memset (NewPhrase, 0x00, 100);
+
+    // create a new phrase from the old one
+    // replacing synonyms with the root word
+    while (token != NULL) {
+
+        strcat(NewPhrase, FindWord(token));
+
+        // next token
+        token = strtok(NULL, " ");
+
+        if (token != NULL)
+            strcat(NewPhrase, " ");
+
+    }
+
+    // now parse the newly constructed phrase
+    currverb = GamePhrases;
+    while (currverb != NULL)
+    {
+
+        currsyn = currverb->PhraseSynonyms;
+        while (currsyn != NULL)
+        {
+
+            if (strcmp(currsyn->Text, NewPhrase) == 0)
                 return currverb->ID;
 
             currsyn = currsyn->next;
@@ -70,17 +123,21 @@ char filter[3] = {'\r', '\n', 0x00};
 
 void LoadVerbs()
 {
-    char line[1024];
+    char line[300];
 
     int linenum = 1;
 
     GameString *currstring;
     GameString *prevstring = NULL;
 
-    Synonym *prevsyn = NULL, *currsyn = NULL;
-    GameVerb *prevverb = NULL, *currverb = NULL;
+    PhraseSynonym *prevsyn = NULL, *currsyn = NULL;
+    GamePhrase *prevverb = NULL, *currverb = NULL;
+    WordSynonym *prevwordsyn = NULL, *currwordsyn = NULL;
+    GameWord *prevword = NULL, *currword = NULL;
+
     char *token;
 
+    // Load strings
     FILE *file = fopen("smelly.poo", "r");
 
     while (fgets(line, 1024, file))
@@ -107,19 +164,100 @@ void LoadVerbs()
 
     fclose(file);
 
+
+    // Load Words
+
+    file = fopen("sticky.poo", "r");
+
+    while (fgets(line, 1024, file))
+    {
+        // one word per line
+        currword = malloc(sizeof(GameWord));
+        currword->WordSynonyms = NULL;
+        currword->next = NULL;
+
+        if (GameWords == NULL)
+            GameWords = currword;
+
+        if (prevword != NULL)
+            prevword->next = currword;
+
+        // Get the first token
+        token = strtok(line, ",");
+
+        currword->Text = malloc(strlen(token) + 1);
+
+        strcpy(currword->Text, token);
+        currwordsyn->Text[strcspn(currwordsyn->Text, filter)] = 0; // strip newline
+
+        prevwordsyn = NULL;
+
+        // next token
+        token = strtok(NULL, ",");
+
+        // Walk through other tokens
+        while (token != NULL)
+        {
+
+            // alloc a synonym
+            currwordsyn = malloc(sizeof(WordSynonym));
+            currwordsyn->next = NULL;
+
+            // if first one, link it into verb
+            if (currword->WordSynonyms == NULL)
+                currword->WordSynonyms = currwordsyn;
+
+            currwordsyn->Text = malloc(strlen(token) + 1);
+
+            strcpy(currwordsyn->Text, token);
+            currwordsyn->Text[strcspn(currwordsyn->Text, filter)] = 0; // strip newline
+
+            //printf(" -- %s\n", currwordsyn->Text);
+
+            if (prevwordsyn != NULL)
+                prevwordsyn->next = currwordsyn;
+
+            prevwordsyn = currwordsyn;
+
+            token = strtok(NULL, ",");
+        }
+
+        prevword = currword;
+    }
+
+    fclose(file);
+
+    /*currword = GameWords;
+    while (currword != NULL) {
+
+        printf("%s - ", currword->Text);
+        currwordsyn = currword->WordSynonyms;
+        while (currwordsyn != NULL){
+            printf("%s,", currwordsyn->Text);
+            currwordsyn = currwordsyn->next;
+        }
+
+        printf("\n");
+
+        currword = currword->next;
+    }*/
+
+
+    // Load Phrases
+
     file = fopen("runny.poo", "r");
 
     linenum = 1;
     while (fgets(line, 1024, file))
     {
         // one verb per line
-        currverb = malloc(sizeof(GameVerb));
+        currverb = malloc(sizeof(GamePhrase));
         currverb->ID = linenum;
-        currverb->Synonyms = NULL;
+        currverb->PhraseSynonyms = NULL;
         currverb->next = NULL;
 
-        if (firstverb == NULL)
-            firstverb = currverb;
+        if (GamePhrases == NULL)
+            GamePhrases = currverb;
 
         if (prevverb != NULL)
             prevverb->next = currverb;
@@ -134,12 +272,12 @@ void LoadVerbs()
         {
 
             // alloc a synonym
-            currsyn = malloc(sizeof(Synonym));
+            currsyn = malloc(sizeof(PhraseSynonym));
             currsyn->next = NULL;
 
             // if first one, link it into verb
-            if (currverb->Synonyms == NULL)
-                currverb->Synonyms = currsyn;
+            if (currverb->PhraseSynonyms == NULL)
+                currverb->PhraseSynonyms = currsyn;
 
             currsyn->Text = malloc(strlen(token) + 1);
 
@@ -169,11 +307,12 @@ void LoadVerbs()
 
     fclose(file);
 
-    /*currverb = firstverb;
+
+    /*currverb = GamePhrases;
     while (currverb != NULL) {
 
         printf("%d\n", currverb->ID);
-        currsyn = currverb->Synonyms;
+        currsyn = currverb->PhraseSynonyms;
         while (currsyn != NULL){
             pnt = currsyn->Text;
             while (*pnt != 0){

@@ -110,12 +110,12 @@ $(OBJDIR)/%.cga : gfx/%.raw
 	gfx\lz4.exe -c2 stdin $@ < $@.tmp
 	-$(RM) $@.tmp
 
-$(OBJDIR)/unk.cga : gfx/48.raw
+$(OBJDIR)/unk2.cga : gfx/unk1.raw
 	gfx\encoder.exe $< $@.tmp r
 	gfx\lz4.exe -c2 stdin $@ < $@.tmp
 	-$(RM) $@.tmp
 
-$(OBJDIR)/unk.ega : gfx/48.raw
+$(OBJDIR)/unk2.ega : gfx/unk1.raw
 	gfx\encoder.exe $< $@.tmp r
 	gfx\lz4.exe -c2 stdin $@ < $@.tmp
 	-$(RM) $@.tmp
@@ -141,6 +141,7 @@ $(OBJDIR)/dontshit.exe: makebuilddir $(OBJS) $(OBJDIR)/massive.poo $(OBJDIR)/mon
 	copy $(OBJDIR)\dontshit.exe floppy
 	copy runny.poo floppy
 	copy smelly.poo floppy
+	copy sticky.poo floppy
 	copy $(OBJDIR)\massive.poo floppy
 	copy $(OBJDIR)\monster.poo floppy
 	bfi -t=3 -f=$(OBJDIR)\dontshit.img .\floppy

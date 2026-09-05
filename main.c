@@ -105,22 +105,19 @@ int main(void)
             old_int23 = _dos_getvect(0x23);
             _dos_setvect(0x23, my_int23);
 
-
-
             rasterDisable();
             DisableBlink();
             rasterEnable();
             GFXLine = 0;
-
-            if (graphicsmode = GFX_MODE_EGA) {
+            if (graphicsmode == GFX_MODE_CGA)  {
+                DisplayGFX(GFX_UNK2);
+            } else {
                 graphicsmode = GFX_MODE_CGA;
                 DisplayGFX(GFX_UNK2);
-
-            } else {
-                DisplayGFX(GFX_UNK2);
-                SetGFXLines(0);
             }
-            
+
+            TextLine = 0;
+
             DrawTextInWindow(0, 0, 0x07, "ERROR : Causality Violation");
             DrawTextInWindow(0, 1, 0x07, "                                                     ");
             y = 2;
@@ -193,6 +190,11 @@ int main(void)
                             subsubstate++;
                         } else if (y == 6 && subsubstate == 1) {
                             DrawTextInWindow(43, 19, 0x07, "What are you doing?");
+                            DrawTextInWindow(32, 12, 0x40, "  ");
+                            DrawTextInWindow(32, 13, 0x40, "  ");
+                            DrawTextInWindow(32, 14, 0x40, "  ");
+                            DrawTextInWindow(32, 15, 0x40, "  ");
+                            DrawTextInWindow(36, 16, 0x40, "  ");
                             subsubstate++;
                         } else if (y == 15 && subsubstate == 2) {
                             DrawTextInWindow(43, 19, 0x04, "YOU CANT DESTROY ME!!!!!");

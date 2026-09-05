@@ -9,26 +9,47 @@
 #define GFX_MODE_EGA 0x32
 #define GFX_MODE_VGA 0x33
 
-// linked list of synonyms
-typedef struct _Synonym {
+// Synonyms for words
+typedef struct _WordSynonym {
 
     char *Text;
 
-    struct _Synonym *next;
+    struct _WordSynonym *next;
 
-} Synonym;
+} WordSynonym;
 
-typedef struct _GameVerb {
+// Words form a phrase
+typedef struct _GameWord {
+
+    char *Text;
+
+    // Linked list of synonyms for this word
+    WordSynonym *WordSynonyms;
+
+    struct _GameWord *next;
+
+} GameWord;
+
+// Different ways a phrase can be, err, phrased
+typedef struct _PhraseSynonym {
+
+    char *Text;
+
+    struct _PhraseSynonym *next;
+
+} PhraseSynonym;
+
+typedef struct _GamePhrase {
 
     int ID;
 
-    // Linked list, or array or something, of synonyms for this verb
-    Synonym *Synonyms;
+    // Linked list of synonyms for this phrase
+    PhraseSynonym *PhraseSynonyms;
 
     // next in list
-    struct _GameVerb *next;
+    struct _GamePhrase *next;
 
-} GameVerb;
+} GamePhrase;
 
 
 typedef struct _GameString {
@@ -162,6 +183,8 @@ extern unsigned int FramesPerSecond;
 
 #define rasterDisable() outp(CGA_MODE_CTRL, 0x01)
 #define rasterEnable()  outp(CGA_MODE_CTRL, 0x09)
+
+void update_cursor(int x, int y);
 
 #define ACTION_NONE 0
 #define ACTION_TEXTOUTPUT 1
