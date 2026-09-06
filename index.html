@@ -9,21 +9,19 @@
     </style>
   </head>
   <body>
-    <div id="dosbox"></div>
+    <div id="dos" style="width: 100vw; height: 60vw;"></div>
     <br/>
-    <button onclick="dosbox.requestFullScreen();">Make fullscreen</button>
+    <button onclick="dos.requestFullScreen();">Make fullscreen</button>
     
-    <script type="text/javascript" src="https://js-dos.com/cdn/js-dos-api.js"></script>
-    <script type="text/javascript">
-      var dosbox = new Dosbox({
-        id: "dosbox",
-        onload: function (dosbox) {
-          dosbox.run("dontshitjsdos.zip", "./dontshit.exe");
-        },
-        onrun: function (dosbox, app) {
-          console.log("App '" + app + "' is runned");
-        }
-      });
+    <!-- js-dos style sheet -->
+    <link rel="stylesheet" href="https://v8.js-dos.com/latest/js-dos.css">
+
+    <!-- js-dos -->
+    <script src="https://v8.js-dos.com/latest/js-dos.js"></script>
+    <script>
+        Dos(document.getElementById("dos"), {
+            url: "DontShit.jsdos",
+        });
     </script>
   </body>
 </html>
