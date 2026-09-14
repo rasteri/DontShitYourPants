@@ -65,7 +65,7 @@ extern void far *inb, *outb;
 unsigned char far *vram = (unsigned char far *)0xA0000000L;
 unsigned char *lz4pnt;
 
-int main(void)
+int main(int argc, char *argv[])
 {
     FILE *f;
     char inkey;
@@ -90,6 +90,9 @@ int main(void)
     PlaySound(JukeBox[SOUND_INTRO]);
 
     Gamelogic_Init();
+
+    if (argc == 2) 
+        graphicsmode = argv[1][0];
 
     GFX_Init();
 

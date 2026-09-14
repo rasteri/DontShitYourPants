@@ -15,7 +15,7 @@ unsigned char far *graphics_mem = (unsigned char far *)0xA0000000L;
 
 int CrownX = 0, CrownY = 0;
 
-int graphicsmode = 0;
+int graphicsmode = NULL;
 
 char TextAtTop = 0;
 
@@ -785,11 +785,14 @@ void GFX_Init() {
     char tat = 0;
 
     system("cls");
-    printf("1. CGA\n2. EGA\n3. VGA\n");
 
-    graphicsmode = getch();
+    if (graphicsmode == NULL){
+        printf("1. CGA\n2. EGA\n3. VGA\n");
+        graphicsmode = getch();
+    }
 
     memset(Graphics, 0x00, sizeof(Graphics));
+
 
     LoadGFX();
 

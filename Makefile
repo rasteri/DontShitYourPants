@@ -151,6 +151,7 @@ $(OBJDIR)/dontshit.exe: makebuilddir $(OBJS) $(OBJDIR)/massive.poo $(OBJDIR)/mon
 	copy floppy\*.* dosbox
 	copy jsdos\*.* dosbox\.jsdos
 	cd dosbox && $(ZIP) -r DontShit.jsdos *.* .jsdos
+	copy dosbox\DontShit.jsdos DontShit.jsdos
 	$(DOSBOX) -conf dosbox.conf
 
 .DEFAULT_GOAL := all
