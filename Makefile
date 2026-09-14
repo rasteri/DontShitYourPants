@@ -148,6 +148,7 @@ $(OBJDIR)/dontshit.exe: makebuilddir $(OBJS) $(OBJDIR)/massive.poo $(OBJDIR)/mon
 	copy $(OBJDIR)\monster.poo floppy
 	bfi -t=3 -f=$(OBJDIR)\dontshit.img .\floppy
 	copy $(OBJDIR)\dontshit.img C:\martypc\media\floppies
+	-$(RM) -f dosbox/*
 	copy floppy\*.* dosbox
 	copy jsdos\*.* dosbox\.jsdos
 	cd dosbox && $(ZIP) -r DontShit.jsdos *.* .jsdos
