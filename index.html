@@ -28,8 +28,10 @@
     <div id="dos" style="width: 90%; height: 90%;"></div>
 
     <script>
+        // Example of cache-busting the jsdos file URL
+        const bundleUrl = "https://rasteri.github.io/DontShitYourPants/dosbox/DontShit.jsdos?v=" + new Date().getTime();
         Dos(document.getElementById("dos"), {
-            url: "https://rasteri.github.io/DontShitYourPants/dosbox/DontShit.jsdos",
+            url: bundleUrl,
         });
     </script>
 </body>
