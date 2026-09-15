@@ -1,29 +1,38 @@
-<html lang="en-us">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>js-dos api</title>
-    <style type="text/css">
-      .dosbox-container { width: 640px; height: 400px; }
-      .dosbox-container > .dosbox-overlay { background: url(https://js-dos.com/cdn/digger.png); }
-    </style>
-  </head>
-  <body>
-    <div id="dosbox"></div>
-    <br/>
-    <button onclick="dosbox.requestFullScreen();">Make fullscreen</button>
-    
-    <script type="text/javascript" src="https://js-dos.com/cdn/js-dos-api.js"></script>
-    <script type="text/javascript">
-      var dosbox = new Dosbox({
-        id: "dosbox",
-        onload: function (dosbox) {
-          dosbox.run("dontshitjsdos.zip", "./dontshit.exe");
-        },
-        onrun: function (dosbox, app) {
-          console.log("App '" + app + "' is runned");
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Don't Shit Your Pants XT</title>
+
+    <style>
+        html, body {
+            height: 100%;
+            align-items: center;
+            vertical-align: center;
         }
-      });
+
+        #dos {
+            width: 90%;
+            height: 90%;
+        }
+    </style>
+
+    <!-- js-dos style sheet -->
+    <link rel="stylesheet" href="https://v8.js-dos.com/latest/js-dos.css">
+
+    <!-- js-dos -->
+    <script src="https://v8.js-dos.com/latest/js-dos.js"></script>
+</head>
+<body bgcolor="#000000">
+
+    <div id="dos" style="width: 90%; height: 90%;"></div>
+
+    <script>
+        // Example of cache-busting the jsdos file URL
+        const bundleUrl = "https://rasteri.github.io/DontShitYourPants/dosbox/DontShit.jsdos?v=" + new Date().getTime();
+        Dos(document.getElementById("dos"), {
+            url: bundleUrl,
+        });
     </script>
-  </body>
+</body>
 </html>

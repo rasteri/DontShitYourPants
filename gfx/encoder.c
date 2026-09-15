@@ -64,14 +64,14 @@ int main(int argc, char *argv[]) {
 
     unsigned char firsttime = 1;
 
-    printf ("usage - encoder [in] [out] [mode] [width]\n");
+    printf ("usage - encoder [in] [out] [mode] [width]\nModes - s for sprite, b for background, r for raw memory, e for ega\n");
 
     if (argc < 4) {
         printf("No file specified\n");
         exit(1);
     }
 
-    printf("reading %s, writing %s, mode %s, width %s\nModes - s for sprite, b for background, r for raw memory, e for ega", argv[1], argv[2], argv[3], argv[4]);
+    printf("reading %s, writing %s, mode %s, width %s\n", argv[1], argv[2], argv[3], argv[4]);
 
     if (strcmp(argv[3], "s") == 0){
         if (argc < 5){

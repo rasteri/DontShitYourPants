@@ -1,5 +1,3 @@
-
-
 /* CGA ports */
 #define CGA_CRTC_INDEX  0x3D4
 #define CGA_CRTC_DATA   0x3D5
@@ -9,27 +7,49 @@
 
 #define GFX_MODE_CGA 0x31
 #define GFX_MODE_EGA 0x32
+#define GFX_MODE_VGA 0x33
 
-// linked list of synonyms
-typedef struct _Synonym {
+// Synonyms for words
+typedef struct _WordSynonym {
 
     char *Text;
 
-    struct _Synonym *next;
+    struct _WordSynonym *next;
 
-} Synonym;
+} WordSynonym;
 
-typedef struct _GameVerb {
+// Words form a phrase
+typedef struct _GameWord {
+
+    char *Text;
+
+    // Linked list of synonyms for this word
+    WordSynonym *WordSynonyms;
+
+    struct _GameWord *next;
+
+} GameWord;
+
+// Different ways a phrase can be, err, phrased
+typedef struct _PhraseSynonym {
+
+    char *Text;
+
+    struct _PhraseSynonym *next;
+
+} PhraseSynonym;
+
+typedef struct _GamePhrase {
 
     int ID;
 
-    // Linked list, or array or something, of synonyms for this verb
-    Synonym *Synonyms;
+    // Linked list of synonyms for this phrase
+    PhraseSynonym *PhraseSynonyms;
 
     // next in list
-    struct _GameVerb *next;
+    struct _GamePhrase *next;
 
-} GameVerb;
+} GamePhrase;
 
 
 typedef struct _GameString {
@@ -148,7 +168,6 @@ extern GameState *CurrState;
 
 #define KEYBUF_SIZE 32
 extern volatile unsigned char keybuf[KEYBUF_SIZE];
-extern volatile unsigned int  keybuf_head;
 extern volatile unsigned char last_keybyte;
 
 unsigned long Awards;
@@ -160,8 +179,12 @@ extern unsigned char RandomTable[256];
 // What character line the text input window is
 extern unsigned int InputLine;
 
+extern unsigned int FramesPerSecond;
+
 #define rasterDisable() outp(CGA_MODE_CTRL, 0x01)
 #define rasterEnable()  outp(CGA_MODE_CTRL, 0x09)
+
+void update_cursor(int x, int y);
 
 #define ACTION_NONE 0
 #define ACTION_TEXTOUTPUT 1
@@ -414,54 +437,35 @@ extern unsigned int InputLine;
 #define STATE_ELVIS 47
 #define STATECOUNT 48
 
-#define GFX_MENU 1
-#define GFX_STANDING 2
-#define GFX_STANDINGPANTSOFF 3
-#define GFX_DOOROPEN 4
-#define GFX_DOOROPENPANTSOFF 5
-#define GFX_ONTOILET 6
-#define GFX_ONTOILETPANTSOFF 7
-#define GFX_AWARDS 8
-#define GFX_CREDITS 9
-#define GFX_SHITONFLOOR 10
-#define GFX_SHITINTOILET 11
-#define GFX_SHITPANTSSTANDING 12
-#define GFX_SHITINPANTSSITTING 13
-/*#define GFX_DONTSHITPANTSON 14
-#define GFX_BREAKPANTSON 15
-#define GFX_FARTPANTSON 16
-#define GFX_FARTPANTSOFF 17*/
-#define GFX_DIEPANTSON 18
-#define GFX_DIEPANTSOFF 19
-//#define GFX_DONTSHITPANTSOFF 20
-//#define GFX_BREAKPANTSOFF 21
-#define GFX_PILLSSTANDINGPANTSON1 22
-#define GFX_PILLSSTANDINGPANTSON2 23
-//#define GFX_PILLSSTANDINGPANTSON3 24
-#define GFX_STARTINGGUN 25
-#define GFX_PILLSSTANDINGPANTSOFF1 26
-#define GFX_PILLSSTANDINGPANTSOFF2 27
-//#define GFX_PILLSSTANDINGPANTSOFF3 28
-#define GFX_PILLSSITTINGPANTSON1 29
-#define GFX_PILLSSITTINGPANTSON2 30
-#define GFX_PILLSSITTINGPANTSON3 31
-//#define GFX_PILLSSITTINGPANTSOFF1 32
-#define GFX_PILLSSITTINGPANTSOFF2 33
-//#define GFX_PILLSSITTINGPANTSOFF3 34
-//#define GFX_TIMEOVERSTANDINGPANTSON 35
-//#define GFX_TIMEOVERSITTINGPANTSON 36
-//#define GFX_TIMEOVERSTANDINGPANTSOFF 37
-//#define GFX_TIMEOVERSITTINGPANTSOFF 38
-#define GFX_SHITINPANTSWHILEOFF 39
-//#define GFX_FARTPANTSONSITTING 40
-//#define GFX_DONTSHITPANTSONSITTING 41
-#define GFX_DIEPANTSONSITTING 42
-#define GFX_DIEPANTSOFFSITTING 43
-//#define GFX_DONTSHITPANTSOFFSITTING 44
-#define GFX_SHITONBATHROOMFLOOR 45
-#define GFX_ELVIS 46
-#define GFX_CROWN 47
-#define GFXCOUNT 48
+#define GFX_MENU 0
+#define GFX_STANDING 1
+#define GFX_STANDINGPANTSOFF 2
+#define GFX_DOOROPEN 3
+#define GFX_DOOROPENPANTSOFF 4
+#define GFX_ONTOILET 5
+#define GFX_ONTOILETPANTSOFF 6
+#define GFX_AWARDS 7
+#define GFX_CREDITS 8
+#define GFX_SHITONFLOOR 9
+#define GFX_SHITINTOILET 10
+#define GFX_SHITPANTSSTANDING 11
+#define GFX_SHITINPANTSSITTING 12
+#define GFX_DIEPANTSON 13
+#define GFX_DIEPANTSOFF 14
+#define GFX_PILLSSTANDINGPANTSON1 15
+#define GFX_PILLSSTANDINGPANTSON2 16
+#define GFX_PILLSSTANDINGPANTSOFF1 17
+#define GFX_PILLSSTANDINGPANTSOFF2 18
+#define GFX_PILLSSITTINGPANTSON1 19
+#define GFX_PILLSSITTINGPANTSON2 20
+#define GFX_PILLSSITTINGPANTSOFF2 21
+#define GFX_SHITINPANTSWHILEOFF 22
+#define GFX_DIEPANTSONSITTING 23
+#define GFX_DIEPANTSOFFSITTING 24
+#define GFX_SHITONBATHROOMFLOOR 25
+#define GFX_ELVIS 26
+#define GFX_CROWN 27
+#define GFXCOUNT 28
 extern Graphic Graphics[GFXCOUNT];
 
 #define AWARD_SHITINTOILET 1

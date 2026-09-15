@@ -27,7 +27,45 @@ char InputBuff[100];
 char TimeBuf[30];
 char OutputBuff[100];
 
-int main(void)
+
+static void (__interrupt __far *old_int23)(void);
+
+void __interrupt __far my_int23(void) {
+
+}
+
+void reboot(void) {
+    unsigned short far *bootflag;
+
+    // try using the keyboard controller (AT onwards)
+    outp(0x64, 0xFE);
+
+    // failing that...
+
+    // warm boot flag
+    bootflag = MK_FP(0x40, 0x72);
+    *bootflag = 0x1234;
+
+    // jump to reset vector
+    _asm {
+        mov ax, 0FFFFh
+        push ax
+
+        xor ax, ax
+        push ax
+
+        retf
+    }
+
+}
+unsigned char tmp[1107];
+
+extern void far *inb, *outb;
+
+unsigned char far *vram = (unsigned char far *)0xA0000000L;
+unsigned char *lz4pnt;
+
+int main(int argc, char *argv[])
 {
     FILE *f;
     char inkey;
@@ -42,6 +80,9 @@ int main(void)
 
     Gamelogic_Init();
 
+    if (argc == 2) 
+        graphicsmode = argv[1][0];
+
     GFX_Init();
 
     EnterState();
@@ -52,12 +93,14 @@ int main(void)
 
             if (CurrState->ID <= STATE_ONTOILETPANTSOFF && CurrState->ID >= STATE_STANDING)
             SecondCount++;
-            if (SecondCount == 60)
+            if (SecondCount == FramesPerSecond)
             {
                 SecondCount = 0;
                 Gamelogic_SecondTick();
-                sprintf(TimeBuf, "%02d:%02d", Countdown / 60, Countdown % 60);
-                DrawText(70, InputLine + 2, 0x07, TimeBuf);
+                if (Countdown > 0) {
+                    sprintf(TimeBuf, "%02d:%02d", Countdown / 60, Countdown % 60);
+                    DrawText(70, InputLine + 2, 0x07, TimeBuf);
+                }
             }
 
             while (kbhit())
@@ -103,7 +146,6 @@ int main(void)
                 update_cursor(strlen(InputBuff) + 4, InputLine + 2);
             }
 
-            keybuf_head = 0;
             Music_Task();
         }
 

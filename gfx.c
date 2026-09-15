@@ -15,7 +15,7 @@ unsigned char far *graphics_mem = (unsigned char far *)0xA0000000L;
 
 int CrownX = 0, CrownY = 0;
 
-int graphicsmode = 0;
+int graphicsmode = NULL;
 
 char TextAtTop = 0;
 
@@ -56,6 +56,7 @@ void set_mode_cga(void)
 
     rasterEnable();
     MSPerFrame = 17;
+    FramesPerSecond = 60;
 }
 
 void set_mode_ega(void)
@@ -90,6 +91,17 @@ void set_mode_ega(void)
     //Bit Mask = FFh
     outp(0x3CE, 0x08);
     outp(0x3CF, 0xFF);
+
+    MSPerFrame = 17;
+    TextAtTop = 0;
+    FramesPerSecond = 60;
+}
+
+void set_mode_vga(void)
+{
+    set_mode_ega();
+    MSPerFrame = 14;
+    FramesPerSecond = 70;
 }
 
 
@@ -214,6 +226,7 @@ void SetTextLines(int lines, char HideTextInput) {
     if (!HideTextInput){
         ClearLine(2);
         DrawTextInInput(2, 2, 0x07, ">");
+        update_cursor(4, InputLine + 2);
     }
 }
 
@@ -237,17 +250,7 @@ void CGA_Resplit(void) {
     }
 }
 
-void ClearTextWindow() {
-    if (!TextAtTop || (CurrState->ID == STATE_MENU || CurrState->ID == STATE_AWARDS || CurrState->ID == STATE_AWARDS2)) {
-
-    }
-    else {
-
-    }
-}
-
 volatile unsigned char keybuf[KEYBUF_SIZE];
-volatile unsigned int  keybuf_head = 0;
 volatile unsigned char last_keybyte = 0;
 
 void raster_loop_frames(void);
@@ -331,8 +334,16 @@ void DrawTextInInput(unsigned int x, unsigned int y, unsigned char color, unsign
 }
 
 void ClearLine(int line) {
+
+    int i;
+
+    unsigned char far *mempnt = text_mem + ((line + InputLine) * 160); 
+
     if (graphicsmode == GFX_MODE_CGA) {
-        memset(text_mem + ((line + InputLine) * 160), 0x00, 160);
+        for (i = 0; i < 80; i++) {
+            *mempnt++ = 0x00;
+            *mempnt++ = 0x07;
+        }
     } else {
         // Enable writing to all planes
         outp(0x3C4, 0x02);
@@ -371,7 +382,6 @@ void ClearScreen() {
 
         memset(graphics_mem, 0x00, 16000);
     }
-
 }
 
 void DisplayText(char *text) { 
@@ -697,29 +707,57 @@ void get_cursor_pos(int *row, int *col)
     *col = regs.h.dl;   // Column (0-based)
 }
 
-void LoadGFX(int num, char *file) {
+unsigned char *GFXData;
+
+void LoadGFX() {
     FILE *infile;
-    char filename[20];
+    long filelen;
+    unsigned char i;
+    long offset;
+    long tableindex;
+
+    // load the big blob of graphics
 
     if (graphicsmode == GFX_MODE_CGA)
-        sprintf(filename, "%s.cga", file);
+        infile = fopen("massive.poo", "rb");
     else    
-        sprintf(filename, "%s.ega", file);
+        infile = fopen("monster.poo", "rb");
     
-    infile = fopen(filename, "rb");
-    if (!infile){
-        printf("Can't open %s\n", filename);
+    if (!infile) {
+        printf("Can't open .poo file\n");
         exit (1);
     }
 
-
     fseek(infile, 0, SEEK_END);
-    Graphics[num].Length = ftell(infile);
+    filelen = ftell(infile);
     fseek(infile, 0, SEEK_SET);
 
-    Graphics[num].Data = malloc(Graphics[num].Length + 1);
-    fread(Graphics[num].Data, Graphics[num].Length, 1, infile);
+    GFXData = malloc(filelen);
+    fread(GFXData, filelen, 1, infile);
     fclose(infile);
+
+    // now link up the pointers
+
+    for (i=0; i < GFXCOUNT; i++) {
+        // get the index to the file from the index table at the start of the data block
+        tableindex = (i * sizeof(long) * 2);
+        offset = *((long *)(GFXData + tableindex));
+
+        // skip the index table itself
+        offset += sizeof(long) * GFXCOUNT;
+
+        // set the pointer
+        Graphics[i].Data = GFXData + offset;
+
+        // check ok
+        if (i != GFX_CROWN && FindMagic(Graphics[i].Data, 1) == NULL)
+            printf("Invalid GFX %d", i);
+
+        // length is the second byte in the index table
+        tableindex += sizeof(long);
+        Graphics[i].Length = *((long *)(GFXData + tableindex));
+
+    }
 }
 
 
@@ -747,9 +785,16 @@ void GFX_Init() {
     char tat = 0;
 
     system("cls");
-    printf("1. CGA\n2. EGA/VGA\n");
 
-    graphicsmode = getch();
+    if (graphicsmode == NULL){
+        printf("1. CGA\n2. EGA\n3. VGA\n");
+        graphicsmode = getch();
+    }
+
+    memset(Graphics, 0x00, sizeof(Graphics));
+
+
+    LoadGFX();
 
     switch (graphicsmode) {
         case GFX_MODE_CGA:
@@ -760,9 +805,11 @@ void GFX_Init() {
             break;
 
         case GFX_MODE_EGA:
-            LZ4Buffer = malloc(16000);
-            TextAtTop = 0;
             set_mode_ega();
+            break;
+
+        case GFX_MODE_VGA:
+            set_mode_vga();
             break;
 
         default:
@@ -771,36 +818,5 @@ void GFX_Init() {
     }
 
     GFXRegisterMode = GFXLinesPerChar - 1;
-
-    memset(Graphics, 0x00, sizeof(Graphics));
-
-    LoadGFX(GFX_MENU, "1");
-    LoadGFX(GFX_STANDING, "2");
-    LoadGFX(GFX_STANDINGPANTSOFF, "3");
-    LoadGFX(GFX_DOOROPEN, "4");
-    LoadGFX(GFX_DOOROPENPANTSOFF, "5");
-    LoadGFX(GFX_ONTOILET, "6");
-    LoadGFX(GFX_ONTOILETPANTSOFF, "7");
-    LoadGFX(GFX_AWARDS, "8");
-    LoadGFX(GFX_CREDITS, "9");
-    LoadGFX(GFX_SHITONFLOOR, "10");
-    LoadGFX(GFX_SHITINTOILET, "11");
-    LoadGFX(GFX_SHITPANTSSTANDING, "12");
-    LoadGFX(GFX_SHITINPANTSSITTING, "13");
-    LoadGFX(GFX_DIEPANTSON, "18");
-    LoadGFX(GFX_DIEPANTSOFF, "19");
-    LoadGFX(GFX_PILLSSTANDINGPANTSON1, "22");
-    LoadGFX(GFX_PILLSSTANDINGPANTSON2, "23");
-    LoadGFX(GFX_PILLSSTANDINGPANTSOFF1, "26");
-    LoadGFX(GFX_PILLSSTANDINGPANTSOFF2, "27");
-    LoadGFX(GFX_PILLSSITTINGPANTSON1, "29");
-    LoadGFX(GFX_PILLSSITTINGPANTSON2, "30");
-    LoadGFX(GFX_PILLSSITTINGPANTSOFF2, "33");
-    LoadGFX(GFX_SHITINPANTSWHILEOFF, "39");
-    LoadGFX(GFX_DIEPANTSONSITTING, "42");
-    LoadGFX(GFX_DIEPANTSOFFSITTING, "43");
-    LoadGFX(GFX_SHITONBATHROOMFLOOR, "45");
-    LoadGFX(GFX_ELVIS, "46");
-    LoadGFX(GFX_CROWN, "crown");
 
 }
