@@ -85,6 +85,7 @@ int main(int argc, char *argv[])
     unsigned char deleteprogress = 0;
     union REGS r;
 
+
     memset(InputBuff, 0x00, 100);
 
     PlaySound(JukeBox[SOUND_INTRO]);
@@ -111,7 +112,7 @@ int main(int argc, char *argv[])
             rasterDisable();
             DisableBlink();
             rasterEnable();
-            
+
             GFXLine = 0;
             if (graphicsmode == GFX_MODE_CGA)  {
                 DisplayGFX(GFX_UNK2);
