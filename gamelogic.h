@@ -181,8 +181,8 @@ extern unsigned int InputLine;
 
 extern unsigned int FramesPerSecond;
 
-#define rasterDisable() outp(CGA_MODE_CTRL, 0x01)
-#define rasterEnable()  outp(CGA_MODE_CTRL, 0x09)
+#define rasterDisable() if (graphicsmode == GFX_MODE_CGA) outp(CGA_MODE_CTRL, 0x01)
+#define rasterEnable()  if (graphicsmode == GFX_MODE_CGA) outp(CGA_MODE_CTRL, 0x09)
 
 void update_cursor(int x, int y);
 

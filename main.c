@@ -111,6 +111,7 @@ int main(int argc, char *argv[])
             rasterDisable();
             DisableBlink();
             rasterEnable();
+            
             GFXLine = 0;
             if (graphicsmode == GFX_MODE_CGA)  {
                 DisplayGFX(GFX_UNK2);
