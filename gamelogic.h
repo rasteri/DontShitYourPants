@@ -142,6 +142,7 @@ void PlaySound(Note *Song);
 void Music_Task();
 
 void Frontend_Exit();
+void * xmalloc(size_t size);
 
 extern unsigned int SplitAtLine;
 extern Note SONG_INTRO[];

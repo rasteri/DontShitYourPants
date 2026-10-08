@@ -23,6 +23,17 @@ void Frontend_Exit()
     exit(0);
 }
 
+void * xmalloc(size_t size)
+{
+    void *p = malloc(size);
+
+    if (p == NULL) {
+        fprintf(stderr, "Malloc shat itself\n");
+        exit(1);
+    }
+    return p;
+}
+
 char InputBuff[100];
 char TimeBuf[30];
 char OutputBuff[100];

@@ -144,11 +144,12 @@ void LoadVerbs()
     {
 
         // one string per line
-        currstring = malloc(sizeof(GameString));
+
+        currstring = xmalloc(sizeof(GameString));
         currstring->ID = linenum;
         currstring->next = NULL;
 
-        currstring->Text = malloc(strlen(line) + 1);
+        currstring->Text = xmalloc(strlen(line) + 1);
         strcpy(currstring->Text, line);
         currstring->Text[strcspn(currstring->Text, filter)] = 0; // strip newline
 
@@ -172,7 +173,7 @@ void LoadVerbs()
     while (fgets(line, 1024, file))
     {
         // one word per line
-        currword = malloc(sizeof(GameWord));
+        currword = xmalloc(sizeof(GameWord));
         currword->WordSynonyms = NULL;
         currword->next = NULL;
 
@@ -185,7 +186,7 @@ void LoadVerbs()
         // Get the first token
         token = strtok(line, ",");
 
-        currword->Text = malloc(strlen(token) + 1);
+        currword->Text = xmalloc(strlen(token) + 1);
 
         strcpy(currword->Text, token);
         currwordsyn->Text[strcspn(currwordsyn->Text, filter)] = 0; // strip newline
@@ -200,14 +201,14 @@ void LoadVerbs()
         {
 
             // alloc a synonym
-            currwordsyn = malloc(sizeof(WordSynonym));
+            currwordsyn = xmalloc(sizeof(WordSynonym));
             currwordsyn->next = NULL;
 
             // if first one, link it into verb
             if (currword->WordSynonyms == NULL)
                 currword->WordSynonyms = currwordsyn;
 
-            currwordsyn->Text = malloc(strlen(token) + 1);
+            currwordsyn->Text = xmalloc(strlen(token) + 1);
 
             strcpy(currwordsyn->Text, token);
             currwordsyn->Text[strcspn(currwordsyn->Text, filter)] = 0; // strip newline
@@ -251,7 +252,7 @@ void LoadVerbs()
     while (fgets(line, 1024, file))
     {
         // one verb per line
-        currverb = malloc(sizeof(GamePhrase));
+        currverb = xmalloc(sizeof(GamePhrase));
         currverb->ID = linenum;
         currverb->PhraseSynonyms = NULL;
         currverb->next = NULL;
@@ -272,14 +273,14 @@ void LoadVerbs()
         {
 
             // alloc a synonym
-            currsyn = malloc(sizeof(PhraseSynonym));
+            currsyn = xmalloc(sizeof(PhraseSynonym));
             currsyn->next = NULL;
 
             // if first one, link it into verb
             if (currverb->PhraseSynonyms == NULL)
                 currverb->PhraseSynonyms = currsyn;
 
-            currsyn->Text = malloc(strlen(token) + 1);
+            currsyn->Text = xmalloc(strlen(token) + 1);
 
             strcpy(currsyn->Text, token);
             currsyn->Text[strcspn(currsyn->Text, filter)] = 0; // strip newline

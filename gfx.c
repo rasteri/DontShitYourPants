@@ -32,6 +32,7 @@ void SetVGAPalette() {
 
     outp(0x03C6, 0xff);
     outp(0x03C8, 0x00);
+    
     for (i = 0; i < 16 * 3; i++) {
         outp(0x03C9, VGAPal[i]);
     }
@@ -763,7 +764,7 @@ void LoadGFX() {
     filelen = ftell(infile);
     fseek(infile, 0, SEEK_SET);
 
-    GFXData = malloc(filelen);
+    GFXData = xmalloc(filelen);
     fread(GFXData, filelen, 1, infile);
     fclose(infile);
 
