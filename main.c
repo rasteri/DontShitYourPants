@@ -28,7 +28,7 @@ void * xmalloc(size_t size)
     void *p = malloc(size);
 
     if (p == NULL) {
-        fprintf(stderr, "Malloc shat itself\n");
+        fprintf(stderr, "Malloc shit its pants\n");
         exit(1);
     }
     return p;
