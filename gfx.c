@@ -50,8 +50,6 @@ int graphicsmode = NULL;
 
 char TextAtTop = 0;
 
-void far *inb, *outb;
-
 Graphic Graphics[GFXCOUNT];
 
 void DisableBlink(void) {
@@ -288,7 +286,7 @@ volatile unsigned char last_keybyte = 0;
 void raster_loop_frames(void);
 
 void DrawChar(unsigned int x, unsigned int y, unsigned char data) {
-    unsigned char far *screenpt;
+    unsigned char *screenpt;
     union REGS r;
     if (graphicsmode == GFX_MODE_CGA) {
         screenpt = text_mem + (y * 160) + (2 * x);
@@ -307,7 +305,7 @@ void DrawChar(unsigned int x, unsigned int y, unsigned char data) {
 
 void DrawText(unsigned int x, unsigned int y, unsigned char color, unsigned char *data) {
 
-    unsigned char far *screenpt;
+    unsigned char *screenpt;
     union REGS r;
     unsigned int xn = x;
 
@@ -536,64 +534,13 @@ void DecodeSprite(char *gfx, int length, int x, int y) {
     }
 }
 
-/*void DrawEGA(unsigned char far *from, unsigned int lines) {
-
-    unsigned char cnt;
-
-    unsigned char far *vram = graphics_mem;
-    unsigned char *lz4pnt;
-    unsigned int x = 0, y = 0;
-
-    unsigned char bmm;
-
-    lz4pnt = from + 1;
-
-    for (y = 0; y < lines; y++){
-        for (x = 0; x < 80; x++) {
-
-            cnt = 0;
-            bmm = *lz4pnt;
-
-            outp(0x3C4, 0x02);  // enable planes
-            outp(0x3C5, bmm & 0x0F);  // colors
-
-            outpw(0x3CE, 0xF008); // bit mask
-            *vram = 0xFF;
-            *(vram + 80) = 0xFF;
-
-            // dummy read to fill latches
-            cnt = *vram;
-
-            outp(0x3C4, 0x02);  // enable planes
-            outp(0x3C5, (bmm & 0xF0) >> 4);  // colors
-
-            outpw(0x3CE, 0x0F08); // bit mask
-            *vram = 0xFF;
-            *(vram + 80) = 0xFF;
-
-            vram += 1;
-            lz4pnt += 2;
-        }
-        vram += 80;
-    }
-
-    //reset registers
-    //Bit Mask = FFh
-    outp(0x3CE, 0x08);
-    outp(0x3CF, 0xFF);
-
-    // All planes writable
-    outp(0x3CE, 0x02);
-    outp(0x3CF, 0x0F);
-}*/
-
 unsigned char *LZ4Buffer;
 
 unsigned int DecodeSize;
 
 unsigned char LZ4Magic[] = {0x02, 0x21, 0x4C, 0x18, 0x00};
 
-char far *FindMagic(char far *s1, unsigned int length) {
+char *FindMagic(char *s1, unsigned int length) {
 
     while (length--){
         if (
@@ -610,13 +557,13 @@ char far *FindMagic(char far *s1, unsigned int length) {
     
 }
 
-unsigned char bum[30];
+void *inb, *outb;
 
-unsigned char lz4bum[16000];
-
-void Decode(char far *gfx, unsigned int length) {
+void Decode(char *gfx, unsigned int length) {
 
     int x;
+
+
 
     if (graphicsmode == GFX_MODE_CGA) {
         inb = gfx;
@@ -824,7 +771,6 @@ void GFX_Init() {
     }
 
     memset(Graphics, 0x00, sizeof(Graphics));
-
 
     LoadGFX();
 

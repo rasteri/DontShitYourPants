@@ -83,11 +83,9 @@ $(OBJDIR)/unk1.cga \
 $(OBJDIR)/unk2.cga \
 $(OBJDIR)/end.cga
 
-CFLAGS := -i="C:\WATCOM/h" -w4 -e25 -zq -ot -d2 -bt=dos -ml
+CFLAGS := -i="C:\WATCOM/h" -w4 -e25 -zq -ot -d2 -bt=dos -mc
 
 AFLAGS := 
-
-LFLAGS := name dontshit d all sys dos op m op maxe=25 op q op symf
 
 makebuilddir:
 	@-mkdir $(OBJDIR)
@@ -138,7 +136,7 @@ $(OBJDIR)/massive.poo: makebuilddir $(CGAGFX)
 	gfx\poopack.exe $(OBJDIR)\massive.poo $(CGAGFX)
 
 $(OBJDIR)/dontshit.exe: makebuilddir $(OBJS) $(OBJDIR)/massive.poo $(OBJDIR)/monster.poo
-	$(LINK) name $(OBJDIR)/dontshit.exe d all sys dos op m=$(OBJDIR)/dontshit.map op maxe=25 op quiet op symf=$(OBJDIR)/dontshit.sym file { $(OBJS) }
+	$(LINK) name $(OBJDIR)/dontshit.exe sys dos op m=$(OBJDIR)/dontshit.map op maxe=25 op quiet op symf=$(OBJDIR)/dontshit.sym file { $(OBJS) }
 	-$(RM) -f floppy/*
 	copy $(OBJDIR)\dontshit.exe floppy
 	copy runny.poo floppy

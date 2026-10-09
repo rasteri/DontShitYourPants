@@ -95,7 +95,7 @@ typedef struct _Graphic {
     unsigned int Lines;
 
     // pointer to le data
-    char far *Data;
+    char *Data;
 
 } Graphic;
 
@@ -109,7 +109,7 @@ typedef struct _Note {
 
 
 void DisplayGFX(int id);
-void Decode(char far *gfx, unsigned int length);
+void Decode(char *gfx, unsigned int length);
 void DrawTextInWindow(unsigned int x, unsigned int y, unsigned char color, unsigned char *data);
 void SetGFXLines(int rows);
 void ClearScreen();
@@ -171,7 +171,7 @@ extern GameState *CurrState;
 extern volatile unsigned char keybuf[KEYBUF_SIZE];
 extern volatile unsigned char last_keybyte;
 
-unsigned long Awards;
+extern unsigned long Awards;
 extern int endingcount;
 extern unsigned long EndingLog;
 

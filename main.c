@@ -23,9 +23,11 @@ void Frontend_Exit()
     exit(0);
 }
 
+
 void * xmalloc(size_t size)
 {
     void *p = malloc(size);
+
 
     if (p == NULL) {
         fprintf(stderr, "Malloc shit its pants\n");
@@ -69,12 +71,6 @@ void reboot(void) {
     }
 
 }
-unsigned char tmp[1107];
-
-extern void far *inb, *outb;
-
-unsigned char far *vram = (unsigned char far *)0xA0000000L;
-unsigned char *lz4pnt;
 
 int main(int argc, char *argv[])
 {
@@ -96,17 +92,18 @@ int main(int argc, char *argv[])
     unsigned char deleteprogress = 0;
     union REGS r;
 
-
     memset(InputBuff, 0x00, 100);
 
     PlaySound(JukeBox[SOUND_INTRO]);
 
-    Gamelogic_Init();
-
     if (argc == 2) 
         graphicsmode = argv[1][0];
 
+
+
     GFX_Init();
+
+    Gamelogic_Init();
 
     EnterState();
 

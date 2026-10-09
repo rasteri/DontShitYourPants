@@ -1,5 +1,5 @@
 .8086
-.model large
+.model compact
 .code
 
 PUBLIC raster_split_nopoll_
