@@ -4,6 +4,7 @@
 #include <graph.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include "gamelogic.h"
 
@@ -74,23 +75,14 @@ void reboot(void) {
 
 int main(int argc, char *argv[])
 {
-    FILE *f;
     char inkey;
-
     int bufpos = 0;
-
-    unsigned int i = 0;
-    unsigned int exitframe = 200;
-    unsigned int curpos = 0;
     unsigned int x = 0, y = 0;
     unsigned char substate = 0;
     unsigned char subsubstate = 0;
     char *pt;
     unsigned char cnt,cnt2;
     unsigned char bmm = 0;
-    FILE *bum;
-    unsigned char deleteprogress = 0;
-    union REGS r;
 
     memset(InputBuff, 0x00, 100);
 
@@ -98,8 +90,6 @@ int main(int argc, char *argv[])
 
     if (argc == 2) 
         graphicsmode = argv[1][0];
-
-
 
     GFX_Init();
 
@@ -332,8 +322,4 @@ int main(int argc, char *argv[])
             Music_Task();
         }
     }
-
-    GFX_Exit();
-
-    return 0;
 }

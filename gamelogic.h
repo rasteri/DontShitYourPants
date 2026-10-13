@@ -127,6 +127,10 @@ void CGA_Unsplit(void);
 void CGA_Resplit(void);
 void raster_split_nopoll(void);
 void raster_waitvsync(void);
+void DisableBlink(void);
+void SaveAwards();
+void DrawText(unsigned int x, unsigned int y, unsigned char color, unsigned char *data);
+void DrawTextInInput(unsigned int x, unsigned int y, unsigned char color, unsigned char *data);
 
 void raster_loop_frames(void);
 void raster_loop_frames(void);
@@ -529,3 +533,4 @@ extern Graphic Graphics[GFXCOUNT];
 #define ENDING_ELVIS 268435456
 #define ENDING_UNK 536870912
 #define NUMENDINGS 30
+

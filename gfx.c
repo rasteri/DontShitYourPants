@@ -46,7 +46,7 @@ unsigned char far *graphics_mem = (unsigned char far *)0xA0000000L;
 
 int CrownX = 0, CrownY = 0;
 
-int graphicsmode = NULL;
+int graphicsmode = 0;
 
 char TextAtTop = 0;
 
@@ -72,7 +72,6 @@ void Set_CGA_Register(unsigned char reg, unsigned char val) {
 void set_mode_cga(void)
 {
     union REGS r;
-    int i;
 
     rasterDisable();
 
@@ -431,9 +430,8 @@ void DisplayText(char *text) {
 // bit2 - newline
 void DecodeSprite(char *gfx, int length, int x, int y) {
     char *writepnt;
-    unsigned int Numbytes;
     unsigned char writebyte = 0;
-    char *tmp;
+    char tmp;
 
     if (graphicsmode == GFX_MODE_CGA) {
 
@@ -561,10 +559,6 @@ void *inb, *outb;
 
 void Decode(char *gfx, unsigned int length) {
 
-    int x;
-
-
-
     if (graphicsmode == GFX_MODE_CGA) {
         inb = gfx;
         outb = text_mem + (GFXLine * 160);
@@ -690,10 +684,8 @@ unsigned char *GFXData;
 
 void LoadGFX() {
     FILE *infile;
-    long filelen;
     unsigned char i;
     long offset;
-    long tableindex;
 
     // load the big blob of graphics
 
@@ -707,36 +699,25 @@ void LoadGFX() {
         exit (1);
     }
 
-    fseek(infile, 0, SEEK_END);
-    filelen = ftell(infile);
-    fseek(infile, 0, SEEK_SET);
-
-    GFXData = xmalloc(filelen);
-    fread(GFXData, filelen, 1, infile);
-    fclose(infile);
-
-    // now link up the pointers
-
     for (i=0; i < GFXCOUNT; i++) {
-        // get the index to the file from the index table at the start of the data block
-        tableindex = (i * sizeof(long) * 2);
-        offset = *((long *)(GFXData + tableindex));
+        // get the offset and length
+        fseek(infile, i * sizeof(long) * 2, SEEK_SET);
+        fread(&offset, sizeof(long), 1, infile);
+        fread(&Graphics[i].Length, sizeof(long), 1, infile);
 
-        // skip the index table itself
-        offset += sizeof(long) * GFXCOUNT;
+        // now grab the data
+        Graphics[i].Data = xmalloc(Graphics[i].Length);
 
-        // set the pointer
-        Graphics[i].Data = GFXData + offset;
+        fseek(infile, offset, SEEK_SET);
+        fread(Graphics[i].Data, Graphics[i].Length, 1, infile);
 
         // check ok
-        if (i != GFX_CROWN && FindMagic(Graphics[i].Data, 1) == NULL)
-            printf("Invalid GFX %d", i);
-
-        // length is the second byte in the index table
-        tableindex += sizeof(long);
-        Graphics[i].Length = *((long *)(GFXData + tableindex));
-
+        if (i != GFX_CROWN && FindMagic(Graphics[i].Data, 1) == NULL) {
+            printf("Invalid GFX %d\n", i);
+            exit(1);
+        }
     }
+
 }
 
 
@@ -761,8 +742,6 @@ void GFX_Exit() {
 }
 
 void GFX_Init() {
-    char tat = 0;
-
     system("cls");
 
     if (graphicsmode == NULL){

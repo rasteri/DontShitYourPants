@@ -403,7 +403,6 @@ void CountEndings() {
 int RunAction(GameAction *curraction)
 {
 
-    int x = 0;
 
     switch (curraction->Type)
     {
@@ -718,3 +717,4 @@ void Gamelogic_SecondTick()
         }
     }
 }
+
