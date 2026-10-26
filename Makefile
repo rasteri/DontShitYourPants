@@ -2,10 +2,6 @@ CC = wcc
 WASM = wasm
 LINK = wlink
 OBJDIR = build
-DOSBOX = "C:\DOSBox-X\dosbox-x.exe"
-RM = "c:\Program Files (x86)\GnuWin32\bin\rm.exe"
-CAT = "c:\Program Files (x86)\GnuWin32\bin\cat.exe"
-ZIP = "C:\msys64\usr\bin\zip.exe"
 
 OBJS = \
 $(OBJDIR)/main.obj \
@@ -77,17 +73,21 @@ $(OBJDIR)/shitonbathroomfloor.cga \
 $(OBJDIR)/elvis.cga \
 $(OBJDIR)/crown.cga 
 
-CFLAGS := -i="C:\WATCOM/h" -w4 -e25 -zq -ot -d2 -bt=dos -ml
+CFLAGS := -w4 -e25 -zq -ot -d2 -bt=dos -mc
 
 AFLAGS := 
-
-LFLAGS := name dontshit d all sys dos op m op maxe=25 op q op symf
 
 makebuilddir:
 	@-mkdir $(OBJDIR)
 	@-mkdir floppy
 	@-mkdir dosbox
-	@-mkdir dosbox\.jsdos
+	@-mkdir dosbox/.jsdos
+
+$(OBJDIR)/encoder : encoder.c
+	gcc encoder.c -o $(OBJDIR)/encoder
+
+$(OBJDIR)/poopack : poopack.c
+	gcc poopack.c -o $(OBJDIR)/poopack
 
 $(OBJDIR)/%.obj : %.c
 	$(CC) $(CFLAGS) -fr=$@.err -fo=$@ $<
@@ -95,56 +95,56 @@ $(OBJDIR)/%.obj : %.c
 $(OBJDIR)/%.obj : %.asm
 	$(WASM) $(AFLAGS) -fr=$@.err -fo=$@ $<
 
-$(OBJDIR)/crown.cga : gfx/crown.raw
-	gfx\encoder.exe $< $@ s 20
+$(OBJDIR)/crown.cga : gfx/crown.raw $(OBJDIR)/encoder
+	$(OBJDIR)/encoder $< $@ s 20
 
-$(OBJDIR)/crown.ega : gfx/crown.raw
-	gfx\encoder.exe $< $@ s 20
+$(OBJDIR)/crown.ega : gfx/crown.raw $(OBJDIR)/encoder
+	$(OBJDIR)/encoder $< $@ s 20
 
-$(OBJDIR)/%.cga : gfx/%.raw
-	gfx\encoder.exe $< $@.tmp r
-	gfx\lz4.exe -c2 stdin $@ < $@.tmp
-	-$(RM) $@.tmp
+$(OBJDIR)/%.cga : gfx/%.raw $(OBJDIR)/encoder
+	$(OBJDIR)/encoder $< $@.tmp r
+	./lz4 -c2st1 stdin $@ < $@.tmp > /dev/null 2>&1
+	-rm $@.tmp
 
-$(OBJDIR)/%.ega : gfx/%.raw
-	gfx\encoder.exe $< $@ e
-	gfx\lz4.exe -c2 stdin $@pl1z < $@pl1
-	gfx\lz4.exe -c2 stdin $@pl2z < $@pl2
-	gfx\lz4.exe -c2 stdin $@pl4z < $@pl4
-	gfx\lz4.exe -c2 stdin $@pl8z < $@pl8
-	$(CAT) $@pl1z $@pl2z $@pl4z $@pl8z > $@
-	-$(RM) $@pl*
+$(OBJDIR)/%.ega : gfx/%.raw $(OBJDIR)/encoder
+	$(OBJDIR)/encoder $< $@ e
+	./lz4 -c2st1 stdin $@pl2z < $@pl2 > /dev/null 2>&1
+	./lz4 -c2st1 stdin $@pl1z < $@pl1 > /dev/null 2>&1
+	./lz4 -c2st1 stdin $@pl4z < $@pl4 > /dev/null 2>&1
+	./lz4 -c2st1 stdin $@pl8z < $@pl8 > /dev/null 2>&1
+	cat $@pl1z $@pl2z $@pl4z $@pl8z > $@
+	-rm $@pl*
 
-$(OBJDIR)/monster.poo: makebuilddir $(EGAGFX)
-	gfx\poopack.exe $(OBJDIR)\monster.poo $(EGAGFX)
+$(OBJDIR)/monster.poo: makebuilddir $(EGAGFX) $(OBJDIR)/poopack
+	$(OBJDIR)/poopack $(OBJDIR)/monster.poo $(EGAGFX)
 
-$(OBJDIR)/massive.poo: makebuilddir $(CGAGFX)
-	gfx\poopack.exe $(OBJDIR)\massive.poo $(CGAGFX)
+$(OBJDIR)/massive.poo: makebuilddir $(CGAGFX) $(OBJDIR)/poopack
+	$(OBJDIR)/poopack $(OBJDIR)/massive.poo $(CGAGFX)
 
-$(OBJDIR)/dontshit.exe: makebuilddir $(OBJS) $(OBJDIR)/massive.poo $(OBJDIR)/monster.poo
-	$(LINK) name $(OBJDIR)/dontshit.exe d all sys dos op m=$(OBJDIR)/dontshit.map op maxe=25 op quiet op symf=$(OBJDIR)/dontshit.sym file { $(OBJS) }
-	-$(RM) -f floppy/*
-	copy $(OBJDIR)\dontshit.exe floppy
-	copy runny.poo floppy
-	copy smelly.poo floppy
-	copy sticky.poo floppy
-	copy $(OBJDIR)\massive.poo floppy
-	copy $(OBJDIR)\monster.poo floppy
-	bfi -t=3 -f=$(OBJDIR)\dontshit.img .\floppy
-	copy $(OBJDIR)\dontshit.img C:\martypc\media\floppies
-	-$(RM) -f dosbox/*
-	copy floppy\*.* dosbox
-	copy jsdos\*.* dosbox\.jsdos
-	cd dosbox && $(ZIP) -r DontShit.jsdos *.* .jsdos
-	copy dosbox\DontShit.jsdos DontShit.jsdos
-	$(DOSBOX) -conf dosbox.conf
+$(OBJDIR)/dontshit: makebuilddir $(OBJS) $(OBJDIR)/massive.poo $(OBJDIR)/monster.poo
+	$(LINK) name $(OBJDIR)/dontshit sys dos op m=$(OBJDIR)/dontshit.map op maxe=25 op quiet op symf=$(OBJDIR)/dontshit.sym file { $(OBJS) }
+	-rm -f floppy/*
+	cp $(OBJDIR)/dontshit floppy
+	cp runny.poo floppy
+	cp smelly.poo floppy
+	cp sticky.poo floppy
+	cp $(OBJDIR)/massive.poo floppy
+	cp $(OBJDIR)/monster.poo floppy
+	./bfi -t=0 -f=$(OBJDIR)/dontshit.img ./floppy
+
+	-rm -f dosbox/*
+	cp floppy/* dosbox
+	cp jsdos/* dosbox/.jsdos
+	cd dosbox && zip -r DontShit.jsdos * .jsdos
+	cp dosbox/DontShit.jsdos DontShit.jsdos
 
 .DEFAULT_GOAL := all
 
-all: $(OBJDIR)/dontshit.exe
+all: $(OBJDIR)/dontshit
 
 clean:
-	-$(RM) -f $(OBJDIR)/*
-	-$(RM) -f floppy/*
+	-rm -f $(OBJDIR)/*
+	-rm -f floppy/*
+	-rm -f dosbox/*
 
 FORCE: ;

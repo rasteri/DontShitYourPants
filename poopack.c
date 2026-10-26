@@ -3,7 +3,7 @@
 #include<stdlib.h>
 #include<string.h>
 #define far 
-#include"..\gamelogic.h"
+#include"gamelogic.h"
 
 Graphic Graphics[GFXCOUNT];
 
@@ -58,8 +58,8 @@ int main(int argc, char *argv[]) {
     }
 
     // output index and length to file
-
-    long runningtotal = sizeof(long) * GFXCOUNT;
+    // add length of table to addresses
+    long runningtotal = sizeof(long) * GFXCOUNT * 2;
 
     for (int x = 0; x < index; x++) {
         if (Graphics[x].Length > 0)

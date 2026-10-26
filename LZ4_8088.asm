@@ -9,7 +9,7 @@
 ; Updated 20260510: Clumsy Watcom port by Andy Tait
 
 .8086
-.model large
+.model compact
 .code
 
 PUBLIC  lz4_decompress_

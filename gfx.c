@@ -7,6 +7,37 @@
 
 #include "gamelogic.h"
 
+// VGA Palette in case the VGA card doesn't set EGA colors correctly
+unsigned char VGAPal[] = {
+    0x00, 0x00, 0x00, 
+    0x00, 0x00, 0x2A, 
+    0x00, 0x2A, 0x00, 
+    0x00, 0x2A, 0x2A, 
+    0x2A, 0x00, 0x00, 
+    0x2A, 0x00, 0x2A, 
+    0x2A, 0x15, 0x00, 
+    0x2A, 0x2A, 0x2A, 
+    0x00, 0x00, 0x15, 
+    0x00, 0x00, 0x3F, 
+    0x00, 0x2A, 0x15, 
+    0x00, 0x2A, 0x3F, 
+    0x2A, 0x00, 0x15, 
+    0x2A, 0x00, 0x3F, 
+    0x2A, 0x2A, 0x15, 
+    0x2A, 0x2A, 0x3F,
+};
+
+void SetVGAPalette() {
+    int i;
+
+    outp(0x03C6, 0xff);
+    outp(0x03C8, 0x00);
+    
+    for (i = 0; i < 16 * 3; i++) {
+        outp(0x03C9, VGAPal[i]);
+    }
+}
+
 // CGA text memory
 unsigned char far *text_mem = MK_FP(0xB000, 0x8000); 
 
@@ -15,11 +46,9 @@ unsigned char far *graphics_mem = (unsigned char far *)0xA0000000L;
 
 int CrownX = 0, CrownY = 0;
 
-int graphicsmode = NULL;
+int graphicsmode = 0;
 
 char TextAtTop = 0;
-
-void far *inb, *outb;
 
 Graphic Graphics[GFXCOUNT];
 
@@ -43,7 +72,6 @@ void Set_CGA_Register(unsigned char reg, unsigned char val) {
 void set_mode_cga(void)
 {
     union REGS r;
-    int i;
 
     rasterDisable();
 
@@ -100,6 +128,7 @@ void set_mode_ega(void)
 void set_mode_vga(void)
 {
     set_mode_ega();
+    SetVGAPalette();
     MSPerFrame = 14;
     FramesPerSecond = 70;
 }
@@ -256,7 +285,7 @@ volatile unsigned char last_keybyte = 0;
 void raster_loop_frames(void);
 
 void DrawChar(unsigned int x, unsigned int y, unsigned char data) {
-    unsigned char far *screenpt;
+    unsigned char *screenpt;
     union REGS r;
     if (graphicsmode == GFX_MODE_CGA) {
         screenpt = text_mem + (y * 160) + (2 * x);
@@ -275,7 +304,7 @@ void DrawChar(unsigned int x, unsigned int y, unsigned char data) {
 
 void DrawText(unsigned int x, unsigned int y, unsigned char color, unsigned char *data) {
 
-    unsigned char far *screenpt;
+    unsigned char *screenpt;
     union REGS r;
     unsigned int xn = x;
 
@@ -401,9 +430,8 @@ void DisplayText(char *text) {
 // bit2 - newline
 void DecodeSprite(char *gfx, int length, int x, int y) {
     char *writepnt;
-    unsigned int Numbytes;
     unsigned char writebyte = 0;
-    char *tmp;
+    char tmp;
 
     if (graphicsmode == GFX_MODE_CGA) {
 
@@ -504,64 +532,13 @@ void DecodeSprite(char *gfx, int length, int x, int y) {
     }
 }
 
-/*void DrawEGA(unsigned char far *from, unsigned int lines) {
-
-    unsigned char cnt;
-
-    unsigned char far *vram = graphics_mem;
-    unsigned char *lz4pnt;
-    unsigned int x = 0, y = 0;
-
-    unsigned char bmm;
-
-    lz4pnt = from + 1;
-
-    for (y = 0; y < lines; y++){
-        for (x = 0; x < 80; x++) {
-
-            cnt = 0;
-            bmm = *lz4pnt;
-
-            outp(0x3C4, 0x02);  // enable planes
-            outp(0x3C5, bmm & 0x0F);  // colors
-
-            outpw(0x3CE, 0xF008); // bit mask
-            *vram = 0xFF;
-            *(vram + 80) = 0xFF;
-
-            // dummy read to fill latches
-            cnt = *vram;
-
-            outp(0x3C4, 0x02);  // enable planes
-            outp(0x3C5, (bmm & 0xF0) >> 4);  // colors
-
-            outpw(0x3CE, 0x0F08); // bit mask
-            *vram = 0xFF;
-            *(vram + 80) = 0xFF;
-
-            vram += 1;
-            lz4pnt += 2;
-        }
-        vram += 80;
-    }
-
-    //reset registers
-    //Bit Mask = FFh
-    outp(0x3CE, 0x08);
-    outp(0x3CF, 0xFF);
-
-    // All planes writable
-    outp(0x3CE, 0x02);
-    outp(0x3CF, 0x0F);
-}*/
-
 unsigned char *LZ4Buffer;
 
 unsigned int DecodeSize;
 
 unsigned char LZ4Magic[] = {0x02, 0x21, 0x4C, 0x18, 0x00};
 
-char far *FindMagic(char far *s1, unsigned int length) {
+char *FindMagic(char *s1, unsigned int length) {
 
     while (length--){
         if (
@@ -578,13 +555,9 @@ char far *FindMagic(char far *s1, unsigned int length) {
     
 }
 
-unsigned char bum[30];
+void *inb, *outb;
 
-unsigned char lz4bum[16000];
-
-void Decode(char far *gfx, unsigned int length) {
-
-    int x;
+void Decode(char *gfx, unsigned int length) {
 
     if (graphicsmode == GFX_MODE_CGA) {
         inb = gfx;
@@ -711,10 +684,8 @@ unsigned char *GFXData;
 
 void LoadGFX() {
     FILE *infile;
-    long filelen;
     unsigned char i;
     long offset;
-    long tableindex;
 
     // load the big blob of graphics
 
@@ -728,36 +699,25 @@ void LoadGFX() {
         exit (1);
     }
 
-    fseek(infile, 0, SEEK_END);
-    filelen = ftell(infile);
-    fseek(infile, 0, SEEK_SET);
-
-    GFXData = malloc(filelen);
-    fread(GFXData, filelen, 1, infile);
-    fclose(infile);
-
-    // now link up the pointers
-
     for (i=0; i < GFXCOUNT; i++) {
-        // get the index to the file from the index table at the start of the data block
-        tableindex = (i * sizeof(long) * 2);
-        offset = *((long *)(GFXData + tableindex));
+        // get the offset and length
+        fseek(infile, i * sizeof(long) * 2, SEEK_SET);
+        fread(&offset, sizeof(long), 1, infile);
+        fread(&Graphics[i].Length, sizeof(long), 1, infile);
 
-        // skip the index table itself
-        offset += sizeof(long) * GFXCOUNT;
+        // now grab the data
+        Graphics[i].Data = xmalloc(Graphics[i].Length);
 
-        // set the pointer
-        Graphics[i].Data = GFXData + offset;
+        fseek(infile, offset, SEEK_SET);
+        fread(Graphics[i].Data, Graphics[i].Length, 1, infile);
 
         // check ok
-        if (i != GFX_CROWN && FindMagic(Graphics[i].Data, 1) == NULL)
-            printf("Invalid GFX %d", i);
-
-        // length is the second byte in the index table
-        tableindex += sizeof(long);
-        Graphics[i].Length = *((long *)(GFXData + tableindex));
-
+        if (i != GFX_CROWN && FindMagic(Graphics[i].Data, 1) == NULL) {
+            printf("Invalid GFX %d\n", i);
+            exit(1);
+        }
     }
+
 }
 
 
@@ -782,8 +742,6 @@ void GFX_Exit() {
 }
 
 void GFX_Init() {
-    char tat = 0;
-
     system("cls");
 
     if (graphicsmode == NULL){
@@ -792,7 +750,6 @@ void GFX_Init() {
     }
 
     memset(Graphics, 0x00, sizeof(Graphics));
-
 
     LoadGFX();
 

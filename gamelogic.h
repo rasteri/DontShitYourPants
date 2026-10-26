@@ -95,7 +95,7 @@ typedef struct _Graphic {
     unsigned int Lines;
 
     // pointer to le data
-    char far *Data;
+    char *Data;
 
 } Graphic;
 
@@ -109,7 +109,7 @@ typedef struct _Note {
 
 
 void DisplayGFX(int id);
-void Decode(char far *gfx, unsigned int length);
+void Decode(char *gfx, unsigned int length);
 void DrawTextInWindow(unsigned int x, unsigned int y, unsigned char color, unsigned char *data);
 void SetGFXLines(int rows);
 void ClearScreen();
@@ -127,6 +127,10 @@ void CGA_Unsplit(void);
 void CGA_Resplit(void);
 void raster_split_nopoll(void);
 void raster_waitvsync(void);
+void DisableBlink(void);
+void SaveAwards();
+void DrawText(unsigned int x, unsigned int y, unsigned char color, unsigned char *data);
+void DrawTextInInput(unsigned int x, unsigned int y, unsigned char color, unsigned char *data);
 
 void raster_loop_frames(void);
 void raster_loop_frames(void);
@@ -142,6 +146,7 @@ void PlaySound(Note *Song);
 void Music_Task();
 
 void Frontend_Exit();
+void * xmalloc(size_t size);
 
 extern unsigned int SplitAtLine;
 extern Note SONG_INTRO[];
@@ -170,7 +175,7 @@ extern GameState *CurrState;
 extern volatile unsigned char keybuf[KEYBUF_SIZE];
 extern volatile unsigned char last_keybyte;
 
-unsigned long Awards;
+extern unsigned long Awards;
 extern int endingcount;
 extern unsigned long EndingLog;
 
@@ -181,8 +186,8 @@ extern unsigned int InputLine;
 
 extern unsigned int FramesPerSecond;
 
-#define rasterDisable() outp(CGA_MODE_CTRL, 0x01)
-#define rasterEnable()  outp(CGA_MODE_CTRL, 0x09)
+#define rasterDisable() if (graphicsmode == GFX_MODE_CGA) outp(CGA_MODE_CTRL, 0x01)
+#define rasterEnable()  if (graphicsmode == GFX_MODE_CGA) outp(CGA_MODE_CTRL, 0x09)
 
 void update_cursor(int x, int y);
 

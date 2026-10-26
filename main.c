@@ -4,6 +4,7 @@
 #include <graph.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include "gamelogic.h"
 
@@ -21,6 +22,19 @@ void Frontend_Exit()
     int86(0x10, &r, &r);
 
     exit(0);
+}
+
+
+void * xmalloc(size_t size)
+{
+    void *p = malloc(size);
+
+
+    if (p == NULL) {
+        fprintf(stderr, "Malloc shit its pants\n");
+        exit(1);
+    }
+    return p;
 }
 
 char InputBuff[100];
@@ -58,32 +72,22 @@ void reboot(void) {
     }
 
 }
-unsigned char tmp[1107];
-
-extern void far *inb, *outb;
-
-unsigned char far *vram = (unsigned char far *)0xA0000000L;
-unsigned char *lz4pnt;
 
 int main(int argc, char *argv[])
 {
-    FILE *f;
     char inkey;
-
     int bufpos = 0;
-
-    FILE *bum;
 
     memset(InputBuff, 0x00, 100);
 
     PlaySound(JukeBox[SOUND_INTRO]);
 
-    Gamelogic_Init();
-
     if (argc == 2) 
         graphicsmode = argv[1][0];
 
     GFX_Init();
+
+    Gamelogic_Init();
 
     EnterState();
 
@@ -148,8 +152,4 @@ int main(int argc, char *argv[])
 
             Music_Task();
         }
-
-    GFX_Exit();
-
-    return 0;
 }
