@@ -25,11 +25,7 @@ Either unzip the .zip file to a folder on your hard disk, or write the .img file
 
 Then change to the folder or disk and run "dontshit.exe"
 
-If you have a slower PC (8086, 8088) select "1" for text above, or for faster PCs (286 or better) select "2" for text below. (Yes, the text placement has a massive impact on performance!)
-
-Then select your graphics card - CGA, EGA200, EGA350, or VGA.
-
-If you have an EGA-compatible card, EGA200 is preferable, but may not work if you have a 350-line monitor. If you have issues, select EGA350.
+Then select your graphics card - CGA, EGA or VGA.
 
 
 ## Technical Info
@@ -46,6 +42,6 @@ Made without LLMs, unless you count Google's stupid AI summary feature that I ca
 
 ## Acknowledgements
 * Cellar Door Games for creating the original, and for allowing me to release this tribute.
-* Jim Leonard/Trixter for the LZ4 decompression code.
+* Jim Leonard/Trixter for the LZ4 decompression code and help with EGA text rendering.
 * CRTC+Hornet for the demo Area 5150, which helped me understand CGA screen timings
 * Daniel Balsom for the MartyPC emulator, which was invaluable during development and debugging
